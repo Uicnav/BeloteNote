@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.ionvaranita.belotenote.datalayer.database.entity.players4.Game4PEntity
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Created by ionvaranita on 2019-09-11;
@@ -14,7 +15,7 @@ interface Game4PDao {
     suspend fun insert(game4PEntity: Game4PEntity): Long
 
     @Query("select * from Game4PEntity order by dateGame desc")
-    suspend fun getGames(): List<Game4PEntity>
+    fun getGames(): Flow<List<Game4PEntity>>
 
     @Query("select * from Game4PEntity where idGame = :idGame")
     suspend fun getGame(idGame: Short): Game4PEntity

@@ -2,6 +2,7 @@ package com.ionvaranita.belotenote.domain.model
 
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.Game2PEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players3.Game3PEntity
+import com.ionvaranita.belotenote.datalayer.database.entity.players4.Game4PEntity
 import varanita.informatics.shared.constants.GameStatus
 
 data class Game2PUi(val idGame: Short = 0, val statusGame: Byte = GameStatus.CONTINUE, val winnerPoints: Short, val name1: String, val name2: String) {
@@ -14,6 +15,13 @@ data class Game2PUi(val idGame: Short = 0, val statusGame: Byte = GameStatus.CON
 data class Game3PUi(val idGame: Short = 0, val statusGame: Byte = GameStatus.CONTINUE, val winnerPoints: Short, val name1: String, val name2: String, val name3: String) {
     fun toDataClass(): Game3PEntity {
         return Game3PEntity(idGame = this.idGame, statusGame = this.statusGame, winnerPoints = this.winnerPoints, name1 = this.name1, name2 = this.name2, name3 = this.name3
+                           )
+    }
+}
+
+data class Game4PUi(val idGame: Short = 0, val statusGame: Byte = GameStatus.CONTINUE, val winnerPoints: Short, val name1: String, val name2: String, val name3: String, val name4: String) {
+    fun toDataClass(): Game4PEntity {
+        return Game4PEntity(idGame = this.idGame, statusGame = this.statusGame, winnerPoints = this.winnerPoints, name1 = this.name1, name2 = this.name2, name3 = this.name3, name4 = this.name4
                            )
     }
 }

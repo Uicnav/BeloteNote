@@ -35,10 +35,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ionvaranita.belotenote.datalayer.database.AppDatabase
 import com.ionvaranita.belotenote.domain.model.Game2PUi
 import com.ionvaranita.belotenote.domain.model.Game3PUi
+import com.ionvaranita.belotenote.domain.model.Game4PUi
 import com.ionvaranita.belotenote.viewmodel.Game2PViewModel
 import com.ionvaranita.belotenote.viewmodel.Game3PViewModel
+import com.ionvaranita.belotenote.viewmodel.Game4PViewModel
 import com.ionvaranita.belotenote.viewmodel.Games2PUiState
 import com.ionvaranita.belotenote.viewmodel.Games3PUiState
+import com.ionvaranita.belotenote.viewmodel.Games4PUiState
 import kotlinx.coroutines.launch
 
 @Composable
@@ -46,7 +49,7 @@ fun TableScreen(appDatabase: AppDatabase, gamePath: GamePath) {
     when (gamePath) {
         GamePath.TWO -> Tables2P(appDatabase)
         GamePath.THREE -> Tables3P(appDatabase)
-        GamePath.FOUR -> Tables2P(appDatabase)
+        GamePath.FOUR -> Tables4P(appDatabase)
         GamePath.GROUP -> Tables2P(appDatabase)
     }
 
@@ -136,6 +139,43 @@ private fun Tables3P(appDatabase: AppDatabase) {
 }
 
 @Composable
+private fun Tables4P(appDatabase: AppDatabase) {
+    val viewModel = viewModel { Game4PViewModel(appDatabase) }
+    val gamesUiState = viewModel.uiState.collectAsState()
+    var shouDialog by remember { mutableStateOf(false) }
+
+    TablesBase(onInsertGameClick = {
+        shouDialog = true
+    }) { paddingValues ->
+        if (shouDialog) {
+            InsertGame4(onClick = {
+                viewModel.insertGame(game = it)
+            }, onDismissRequest = {
+                shouDialog = false
+            })
+        }
+
+        when (gamesUiState.value) {
+            is Games4PUiState.Success -> {
+                LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                    items((gamesUiState.value as Games4PUiState.Success).data) {
+                        Row {
+                            Text("${it.name1}")
+                            Text("${it.name2}")
+                            Text("${it.name3}")
+                            Text("${it.name4}")
+                            Text("${it.statusGame}")
+                        }
+                    }
+                }
+            }
+            is Games4PUiState.Error -> { // Handle error
+            }
+        }
+    }
+}
+
+@Composable
 fun InsertGameFloatingActionButton(onClick: () -> Unit, modifier: Modifier) {
     FloatingActionButton(
         modifier = modifier,
@@ -194,6 +234,40 @@ fun InsertGame3(onDismissRequest: () -> Unit, onClick: (Game3PUi) -> Unit) {
         })
         Button(onClick = {
             onClick(Game3PUi(name1 = p1, name2 = p2, name3 = p3, winnerPoints = winningPoints.toShort()))
+            onDismissRequest()
+        }) {
+            Text("Insert Game")
+        }
+    }
+}
+
+@Composable
+fun InsertGame4(onDismissRequest: () -> Unit, onClick: (Game4PUi) -> Unit) {
+    InsertGameDialogBase(onDismissRequest = onDismissRequest) {
+        var p1 by remember { mutableStateOf("") }
+        var p2 by remember { mutableStateOf("") }
+        var p3 by remember { mutableStateOf("") }
+        var p4 by remember { mutableStateOf("") }
+        var winningPoints by remember { mutableStateOf("") }
+        Row {
+            TextField(value = p1, onValueChange = {
+                p1 = it
+            }, modifier = Modifier.weight(1F))
+            TextField(value = p2, onValueChange = {
+                p2 = it
+            }, modifier = Modifier.weight(1F))
+            TextField(value = p3, onValueChange = {
+                p3 = it
+            }, modifier = Modifier.weight(1F))
+            TextField(value = p4, onValueChange = {
+                p4 = it
+            }, modifier = Modifier.weight(1F))
+        }
+        TextField(value = winningPoints, onValueChange = {
+            winningPoints = it
+        })
+        Button(onClick = {
+            onClick(Game4PUi(name1 = p1, name2 = p2, name3 = p3, name4 = p4, winnerPoints = winningPoints.toShort()))
             onDismissRequest()
         }) {
             Text("Insert Game")
