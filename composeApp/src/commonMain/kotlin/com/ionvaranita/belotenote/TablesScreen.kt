@@ -25,7 +25,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,16 +32,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ionvaranita.belotenote.datalayer.database.AppDatabase
+import com.ionvaranita.belotenote.domain.model.Game2GroupsUi
 import com.ionvaranita.belotenote.domain.model.Game2PUi
 import com.ionvaranita.belotenote.domain.model.Game3PUi
 import com.ionvaranita.belotenote.domain.model.Game4PUi
+import com.ionvaranita.belotenote.viewmodel.Game2GroupsViewModel
 import com.ionvaranita.belotenote.viewmodel.Game2PViewModel
 import com.ionvaranita.belotenote.viewmodel.Game3PViewModel
 import com.ionvaranita.belotenote.viewmodel.Game4PViewModel
+import com.ionvaranita.belotenote.viewmodel.Games2GroupsUiState
 import com.ionvaranita.belotenote.viewmodel.Games2PUiState
 import com.ionvaranita.belotenote.viewmodel.Games3PUiState
 import com.ionvaranita.belotenote.viewmodel.Games4PUiState
-import kotlinx.coroutines.launch
 
 @Composable
 fun TableScreen(appDatabase: AppDatabase, gamePath: GamePath) {
@@ -50,7 +51,7 @@ fun TableScreen(appDatabase: AppDatabase, gamePath: GamePath) {
         GamePath.TWO -> Tables2P(appDatabase)
         GamePath.THREE -> Tables3P(appDatabase)
         GamePath.FOUR -> Tables4P(appDatabase)
-        GamePath.GROUP -> Tables2P(appDatabase)
+        GamePath.GROUP -> Tables2Groups(appDatabase)
     }
 
 }
@@ -88,18 +89,6 @@ private fun Tables2P(appDatabase: AppDatabase) {
             }
         }
     }
-}
-
-@Composable
-private fun TablesBase(onInsertGameClick: () -> Unit, content: @Composable (PaddingValues) -> Unit) {
-    Scaffold(floatingActionButton = {
-        InsertGameFloatingActionButton(onClick = {
-            onInsertGameClick()
-        }, modifier = Modifier)
-    }) { paddingValues ->
-        content(paddingValues)
-    }
-
 }
 
 @Composable
@@ -173,6 +162,53 @@ private fun Tables4P(appDatabase: AppDatabase) {
             }
         }
     }
+}
+
+@Composable
+private fun Tables2Groups(appDatabase: AppDatabase) {
+    val viewModel = viewModel { Game2GroupsViewModel(appDatabase) }
+    val gamesUiState = viewModel.uiState.collectAsState()
+    var shouDialog by remember { mutableStateOf(false) }
+
+    TablesBase(onInsertGameClick = {
+        shouDialog = true
+    }) { paddingValues ->
+        if (shouDialog) {
+            InsertGame2Groups(onClick = {
+                viewModel.insertGame(game = it)
+            }, onDismissRequest = {
+                shouDialog = false
+            })
+        }
+
+        when (gamesUiState.value) {
+            is Games2GroupsUiState.Success -> {
+                LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                    items((gamesUiState.value as Games2GroupsUiState.Success).data) {
+                        Row {
+                            Text("${it.name1}")
+                            Text("${it.name2}")
+                            Text("${it.statusGame}")
+                        }
+                    }
+                }
+            }
+            is Games2GroupsUiState.Error -> { // Handle error
+            }
+        }
+    }
+}
+
+@Composable
+private fun TablesBase(onInsertGameClick: () -> Unit, content: @Composable (PaddingValues) -> Unit) {
+    Scaffold(floatingActionButton = {
+        InsertGameFloatingActionButton(onClick = {
+            onInsertGameClick()
+        }, modifier = Modifier)
+    }) { paddingValues ->
+        content(paddingValues)
+    }
+
 }
 
 @Composable
@@ -268,6 +304,32 @@ fun InsertGame4(onDismissRequest: () -> Unit, onClick: (Game4PUi) -> Unit) {
         })
         Button(onClick = {
             onClick(Game4PUi(name1 = p1, name2 = p2, name3 = p3, name4 = p4, winnerPoints = winningPoints.toShort()))
+            onDismissRequest()
+        }) {
+            Text("Insert Game")
+        }
+    }
+}
+
+@Composable
+fun InsertGame2Groups(onDismissRequest: () -> Unit, onClick: (Game2GroupsUi) -> Unit) {
+    InsertGameDialogBase(onDismissRequest = onDismissRequest) {
+        var p1 by remember { mutableStateOf("") }
+        var p2 by remember { mutableStateOf("") }
+        var winningPoints by remember { mutableStateOf("") }
+        Row {
+            TextField(value = p1, onValueChange = {
+                p1 = it
+            }, modifier = Modifier.weight(1F))
+            TextField(value = p2, onValueChange = {
+                p2 = it
+            }, modifier = Modifier.weight(1F))
+        }
+        TextField(value = winningPoints, onValueChange = {
+            winningPoints = it
+        })
+        Button(onClick = {
+            onClick(Game2GroupsUi(name1 = p1, name2 = p2, winnerPoints = winningPoints.toShort()))
             onDismissRequest()
         }) {
             Text("Insert Game")

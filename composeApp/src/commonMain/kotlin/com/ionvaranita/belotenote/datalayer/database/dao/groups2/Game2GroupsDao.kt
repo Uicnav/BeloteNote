@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Game2GroupsEntity
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Created by ionvaranita on 11/12/2017.
@@ -11,7 +12,7 @@ import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Game2GroupsE
 @Dao
 interface Game2GroupsDao {
     @Query("select * from Game2GroupsEntity order by dateGame desc")
-    suspend fun getGames(): List<Game2GroupsEntity>
+    fun getGames(): Flow<List<Game2GroupsEntity>>
 
     @Query("select * from Game2GroupsEntity where idGame = :idGame")
     suspend fun getGame(idGame: Short): Game2GroupsEntity

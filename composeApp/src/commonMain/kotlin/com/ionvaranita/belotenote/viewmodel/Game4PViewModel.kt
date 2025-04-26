@@ -9,6 +9,7 @@ import com.ionvaranita.belotenote.domain.model.Game3PUi
 import com.ionvaranita.belotenote.domain.model.Game4PUi
 import com.ionvaranita.belotenote.domain.usecase.GetGames4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.InsertGame4PUseCase
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,8 +18,8 @@ import kotlinx.coroutines.launch
 
 class Game4PViewModel(private val appDatabase: AppDatabase) : ViewModel() {
     val repository = Games4PRepositoryImpl(Game4PDataSourceImpl(appDatabase.game4PDao()))
-    private var getGames4PUseCase: GetGames4PUseCase = GetGames4PUseCase(repository)
-    private var insertGame4PUseCase: InsertGame4PUseCase = InsertGame4PUseCase(repository)
+    private var getGamesUseCase: GetGames4PUseCase = GetGames4PUseCase(repository)
+    private var insertGameUseCase: InsertGame4PUseCase = InsertGame4PUseCase(repository)
 
     // Backing property to avoid state updates from other classes
     private val _uiState = MutableStateFlow(Games4PUiState.Success(emptyList()))
@@ -26,13 +27,13 @@ class Game4PViewModel(private val appDatabase: AppDatabase) : ViewModel() {
     // The UI collects from this StateFlow to get its state updates
     val uiState: StateFlow<Games4PUiState> = _uiState
     private fun getGames() = viewModelScope.launch(Dispatchers.IO) {
-        getGames4PUseCase.execute(Unit).collect { gameList ->
+        getGamesUseCase.execute(Unit).collect { gameList ->
             _uiState.value = Games4PUiState.Success(gameList)
         }
     }
 
-    fun insertGame(game: Game4PUi) = viewModelScope.launch(Dispatchers.IO) {
-        insertGame4PUseCase.execute(game.toDataClass())
+    fun insertGame(game: Game4PUi, dispatcher: CoroutineDispatcher = Dispatchers.IO) = viewModelScope.launch(dispatcher) {
+        insertGameUseCase.execute(game.toDataClass())
     }
 
     init {
