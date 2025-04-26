@@ -2,6 +2,7 @@ package com.ionvaranita.belotenote.datalayer.database.entity.players2
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.ionvaranita.belotenote.domain.model.Game2PUi
 import com.ionvaranita.belotenote.utils.getCurrentTime
 import varanita.informatics.shared.constants.GameStatus
 
@@ -13,4 +14,8 @@ data class Game2PEntity(
     val winnerPoints: Short,
     val name1: String,
     val name2: String
-                       )
+                       ) {
+    fun toUiModel(): Game2PUi {
+        return Game2PUi(statusGame = this.statusGame,winnerPoints = this.winnerPoints, name1 = this.name1, name2 = this.name2)
+    }
+}

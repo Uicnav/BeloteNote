@@ -24,7 +24,7 @@ class Game2PViewModel(private val appDatabase: AppDatabase) : ViewModel() {
 
     // The UI collects from this StateFlow to get its state updates
     val uiState: StateFlow<Games2PUiState> = _uiState
-    fun getGames() = viewModelScope.launch(Dispatchers.IO) {
+    private fun getGames() = viewModelScope.launch(Dispatchers.IO) {
         getGames2PUseCase.execute(Unit).collect { gameList ->
             _uiState.value = Games2PUiState.Success(gameList)
         }
@@ -35,19 +35,7 @@ class Game2PViewModel(private val appDatabase: AppDatabase) : ViewModel() {
     }
 
     init {
-        viewModelScope.launch {
-            uiState.collect{
-                when(it) {
-                    is Games2PUiState.Success -> {
-                        print(it.data)
-                    }
-                    is Games2PUiState.Error -> {
-                        print("ERORRRRRRRRR!")
-                    }
-                }
-            }
-        }
-
+        getGames()
     }
 }
 

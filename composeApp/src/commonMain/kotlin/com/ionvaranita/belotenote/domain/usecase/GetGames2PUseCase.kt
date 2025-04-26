@@ -14,7 +14,7 @@ class GetGames2PUseCase (private val repository: Games2PRepository) : UseCase<Un
 private fun games2PToUI(listGames: List<Game2PEntity>): List<Game2PUi> {
     val result = mutableListOf<Game2PUi>()
     listGames.forEach { game->
-        result.add(Game2PUi(idGame = game.idGame, statusGame = game.statusGame, winnerPoints = game.winnerPoints, name1 = game.name1, name2 = game.name2))
+        result.add(game.toUiModel())
     }
     return result
 }
