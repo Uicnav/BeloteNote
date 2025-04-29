@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -27,7 +27,6 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun HomeScreen(onClick: (AppNavDest) -> Unit) {
     Box(modifier = Modifier.fillMaxSize()) {
-        Image(modifier = Modifier.fillMaxSize(), painter = painterResource(Res.drawable.compose_multiplatform), contentDescription = "", contentScale = ContentScale.FillBounds)
         Column(verticalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxSize()) {
             MainButton(gamePath = GamePath.TWO, onClick = {
                 onClick(AppNavDest.TWO)

@@ -1,6 +1,5 @@
 package com.ionvaranita.belotenote.domain.repo
 
-import com.ionvaranita.belotenote.datalayer.database.entity.players3.Game3PEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players4.Game4PEntity
 import kotlinx.coroutines.flow.Flow
 

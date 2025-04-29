@@ -1,4 +1,4 @@
-package varanita.informatics.shared.utils
+package com.ionvaranita.belotenote.utils
 
 object IdsPlayer {
     const val ID_TEAM_1: Int = 411
@@ -14,3 +14,4 @@ object IdsPlayer {
     const val ID_PERSON_4_4: Int = 404
     const val ID_GAME_POINTS: Int = 17
 }
+
