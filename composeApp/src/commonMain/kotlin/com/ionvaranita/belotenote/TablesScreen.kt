@@ -1,14 +1,23 @@
 package com.ionvaranita.belotenote
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.repeatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -32,13 +41,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -63,6 +76,8 @@ import com.ionvaranita.belotenote.viewmodel.Games3PUiState
 import com.ionvaranita.belotenote.viewmodel.Games4PUiState
 import com.ionvaranita.belotenote.viewmodel.WinningPointsState
 import com.ionvaranita.belotenote.viewmodel.WinningPointsViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -96,23 +111,29 @@ private fun Tables2P(appDatabase: AppDatabase) {
         when (val state = gamesUiState.value) {
             is Games2PUiState.Success -> {
                 LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize().padding(16.dp)) {
-                    items(state.data) {game->
-                        Card(modifier = Modifier.padding(16.dp)) {
-                            Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                                Column(modifier = Modifier.weight(1F)) {
-                                    TableTextAtom(game.name1)
-                                    TableTextAtom(game.name2)
-                                }
-                                Spacer(modifier = Modifier.width(16.dp))
-                                StatusImage(GameStatus.fromId(game.statusGame))
+                    items(state.data) { game ->
+                        GameCard {
+                            Column(modifier = Modifier.weight(1F)) {
+                                TableTextAtom(game.name1)
+                                TableTextAtom(game.name2)
                             }
+                            Spacer(modifier = Modifier.width(16.dp))
+                            StatusImage(GameStatus.fromId(game.statusGame))
                         }
-
                     }
                 }
             }
             is Games2PUiState.Error -> { // Handle error
             }
+        }
+    }
+}
+
+@Composable
+fun GameCard(modifier: Modifier = Modifier, content: @Composable RowScope.() -> Unit) {
+    Card(modifier = Modifier.padding(16.dp).alpha(.97F)) {
+        Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            content()
         }
     }
 }
@@ -139,19 +160,18 @@ private fun Tables3P(appDatabase: AppDatabase) {
             })
         }
 
-        when (gamesUiState.value) {
+        when (val state = gamesUiState.value) {
             is Games3PUiState.Success -> {
                 LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize().padding(16.dp)) {
-                    items((gamesUiState.value as Games3PUiState.Success).data) {
-                        Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                    items(state.data) { game ->
+                        GameCard {
                             Column(modifier = Modifier.weight(1F)) {
-                                TableTextAtom("${it.name1}")
-                                TableTextAtom("${it.name2}")
+                                TableTextAtom(game.name1)
+                                TableTextAtom(game.name2)
                             }
+                            TableTextAtom(game.name3, modifier = Modifier.weight(1F))
                             Spacer(modifier = Modifier.width(16.dp))
-                            TableTextAtom("${it.name2}")
-                            Spacer(modifier = Modifier.width(16.dp))
-                            TableTextAtom("${it.statusGame}")
+                            StatusImage(GameStatus.fromId(game.statusGame))
                         }
                     }
                 }
@@ -179,16 +199,21 @@ private fun Tables4P(appDatabase: AppDatabase) {
             })
         }
 
-        when (gamesUiState.value) {
+        when (val state = gamesUiState.value) {
             is Games4PUiState.Success -> {
                 LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize().padding(16.dp)) {
-                    items((gamesUiState.value as Games4PUiState.Success).data) {
-                        Row {
-                            Text("${it.name1}")
-                            Text("${it.name2}")
-                            Text("${it.name3}")
-                            Text("${it.name4}")
-                            Text("${it.statusGame}")
+                    items(state.data) { game ->
+                        GameCard {
+                            Column(modifier = Modifier.weight(1F)) {
+                                TableTextAtom(game.name1)
+                                TableTextAtom(game.name2)
+                            }
+                            Column(modifier = Modifier.weight(1F)) {
+                                TableTextAtom(game.name3)
+                                TableTextAtom(game.name4)
+                            }
+                            Spacer(modifier = Modifier.width(16.dp))
+                            StatusImage(GameStatus.fromId(game.statusGame))
                         }
                     }
                 }
@@ -219,11 +244,14 @@ private fun Tables2Groups(appDatabase: AppDatabase) {
         when (val state = gamesUiState.value) {
             is Games2GroupsUiState.Success -> {
                 LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize().padding(16.dp)) {
-                    items(state.data) {
-                        Row {
-                            Text("${it.name1}")
-                            Text("${it.name2}")
-                            Text("${it.statusGame}")
+                    items(state.data) { game ->
+                        GameCard {
+                            Column(modifier = Modifier.weight(1F)) {
+                                TableTextAtom(game.name1)
+                                TableTextAtom(game.name2)
+                            }
+                            Spacer(modifier = Modifier.width(16.dp))
+                            StatusImage(GameStatus.fromId(game.statusGame))
                         }
                     }
                 }
@@ -260,44 +288,115 @@ fun InsertGameFloatingActionButton(onClick: () -> Unit, modifier: Modifier) {
 fun InsertGame2(appDatabase: AppDatabase, onDismissRequest: () -> Unit, onClick: (Game2PUi) -> Unit) {
     var p1 by remember { mutableStateOf("") }
     var p2 by remember { mutableStateOf("") }
+
+    val shaker1 = remember { TextFieldShaker() }
+    val shaker2 = remember { TextFieldShaker() }
+
     InsertGameDialogBase(onDismissRequest = onDismissRequest, onClick = { winningPoints ->
-        onClick(Game2PUi(winningPoints = winningPoints, name1 = p1, name2 = p2))
+        when {
+            p1.isEmpty() -> shaker1.shake()
+            p2.isEmpty() -> shaker2.shake()
+            else -> {
+                onClick(Game2PUi(winningPoints = winningPoints, name1 = p1, name2 = p2))
+                onDismissRequest()
+            }
+        }
     }, appDatabase = appDatabase) {
         Row {
-            TextField(value = p1, onValueChange = {
-                p1 = it
-            }, modifier = Modifier.weight(1F))
-            TextField(value = p2, onValueChange = {
-                p2 = it
-            }, modifier = Modifier.weight(1F))
+            InsertNamesTextFieldAtom(
+                value = p1,
+                onValueChange = { p1 = it },
+                shaker = shaker1,
+                modifier = Modifier.weight(1f)
+                                    )
+            InsertNamesTextFieldAtom(
+                value = p2,
+                onValueChange = { p2 = it },
+                shaker = shaker2,
+                modifier = Modifier.weight(1f)
+                                    )
         }
     }
 }
 
-@Composable
-private fun InsertNames(value: String,
-    onValueChange: (String) -> Unit,) {
-    TextField(value = value, onValueChange = onValueChange, textStyle = MaterialTheme.typography.displaySmall)
+
+class TextFieldShaker {
+    private val _shouldShake = mutableStateOf(false)
+    val shouldShake: State<Boolean> get() = _shouldShake
+
+    fun shake() {
+        _shouldShake.value = !_shouldShake.value
+    }
 }
+
+
+@Composable
+private fun InsertNamesTextFieldAtom(
+    value: String,
+    onValueChange: (String) -> Unit,
+    shaker: TextFieldShaker,
+    modifier: Modifier = Modifier
+                                    ) {
+    val vibrationOffset = remember { Animatable(0f) }
+
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused = interactionSource.collectIsFocusedAsState()
+    LaunchedEffect(shaker.shouldShake.value, isFocused.value) {
+        if (value.isEmpty() && isFocused.value) {
+            repeat(6) {
+                vibrationOffset.snapTo(if (it % 2 == 0) 6f else -6f)
+                delay(30) // very quick, like vibration
+            }
+            vibrationOffset.snapTo(0f) // go back to center
+        }
+    }
+
+
+
+    TextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = modifier.offset(x = vibrationOffset.value.dp),
+        textStyle = MaterialTheme.typography.displaySmall,
+        maxLines = 1,
+        interactionSource = interactionSource
+             )
+}
+
+
 
 @Composable
 fun InsertGame3(appDatabase: AppDatabase, onDismissRequest: () -> Unit, onClick: (Game3PUi) -> Unit) {
     var p1 by remember { mutableStateOf("") }
     var p2 by remember { mutableStateOf("") }
     var p3 by remember { mutableStateOf("") }
+    val shouldVibrateP1 by remember { mutableStateOf(TextFieldShaker()) }
+    val shouldVibrateP2 by remember { mutableStateOf(TextFieldShaker()) }
+    val shouldVibrateP3 by remember { mutableStateOf(TextFieldShaker()) }
+
+
     InsertGameDialogBase(onDismissRequest = onDismissRequest, onClick = { winningPoints ->
-        onClick(Game3PUi(name1 = p1, name2 = p2, name3 = p3, winnerPoints = winningPoints))
+        if (p1.isEmpty()) {
+            shouldVibrateP1.shake()
+        } else if (p2.isEmpty()) {
+            shouldVibrateP2.shake()
+        } else if (p3.isEmpty()) {
+            shouldVibrateP3.shake()
+        } else {
+            onClick(Game3PUi(name1 = p1, name2 = p2, name3 = p3, winnerPoints = winningPoints))
+            onDismissRequest()
+        }
     }, appDatabase = appDatabase) {
         Row {
-            TextField(value = p1, onValueChange = {
+            InsertNamesTextFieldAtom(value = p1, onValueChange = {
                 p1 = it
-            }, modifier = Modifier.weight(1F))
-            TextField(value = p2, onValueChange = {
+            }, modifier = Modifier.weight(1F), shaker = shouldVibrateP1)
+            InsertNamesTextFieldAtom(value = p2, onValueChange = {
                 p2 = it
-            }, modifier = Modifier.weight(1F))
-            TextField(value = p3, onValueChange = {
+            }, modifier = Modifier.weight(1F), shaker = shouldVibrateP2)
+            InsertNamesTextFieldAtom(value = p3, onValueChange = {
                 p3 = it
-            }, modifier = Modifier.weight(1F))
+            }, modifier = Modifier.weight(1F), shaker = shouldVibrateP3)
         }
     }
 }
@@ -308,22 +407,37 @@ fun InsertGame4(appDatabase: AppDatabase, onDismissRequest: () -> Unit, onClick:
     var p2 by remember { mutableStateOf("") }
     var p3 by remember { mutableStateOf("") }
     var p4 by remember { mutableStateOf("") }
+    val shouldVibrateP1 by remember { mutableStateOf(TextFieldShaker()) }
+    val shouldVibrateP2 by remember { mutableStateOf(TextFieldShaker()) }
+    val shouldVibrateP3 by remember { mutableStateOf(TextFieldShaker()) }
+    val shouldVibrateP4 by remember { mutableStateOf(TextFieldShaker()) }
     InsertGameDialogBase(onDismissRequest = onDismissRequest, onClick = { winningPoints ->
-        onClick(Game4PUi(name1 = p1, name2 = p2, name3 = p3, name4 = p4, winnerPoints = winningPoints.toShort()))
+        if (p1.isEmpty()) {
+            shouldVibrateP1.shake()
+        } else if (p2.isEmpty()) {
+            shouldVibrateP2.shake()
+        } else if (p3.isEmpty()) {
+            shouldVibrateP3.shake()
+        } else if (p4.isEmpty()) {
+            shouldVibrateP4.shake()
+        } else {
+            onClick(Game4PUi(name1 = p1, name2 = p2, name3 = p3, name4 = p4, winnerPoints = winningPoints.toShort()))
+            onDismissRequest()
+        }
     }, appDatabase = appDatabase) {
         Row {
-            TextField(value = p1, onValueChange = {
+            InsertNamesTextFieldAtom(value = p1, onValueChange = {
                 p1 = it
-            }, modifier = Modifier.weight(1F))
-            TextField(value = p2, onValueChange = {
+            }, modifier = Modifier.weight(1F), shaker = shouldVibrateP1)
+            InsertNamesTextFieldAtom(value = p2, onValueChange = {
                 p2 = it
-            }, modifier = Modifier.weight(1F))
-            TextField(value = p3, onValueChange = {
+            }, modifier = Modifier.weight(1F), shaker = shouldVibrateP2)
+            InsertNamesTextFieldAtom(value = p3, onValueChange = {
                 p3 = it
-            }, modifier = Modifier.weight(1F))
-            TextField(value = p4, onValueChange = {
+            }, modifier = Modifier.weight(1F), shaker = shouldVibrateP3)
+            InsertNamesTextFieldAtom(value = p4, onValueChange = {
                 p4 = it
-            }, modifier = Modifier.weight(1F))
+            }, modifier = Modifier.weight(1F), shaker = shouldVibrateP4)
         }
     }
 }
@@ -332,16 +446,26 @@ fun InsertGame4(appDatabase: AppDatabase, onDismissRequest: () -> Unit, onClick:
 fun InsertGame2Groups(appDatabase: AppDatabase, onDismissRequest: () -> Unit, onClick: (Game2GroupsUi) -> Unit) {
     var p1 by remember { mutableStateOf("") }
     var p2 by remember { mutableStateOf("") }
+    val shouldVibrateP1 by remember { mutableStateOf(TextFieldShaker()) }
+    val shouldVibrateP2 by remember { mutableStateOf(TextFieldShaker()) }
     InsertGameDialogBase(onDismissRequest = onDismissRequest, onClick = { winningPoints ->
-        onClick(Game2GroupsUi(name1 = p1, name2 = p2, winnerPoints = winningPoints))
+        if (p1.isEmpty()) {
+            shouldVibrateP1.shake()
+        } else if (p2.isEmpty()) {
+            shouldVibrateP2.shake()
+        } else {
+            onClick(Game2GroupsUi(name1 = p1, name2 = p2, winnerPoints = winningPoints))
+            onDismissRequest()
+
+        }
     }, appDatabase = appDatabase) {
         Row {
-            TextField(value = p1, onValueChange = {
+            InsertNamesTextFieldAtom(value = p1, onValueChange = {
                 p1 = it
-            }, modifier = Modifier.weight(1F))
-            TextField(value = p2, onValueChange = {
+            }, modifier = Modifier.weight(1F), shaker = shouldVibrateP1)
+            InsertNamesTextFieldAtom(value = p2, onValueChange = {
                 p2 = it
-            }, modifier = Modifier.weight(1F))
+            }, modifier = Modifier.weight(1F), shaker = shouldVibrateP2)
         }
     }
 }
@@ -396,7 +520,6 @@ private fun InsertGameDialogBase(onDismissRequest: () -> Unit, onClick: (Short) 
                 Button(onClick = {
                     if (winningPoints.isNotEmpty()) {
                         onClick(winningPoints.toShort())
-                        onDismissRequest()
                     } else {
                         showError = true
                     }
