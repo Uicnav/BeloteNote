@@ -1,9 +1,15 @@
-package varanita.informatics.shared.constants
+package com.ionvaranita.belotenote.constants
 
-object GameStatus {
-    const val TO_START: Byte = 0
-    const val FINISHED: Byte = 1
-    const val CONTINUE: Byte = 2
-    const val EXTENDED: Byte = 3
-    const val EXTENDED_MANDATORY: Byte = 4
+
+enum class GameStatus(val id: Byte) {
+    TO_START(0),
+    FINISHED(1),
+    CONTINUE(2),
+    EXTENDED(3),
+    EXTENDED_MANDATORY(4);
+
+    companion object {
+        private val map = entries.associateBy(GameStatus::id)
+        fun fromId(id: Byte): GameStatus? = map[id]
+    }
 }

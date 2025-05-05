@@ -1,6 +1,5 @@
-package com.ionvaranita.belotenote
+package com.ionvaranita.belotenote.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,37 +8,36 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import belotenote.composeapp.generated.resources.Res
-import belotenote.composeapp.generated.resources.compose_multiplatform
+import com.ionvaranita.belotenote.Games2
+import com.ionvaranita.belotenote.Games3
+import com.ionvaranita.belotenote.Games4
+import com.ionvaranita.belotenote.GamesGroups
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun HomeScreen(onClick: (AppNavDest) -> Unit) {
+fun HomeScreen(onClick: (Any) -> Unit) {
     Box(modifier = Modifier.fillMaxSize()) {
-        Image(modifier = Modifier.fillMaxSize(), painter = painterResource(Res.drawable.compose_multiplatform), contentDescription = "", contentScale = ContentScale.FillBounds)
         Column(verticalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxSize()) {
             MainButton(gamePath = GamePath.TWO, onClick = {
-                onClick(AppNavDest.TWO)
+                onClick(Games2)
             })
             MainButton(gamePath = GamePath.THREE, onClick ={
-                onClick(AppNavDest.THREE)
+                onClick(Games3)
             })
             MainButton(gamePath = GamePath.FOUR, onClick ={
-                onClick(AppNavDest.FOUR)
+                onClick(Games4)
             })
             MainButton(gamePath = GamePath.GROUP, onClick = {
-                onClick(AppNavDest.GROUP)
+                onClick(GamesGroups)
             })
         }
     }
