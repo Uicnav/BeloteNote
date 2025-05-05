@@ -1,8 +1,9 @@
-package com.ionvaranita.belotenote.viewmodel
+package com.ionvaranita.belotenote.ui.viewmodel.game
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ionvaranita.belotenote.datalayer.database.AppDatabase
+import com.ionvaranita.belotenote.datalayer.database.entity.players4.Game4PEntity
 import com.ionvaranita.belotenote.datalayer.datasource.Game4PDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.repo.Games4PRepositoryImpl
 import com.ionvaranita.belotenote.domain.model.Game3PUi
@@ -32,8 +33,8 @@ class Game4PViewModel(private val appDatabase: AppDatabase) : ViewModel() {
         }
     }
 
-    fun insertGame(game: Game4PUi, dispatcher: CoroutineDispatcher = Dispatchers.IO) = viewModelScope.launch(dispatcher) {
-        insertGameUseCase.execute(game.toDataClass())
+    fun insertGame(game: Game4PEntity, dispatcher: CoroutineDispatcher = Dispatchers.IO) = viewModelScope.launch(dispatcher) {
+        insertGameUseCase.execute(game)
     }
 
     init {

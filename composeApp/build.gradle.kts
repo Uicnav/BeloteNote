@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlin.serialization)
 
 }
 
@@ -44,9 +45,9 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-            implementation(libs.navigation.compose)
             implementation(libs.lifecycle.viewmodel.compose)
-
+            implementation(libs.navigation.compose)
+            implementation(libs.kotlinx.serialization.json)
             implementation(libs.room.runtime)
             implementation(libs.sqlite.bundled)
         }

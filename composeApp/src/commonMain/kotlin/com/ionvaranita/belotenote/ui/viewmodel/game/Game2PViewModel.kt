@@ -1,8 +1,9 @@
-package com.ionvaranita.belotenote.viewmodel
+package com.ionvaranita.belotenote.ui.viewmodel.game
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ionvaranita.belotenote.datalayer.database.AppDatabase
+import com.ionvaranita.belotenote.datalayer.database.entity.players2.Game2PEntity
 import com.ionvaranita.belotenote.datalayer.datasource.Game2PDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.repo.Games2PRepositoryImpl
 import com.ionvaranita.belotenote.domain.model.Game2PUi
@@ -30,8 +31,8 @@ class Game2PViewModel(private val appDatabase: AppDatabase) : ViewModel() {
         }
     }
     //TODO for testing coroutine
-    fun insertGame(game2PUi: Game2PUi, dispatcher: CoroutineDispatcher = Dispatchers.IO) = viewModelScope.launch(dispatcher) {
-        insertGameUseCase.execute(game2PUi.toDataClass())
+    fun insertGame(game2PUi: Game2PEntity, dispatcher: CoroutineDispatcher = Dispatchers.IO) = viewModelScope.launch(dispatcher) {
+        insertGameUseCase.execute(game2PUi)
     }
 
     init {

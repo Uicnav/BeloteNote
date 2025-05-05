@@ -16,6 +16,6 @@ data class Game2PEntity(
     val name2: String
                        ) {
     fun toUiModel(): Game2PUi {
-        return Game2PUi(statusGame = this.statusGame, winningPoints = this.winnerPoints, name1 = this.name1, name2 = this.name2)
+        return Game2PUi(idGame = this.idGame, statusGame = this.statusGame, winningPoints = this.winnerPoints, name1 = this.name1, name2 = this.name2)
     }
 }

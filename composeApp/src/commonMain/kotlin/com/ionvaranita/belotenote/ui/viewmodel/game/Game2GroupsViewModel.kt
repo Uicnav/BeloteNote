@@ -1,16 +1,14 @@
-package com.ionvaranita.belotenote.viewmodel
+package com.ionvaranita.belotenote.ui.viewmodel.game
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ionvaranita.belotenote.datalayer.database.AppDatabase
+import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Game2GroupsEntity
 import com.ionvaranita.belotenote.datalayer.datasource.Game2GroupsDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.repo.Games2GroupsRepositoryImpl
 import com.ionvaranita.belotenote.domain.model.Game2GroupsUi
-import com.ionvaranita.belotenote.domain.model.Game3PUi
-import com.ionvaranita.belotenote.domain.model.Game4PUi
 import com.ionvaranita.belotenote.domain.usecase.GetGames2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.InsertGame2GroupsUseCase
-import com.ionvaranita.belotenote.domain.usecase.InsertGame4PUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -34,8 +32,8 @@ class Game2GroupsViewModel(private val appDatabase: AppDatabase) : ViewModel() {
         }
     }
     //TODO for testing coroutine
-    fun insertGame(game: Game2GroupsUi, dispatcher: CoroutineDispatcher = Dispatchers.IO) = viewModelScope.launch(dispatcher) {
-        insertGameUseCase.execute(game.toDataClass())
+    fun insertGame(game: Game2GroupsEntity, dispatcher: CoroutineDispatcher = Dispatchers.IO) = viewModelScope.launch(dispatcher) {
+        insertGameUseCase.execute(game)
     }
 
     init {

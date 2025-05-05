@@ -1,4 +1,4 @@
-package com.ionvaranita.belotenote.viewmodel
+package com.ionvaranita.belotenote.ui.viewmodel.game
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
