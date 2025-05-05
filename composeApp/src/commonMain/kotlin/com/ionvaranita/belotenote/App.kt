@@ -33,7 +33,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-const val ID_GAME = "idGame"
 
 @Composable
 @Preview

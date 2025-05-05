@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -43,6 +44,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,7 +57,6 @@ import androidx.navigation.NavController
 import belotenote.composeapp.generated.resources.Res
 import belotenote.composeapp.generated.resources.alert_dialog_winner_points
 import belotenote.composeapp.generated.resources.dialog_fragment_insert_manually_winner_points
-import com.ionvaranita.belotenote.ID_GAME
 import com.ionvaranita.belotenote.Match2
 import com.ionvaranita.belotenote.Match3
 import com.ionvaranita.belotenote.Match4
@@ -80,6 +81,7 @@ import com.ionvaranita.belotenote.ui.viewmodel.game.Games4PUiState
 import com.ionvaranita.belotenote.ui.viewmodel.game.WinningPointsState
 import com.ionvaranita.belotenote.ui.viewmodel.game.WinningPointsViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -98,7 +100,8 @@ private fun Tables2P(navController: NavController, appDatabase: AppDatabase) {
     val viewModel = viewModel { Game2PViewModel(appDatabase) }
     val gamesUiState = viewModel.uiState.collectAsState()
     var shouDialog by remember { mutableStateOf(false) }
-
+    val gameListState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
     TablesBase(onInsertGameClick = {
         shouDialog = true
     }) { paddingValues ->
@@ -112,7 +115,11 @@ private fun Tables2P(navController: NavController, appDatabase: AppDatabase) {
 
         when (val state = gamesUiState.value) {
             is Games2PUiState.Success -> {
-                LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                scope.launch {
+                    gameListState.animateScrollToItem(state.data.size)
+
+                }
+                LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize().padding(16.dp), state = gameListState) {
                     items(state.data) { game ->
                         GameCard(modifier = Modifier.clickable {
                             val route = Match2(idGame = game.idGame.toInt())
@@ -139,7 +146,8 @@ private fun Tables3P(navController: NavController, appDatabase: AppDatabase) {
     val viewModel = viewModel { Game3PViewModel(appDatabase) }
     val gamesUiState = viewModel.uiState.collectAsState()
     var shouDialog by remember { mutableStateOf(false) }
-
+    val gameListState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
     TablesBase(onInsertGameClick = {
         shouDialog = true
     }) { paddingValues ->
@@ -153,7 +161,10 @@ private fun Tables3P(navController: NavController, appDatabase: AppDatabase) {
 
         when (val state = gamesUiState.value) {
             is Games3PUiState.Success -> {
-                LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                scope.launch {
+                    gameListState.animateScrollToItem(state.data.size)
+                }
+                LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize().padding(16.dp), state = gameListState) {
                     items(state.data) { game ->
                         GameCard(modifier = Modifier.clickable {
                             val route = Match3(idGame = game.idGame.toInt())
@@ -181,6 +192,8 @@ private fun Tables4P(navController: NavController, appDatabase: AppDatabase) {
     val viewModel = viewModel { Game4PViewModel(appDatabase) }
     val gamesUiState = viewModel.uiState.collectAsState()
     var shouDialog by remember { mutableStateOf(false) }
+    val gameListState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
 
     TablesBase(onInsertGameClick = {
         shouDialog = true
@@ -195,7 +208,10 @@ private fun Tables4P(navController: NavController, appDatabase: AppDatabase) {
 
         when (val state = gamesUiState.value) {
             is Games4PUiState.Success -> {
-                LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize().padding(16.dp), state = gameListState) {
+                    scope.launch {
+                        gameListState.animateScrollToItem(state.data.size)
+                    }
                     items(state.data) { game ->
                         GameCard(modifier = Modifier.clickable {
                             val route = Match4(idGame = game.idGame.toInt())
@@ -226,7 +242,8 @@ private fun Tables2Groups(navController: NavController, appDatabase: AppDatabase
     val viewModel = viewModel { Game2GroupsViewModel(appDatabase) }
     val gamesUiState = viewModel.uiState.collectAsState()
     var shouDialog by remember { mutableStateOf(false) }
-
+    val gameListState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
     TablesBase(onInsertGameClick = {
         shouDialog = true
     }) { paddingValues ->
@@ -240,7 +257,10 @@ private fun Tables2Groups(navController: NavController, appDatabase: AppDatabase
 
         when (val state = gamesUiState.value) {
             is Games2GroupsUiState.Success -> {
-                LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                scope.launch {
+                    gameListState.animateScrollToItem(state.data.size)
+                }
+                LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize().padding(16.dp), state = gameListState) {
                     items(state.data) { game ->
                         GameCard(modifier = Modifier.clickable {
                             val route = MatchGroups(idGame = game.idGame.toInt())
@@ -262,9 +282,6 @@ private fun Tables2Groups(navController: NavController, appDatabase: AppDatabase
     }
 }
 
-private fun String.replaceIdGame(idGameValue: Short): String {
-    return this.replace(oldValue = "{$ID_GAME}", newValue = idGameValue.toString())
-}
 
 @Composable
 fun GameCard(modifier: Modifier = Modifier, content: @Composable RowScope.() -> Unit) {
