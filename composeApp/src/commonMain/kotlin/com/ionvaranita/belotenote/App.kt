@@ -15,9 +15,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -32,12 +30,17 @@ import belotenote.composeapp.generated.resources.Res
 import belotenote.composeapp.generated.resources.app_name
 import belotenote.composeapp.generated.resources.belote_backround
 import com.ionvaranita.belotenote.datalayer.database.AppDatabase
-import com.ionvaranita.belotenote.ui.GamePath
 import com.ionvaranita.belotenote.ui.HomeScreen
 import com.ionvaranita.belotenote.ui.LocalAppDatabase
 import com.ionvaranita.belotenote.ui.LocalNavHostController
-import com.ionvaranita.belotenote.ui.match.MatchScreen
-import com.ionvaranita.belotenote.ui.table.TableScreen
+import com.ionvaranita.belotenote.ui.match.MatchScreen2
+import com.ionvaranita.belotenote.ui.match.MatchScreen3
+import com.ionvaranita.belotenote.ui.match.MatchScreen4
+import com.ionvaranita.belotenote.ui.match.MatchScreenGroups
+import com.ionvaranita.belotenote.ui.table.TablesScreen2
+import com.ionvaranita.belotenote.ui.table.TablesScreen3
+import com.ionvaranita.belotenote.ui.table.TablesScreen4
+import com.ionvaranita.belotenote.ui.table.TablesScreenGroups
 import com.ionvaranita.belotenote.utils.BeloteTheme
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.painterResource
@@ -53,7 +56,7 @@ fun App(appDatabase: AppDatabase) {
                 Image(painter = painterResource(Res.drawable.belote_backround), contentDescription = "", modifier = Modifier.fillMaxSize(), contentScale = ContentScale.FillBounds)
                 val navController = LocalNavHostController.current
                 var canNavigateBack by remember {
-                    mutableStateOf( navController.previousBackStackEntry != null )
+                    mutableStateOf(navController.previousBackStackEntry != null)
                 }
                 LaunchedEffect(navController) {
                     navController.addOnDestinationChangedListener { _, _, backStackEntry ->
@@ -70,33 +73,33 @@ fun App(appDatabase: AppDatabase) {
                             })
                         }
                         composable<Games2> {
-                            TableScreen(gamePath = GamePath.TWO)
+                            TablesScreen2()
                         }
                         composable<Games3> {
-                            TableScreen(gamePath = GamePath.THREE)
+                            TablesScreen3()
                         }
                         composable<Games4> {
-                            TableScreen(gamePath = GamePath.FOUR)
+                            TablesScreen4()
                         }
                         composable<GamesGroups> {
-                            TableScreen(gamePath = GamePath.GROUP)
+                            TablesScreenGroups()
                         }
                         composable<Match2> {
                             val args = it.toRoute<Match2>()
-                            MatchScreen(gamePath = GamePath.TWO, idGame = args.idGame.toShort())
+                            MatchScreen2(idGame = args.idGame)
                         }
                         composable<Match3> {
                             val args = it.toRoute<Match3>()
 
-                            MatchScreen(gamePath = GamePath.THREE, idGame = args.idGame.toShort())
+                            MatchScreen3(idGame = args.idGame)
                         }
                         composable<Match4> {
                             val args = it.toRoute<Match4>()
-                            MatchScreen(gamePath = GamePath.FOUR, idGame = args.idGame.toShort())
+                            MatchScreen4(idGame = args.idGame)
                         }
                         composable<MatchGroups> {
                             val args = it.toRoute<MatchGroups>()
-                            MatchScreen(gamePath = GamePath.GROUP, idGame = args.idGame.toShort())
+                            MatchScreenGroups(idGame = args.idGame)
                         }
                     }
                 }

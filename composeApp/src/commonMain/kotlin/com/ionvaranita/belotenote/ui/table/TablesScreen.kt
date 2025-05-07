@@ -86,19 +86,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
-@Composable
-fun TableScreen(gamePath: GamePath) {
-    when (gamePath) {
-        GamePath.TWO -> Tables2P()
-        GamePath.THREE -> Tables3P()
-        GamePath.FOUR -> Tables4P()
-        GamePath.GROUP -> Tables2Groups()
-    }
-
-}
 
 @Composable
-private fun Tables2P() {
+internal fun TablesScreen2() {
     val navController = LocalNavHostController.current
     val appDatabase = LocalAppDatabase.current
     val viewModel = viewModel { Game2PViewModel(appDatabase) }
@@ -146,7 +136,7 @@ private fun Tables2P() {
 }
 
 @Composable
-private fun Tables3P() {
+internal fun TablesScreen3() {
     val navController = LocalNavHostController.current
     val appDatabase = LocalAppDatabase.current
     val viewModel = viewModel { Game3PViewModel(appDatabase) }
@@ -194,7 +184,7 @@ private fun Tables3P() {
 }
 
 @Composable
-private fun Tables4P() {
+internal fun TablesScreen4() {
     val navController = LocalNavHostController.current
     val appDatabase = LocalAppDatabase.current
     val viewModel = viewModel { Game4PViewModel(appDatabase) }
@@ -246,7 +236,7 @@ private fun Tables4P() {
 }
 
 @Composable
-private fun Tables2Groups() {
+internal fun TablesScreenGroups() {
     val navController = LocalNavHostController.current
     val appDatabase = LocalAppDatabase.current
     val viewModel = viewModel { Game2GroupsViewModel(appDatabase) }
