@@ -31,6 +31,7 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
@@ -53,6 +54,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
@@ -270,7 +272,6 @@ internal fun TablesScreenGroups() {
                     gameListState.animateScrollToItem(state.data.size)
                 }
                 LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize().padding(16.dp), state = gameListState) {
-
                     items(state.data) { game ->
                         GameCard(gameId = game.idGame, onDelete = { gameId ->
                             viewModel.deleteGame(gameId)
@@ -316,8 +317,8 @@ fun GameCard(modifier: Modifier = Modifier, gameId: Int, onDelete: (Int) -> Unit
     val scope = rememberCoroutineScope()
     val swipeThreshold = -150f
 
-    Box(modifier = Modifier.fillMaxWidth().height(80.dp).background(Color.LightGray)) {
-        Box(modifier = Modifier.matchParentSize().background(Color.Red).padding(end = 16.dp), contentAlignment = Alignment.CenterEnd) {
+    Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
+        Box(modifier = Modifier.matchParentSize().clip(shape = CardDefaults.shape).background(Color.Red).padding(end = 16.dp), contentAlignment = Alignment.CenterEnd) {
             Text(text = "Delete", color = Color.White)
         }
 
@@ -341,7 +342,7 @@ fun GameCard(modifier: Modifier = Modifier, gameId: Int, onDelete: (Int) -> Unit
             detectTapGestures(onTap = {
                 onTap()
             })
-        }.padding(16.dp)) {
+        }) {
             Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                 content()
             }
