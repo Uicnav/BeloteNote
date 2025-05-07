@@ -1,11 +1,9 @@
-package com.ionvaranita.belotenote.domain.usecase
+package com.ionvaranita.belotenote.domain.usecase.game.get
 
-import com.ionvaranita.belotenote.datalayer.database.entity.players2.Game2PEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players3.Game3PEntity
-import com.ionvaranita.belotenote.domain.model.Game2PUi
 import com.ionvaranita.belotenote.domain.model.Game3PUi
-import com.ionvaranita.belotenote.domain.repo.Games2PRepository
-import com.ionvaranita.belotenote.domain.repo.Games3PRepository
+import com.ionvaranita.belotenote.domain.repo.game.Games3PRepository
+import com.ionvaranita.belotenote.domain.usecase.UseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

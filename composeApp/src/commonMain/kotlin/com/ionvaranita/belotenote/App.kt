@@ -76,39 +76,39 @@ fun App(appDatabase: AppDatabase) {
                 Scaffold(containerColor = Color.Transparent, topBar = {
                     BeloteAppBar(currentRoute = currentRoute,canNavigateBack = canNavigateBack, navigateUp = { navController.navigateUp() })
                 }) { innerPadding ->
-                    NavHost(navController = navController, startDestination = Home, modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-                        composable<Home> {
+                    NavHost(navController = navController, startDestination = HomeDest, modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+                        composable<HomeDest> {
                             HomeScreen(onClick = {
                                 navController.navigate(it)
                             })
                         }
-                        composable<Games2> {
+                        composable<Games2Dest> {
                             TablesScreen2()
                         }
-                        composable<Games3> {
+                        composable<Games3Dest> {
                             TablesScreen3()
                         }
-                        composable<Games4> {
+                        composable<Games4Dest> {
                             TablesScreen4()
                         }
-                        composable<GamesGroups> {
+                        composable<GamesGroupsDest> {
                             TablesScreenGroups()
                         }
-                        composable<Match2> {
-                            val args = it.toRoute<Match2>()
+                        composable<Match2Dest> {
+                            val args = it.toRoute<Match2Dest>()
                             MatchScreen2(idGame = args.idGame)
                         }
-                        composable<Match3> {
-                            val args = it.toRoute<Match3>()
+                        composable<Match3Dest> {
+                            val args = it.toRoute<Match3Dest>()
 
                             MatchScreen3(idGame = args.idGame)
                         }
-                        composable<Match4> {
-                            val args = it.toRoute<Match4>()
+                        composable<Match4Dest> {
+                            val args = it.toRoute<Match4Dest>()
                             MatchScreen4(idGame = args.idGame)
                         }
-                        composable<MatchGroups> {
-                            val args = it.toRoute<MatchGroups>()
+                        composable<MatchGroupsDest> {
+                            val args = it.toRoute<MatchGroupsDest>()
                             MatchScreenGroups(idGame = args.idGame)
                         }
                     }
@@ -141,22 +141,22 @@ fun BeloteAppBar(currentRoute: String?,canNavigateBack: Boolean, navigateUp: () 
 @Composable
 private inline fun ScreenTitle(currentRoute: String?) {
     val text = when (currentRoute) {
-        Home::class.qualifiedName -> {
+        HomeDest::class.qualifiedName -> {
             stringResource(Res.string.app_name)
         }
-        Match2::class.qualifiedName + "/{idGame}", Games2::class.qualifiedName -> {
+        Match2Dest::class.qualifiedName + "/{idGame}", Games2Dest::class.qualifiedName -> {
             stringResource(Res.string.two_players)
 
         }
-        Match3::class.qualifiedName + "/{idGame}", Games3::class.qualifiedName -> {
+        Match3Dest::class.qualifiedName + "/{idGame}", Games3Dest::class.qualifiedName -> {
             stringResource(Res.string.three_players)
 
         }
-         Match4::class.qualifiedName + "/{idGame}", Games4::class.qualifiedName -> {
+         Match4Dest::class.qualifiedName + "/{idGame}", Games4Dest::class.qualifiedName -> {
             stringResource(Res.string.four_players)
 
         }
-        MatchGroups::class.qualifiedName + "/{idGame}", GamesGroups::class.qualifiedName -> {
+        MatchGroupsDest::class.qualifiedName + "/{idGame}", GamesGroupsDest::class.qualifiedName -> {
             stringResource(Res.string.two_vs_two)
         }
         else -> {
@@ -167,29 +167,29 @@ private inline fun ScreenTitle(currentRoute: String?) {
 }
 
 @Serializable
-object Home
+object HomeDest
 
 @Serializable
-object Games2
+object Games2Dest
 
 @Serializable
-object Games3
+object Games3Dest
 
 @Serializable
-object Games4
+object Games4Dest
 
 @Serializable
-object GamesGroups
+object GamesGroupsDest
 
 @Serializable
-data class Match2(val idGame: Int)
+data class Match2Dest(val idGame: Int)
 
 @Serializable
-data class Match3(val idGame: Int)
+data class Match3Dest(val idGame: Int)
 
 @Serializable
-data class Match4(val idGame: Int)
+data class Match4Dest(val idGame: Int)
 
 @Serializable
-data class MatchGroups(val idGame: Int)
+data class MatchGroupsDest(val idGame: Int)
 

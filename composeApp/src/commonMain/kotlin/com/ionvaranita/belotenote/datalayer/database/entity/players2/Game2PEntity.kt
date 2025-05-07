@@ -8,7 +8,7 @@ import com.ionvaranita.belotenote.constants.GameStatus
 
 @Entity
 data class Game2PEntity(
-    @PrimaryKey(autoGenerate = true) val idGame: Short = 0,
+    @PrimaryKey(autoGenerate = true) val idGame: Int = 0,
     val dateGame: Long = getCurrentTime(), // Default value
     val statusGame: Byte = GameStatus.CONTINUE.id,
     val winnerPoints: Short,

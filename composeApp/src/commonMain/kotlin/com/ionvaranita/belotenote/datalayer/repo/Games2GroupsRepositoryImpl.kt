@@ -1,8 +1,8 @@
 package com.ionvaranita.belotenote.datalayer.repo
 
 import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Game2GroupsEntity
-import com.ionvaranita.belotenote.domain.datasource.Game2GroupsDataSource
-import com.ionvaranita.belotenote.domain.repo.Games2GroupsRepository
+import com.ionvaranita.belotenote.domain.datasource.game.Game2GroupsDataSource
+import com.ionvaranita.belotenote.domain.repo.game.Games2GroupsRepository
 import kotlinx.coroutines.flow.Flow
 
 class Games2GroupsRepositoryImpl(private val game2GroupsDataSource: Game2GroupsDataSource) : Games2GroupsRepository {
@@ -12,6 +12,10 @@ class Games2GroupsRepositoryImpl(private val game2GroupsDataSource: Game2GroupsD
 
     override suspend fun insetGame(game: Game2GroupsEntity) {
         game2GroupsDataSource.insertGame(game)
+    }
+
+    override suspend fun deleteGame(idGame: Int) {
+        game2GroupsDataSource.deleteGame(idGame)
     }
 
 }

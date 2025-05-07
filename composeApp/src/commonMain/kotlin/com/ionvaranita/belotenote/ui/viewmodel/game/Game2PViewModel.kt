@@ -7,8 +7,10 @@ import com.ionvaranita.belotenote.datalayer.database.entity.players2.Game2PEntit
 import com.ionvaranita.belotenote.datalayer.datasource.Game2PDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.repo.Games2PRepositoryImpl
 import com.ionvaranita.belotenote.domain.model.Game2PUi
-import com.ionvaranita.belotenote.domain.usecase.GetGames2PUseCase
-import com.ionvaranita.belotenote.domain.usecase.InsertGame2PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.delete.DeleteGame2GroupsUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.delete.DeleteGame2PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.get.GetGames2PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.insert.InsertGame2PUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -17,8 +19,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class Game2PViewModel(private val appDatabase: AppDatabase) : ViewModel() {
-    private var getGamesUseCase: GetGames2PUseCase = GetGames2PUseCase(Games2PRepositoryImpl(Game2PDataSourceImpl(appDatabase.game2PDao())))
-    private var insertGameUseCase: InsertGame2PUseCase = InsertGame2PUseCase(Games2PRepositoryImpl(Game2PDataSourceImpl(appDatabase.game2PDao())))
+    val repository = Games2PRepositoryImpl(Game2PDataSourceImpl(appDatabase.game2PDao()))
+    private var getGamesUseCase: GetGames2PUseCase = GetGames2PUseCase(repository)
+    private var insertGameUseCase: InsertGame2PUseCase = InsertGame2PUseCase(repository)
+    private val deleteGameUseCase: DeleteGame2PUseCase = DeleteGame2PUseCase(repository)
 
     // Backing property to avoid state updates from other classes
     private val _uiState = MutableStateFlow(Games2PUiState.Success(emptyList()))
@@ -33,6 +37,10 @@ class Game2PViewModel(private val appDatabase: AppDatabase) : ViewModel() {
     //TODO for testing coroutine
     fun insertGame(game2PUi: Game2PEntity, dispatcher: CoroutineDispatcher = Dispatchers.IO) = viewModelScope.launch(dispatcher) {
         insertGameUseCase.execute(game2PUi)
+    }
+
+    fun deleteGame(idGame: Int, dispatcher: CoroutineDispatcher = Dispatchers.IO) = viewModelScope.launch(dispatcher) {
+        deleteGameUseCase.execute(idGame)
     }
 
     init {

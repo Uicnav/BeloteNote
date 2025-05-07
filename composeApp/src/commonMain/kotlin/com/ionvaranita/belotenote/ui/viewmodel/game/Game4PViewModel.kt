@@ -7,9 +7,9 @@ import com.ionvaranita.belotenote.datalayer.database.entity.players4.Game4PEntit
 import com.ionvaranita.belotenote.datalayer.datasource.Game4PDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.repo.Games4PRepositoryImpl
 import com.ionvaranita.belotenote.domain.model.Game3PUi
-import com.ionvaranita.belotenote.domain.model.Game4PUi
-import com.ionvaranita.belotenote.domain.usecase.GetGames4PUseCase
-import com.ionvaranita.belotenote.domain.usecase.InsertGame4PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.delete.DeleteGame4PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.get.GetGames4PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.insert.InsertGame4PUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -21,6 +21,7 @@ class Game4PViewModel(private val appDatabase: AppDatabase) : ViewModel() {
     val repository = Games4PRepositoryImpl(Game4PDataSourceImpl(appDatabase.game4PDao()))
     private var getGamesUseCase: GetGames4PUseCase = GetGames4PUseCase(repository)
     private var insertGameUseCase: InsertGame4PUseCase = InsertGame4PUseCase(repository)
+    private val deleteGameUseCase: DeleteGame4PUseCase = DeleteGame4PUseCase(repository)
 
     // Backing property to avoid state updates from other classes
     private val _uiState = MutableStateFlow(Games4PUiState.Success(emptyList()))
@@ -35,6 +36,10 @@ class Game4PViewModel(private val appDatabase: AppDatabase) : ViewModel() {
 
     fun insertGame(game: Game4PEntity, dispatcher: CoroutineDispatcher = Dispatchers.IO) = viewModelScope.launch(dispatcher) {
         insertGameUseCase.execute(game)
+    }
+
+    fun deleteGame(idGame: Int, dispatcher: CoroutineDispatcher = Dispatchers.IO) = viewModelScope.launch(dispatcher) {
+        deleteGameUseCase.execute(idGame)
     }
 
     init {

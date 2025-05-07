@@ -4,7 +4,6 @@ import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
-import androidx.room.migration.Migration
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.ionvaranita.belotenote.datalayer.database.dao.WinningPointsDao
 import com.ionvaranita.belotenote.datalayer.database.dao.groups2.Scor2GroupsDao
@@ -39,14 +38,15 @@ import varanita.informatics.shared.database.dao.players3.Points3PDao
 import varanita.informatics.shared.database.dao.players3.Scor3PDao
 import varanita.informatics.shared.database.dao.players4.Game4PDao
 import varanita.informatics.shared.database.dao.players4.Scor4PDao
-import varanita.informatics.shared.database.entity.players2.Points2PEntity
+import com.ionvaranita.belotenote.datalayer.database.entity.players2.Points2PEntity
+import com.ionvaranita.belotenote.datalayer.database.entity.players2.Scor2PEntity
 
 /**
  * Created by ionvaranita on 20/11/17.
  */
 @Database(
-    entities = [Game2PEntity::class, Points2PEntity::class, varanita.informatics.shared.database.entity.players2.Scor2PEntity::class, Game3PEntity::class, Points3PEntity::class, Scor3PEntity::class, Game4PEntity::class, Points4PEntity::class, Scor4PEntity::class, Game2GroupsEntity::class, Points2GroupsEntity::class, Scor2GroupsEntity::class, ExtendedGameEntity::class, BoltEntity::class, BoltManagerEntity::class, WinningPointsEntity::class],
-    version = 2, exportSchema = false)
+    entities = [Game2PEntity::class, Points2PEntity::class, Scor2PEntity::class, Game3PEntity::class, Points3PEntity::class, Scor3PEntity::class, Game4PEntity::class, Points4PEntity::class, Scor4PEntity::class, Game2GroupsEntity::class, Points2GroupsEntity::class, Scor2GroupsEntity::class, ExtendedGameEntity::class, BoltEntity::class, BoltManagerEntity::class, WinningPointsEntity::class],
+    version = 3, exportSchema = false)
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase(), DB {
     //PLAYERS 2

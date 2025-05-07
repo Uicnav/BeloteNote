@@ -1,8 +1,9 @@
-package com.ionvaranita.belotenote.domain.usecase
+package com.ionvaranita.belotenote.domain.usecase.game.get
 
 import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Game2GroupsEntity
 import com.ionvaranita.belotenote.domain.model.Game2GroupsUi
-import com.ionvaranita.belotenote.domain.repo.Games2GroupsRepository
+import com.ionvaranita.belotenote.domain.repo.game.Games2GroupsRepository
+import com.ionvaranita.belotenote.domain.usecase.UseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
