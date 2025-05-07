@@ -2,6 +2,7 @@ package com.ionvaranita.belotenote.ui.table
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -64,6 +66,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import belotenote.composeapp.generated.resources.Res
 import belotenote.composeapp.generated.resources.alert_dialog_winner_points
 import belotenote.composeapp.generated.resources.dialog_fragment_insert_manually_winner_points
+import belotenote.composeapp.generated.resources.ic_delete_white
 import com.ionvaranita.belotenote.Match2Dest
 import com.ionvaranita.belotenote.Match3Dest
 import com.ionvaranita.belotenote.Match4Dest
@@ -90,6 +93,7 @@ import com.ionvaranita.belotenote.ui.viewmodel.game.WinningPointsState
 import com.ionvaranita.belotenote.ui.viewmodel.game.WinningPointsViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -319,7 +323,7 @@ fun GameCard(modifier: Modifier = Modifier, gameId: Int, onDelete: (Int) -> Unit
 
     Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
         Box(modifier = Modifier.matchParentSize().clip(shape = CardDefaults.shape).background(Color.Red).padding(end = 16.dp), contentAlignment = Alignment.CenterEnd) {
-            Text(text = "Delete", color = Color.White)
+            Image(painter = painterResource(Res.drawable.ic_delete_white), contentDescription = null, modifier = modifier.width(44.dp))
         }
 
         Card(modifier = modifier.offset { IntOffset(offsetX.value.toInt(), 0) }.pointerInput(Unit) {
