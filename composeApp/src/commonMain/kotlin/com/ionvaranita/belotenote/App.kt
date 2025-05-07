@@ -29,6 +29,10 @@ import androidx.navigation.toRoute
 import belotenote.composeapp.generated.resources.Res
 import belotenote.composeapp.generated.resources.app_name
 import belotenote.composeapp.generated.resources.belote_backround
+import belotenote.composeapp.generated.resources.four_players
+import belotenote.composeapp.generated.resources.three_players
+import belotenote.composeapp.generated.resources.two_players
+import belotenote.composeapp.generated.resources.two_vs_two
 import com.ionvaranita.belotenote.datalayer.database.AppDatabase
 import com.ionvaranita.belotenote.ui.HomeScreen
 import com.ionvaranita.belotenote.ui.LocalAppDatabase
@@ -58,13 +62,19 @@ fun App(appDatabase: AppDatabase) {
                 var canNavigateBack by remember {
                     mutableStateOf(navController.previousBackStackEntry != null)
                 }
+                var currentRoute by remember {
+                    mutableStateOf(navController.currentDestination?.route)
+                }
                 LaunchedEffect(navController) {
                     navController.addOnDestinationChangedListener { _, _, backStackEntry ->
                         canNavigateBack = navController.previousBackStackEntry != null
+                        currentRoute = navController.currentDestination?.route
+                        println("Current route : =========== $currentRoute")
+
                     }
                 }
                 Scaffold(containerColor = Color.Transparent, topBar = {
-                    BeloteAppBar(canNavigateBack = canNavigateBack, navigateUp = { navController.navigateUp() })
+                    BeloteAppBar(currentRoute = currentRoute,canNavigateBack = canNavigateBack, navigateUp = { navController.navigateUp() })
                 }) { innerPadding ->
                     NavHost(navController = navController, startDestination = Home, modifier = Modifier.fillMaxSize().padding(innerPadding)) {
                         composable<Home> {
@@ -114,9 +124,9 @@ fun App(appDatabase: AppDatabase) {
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BeloteAppBar(canNavigateBack: Boolean, navigateUp: () -> Unit, modifier: Modifier = Modifier) {
+fun BeloteAppBar(currentRoute: String?,canNavigateBack: Boolean, navigateUp: () -> Unit, modifier: Modifier = Modifier) {
     TopAppBar(
-        title = { Text(stringResource(Res.string.app_name)) }, modifier = modifier,
+        title = { ScreenTitle(currentRoute) }, modifier = modifier,
         navigationIcon = {
             if (canNavigateBack) {
                 IconButton({
@@ -127,30 +137,34 @@ fun BeloteAppBar(canNavigateBack: Boolean, navigateUp: () -> Unit, modifier: Mod
             }
         },
              )
-}/*@Composable
-private inline fun ScreenTitle(appNavDest: AppNavDest) {
-    val text = when (appNavDest) {
-        is Home -> {
+}
+@Composable
+private inline fun ScreenTitle(currentRoute: String?) {
+    val text = when (currentRoute) {
+        Home::class.qualifiedName -> {
             stringResource(Res.string.app_name)
         }
-        is Match2, is Games2 -> {
+        Match2::class.qualifiedName + "/{idGame}", Games2::class.qualifiedName -> {
             stringResource(Res.string.two_players)
 
         }
-        is Match3, is Games3 -> {
+        Match3::class.qualifiedName + "/{idGame}", Games3::class.qualifiedName -> {
             stringResource(Res.string.three_players)
 
         }
-        is Match4, is Games4 -> {
+         Match4::class.qualifiedName + "/{idGame}", Games4::class.qualifiedName -> {
             stringResource(Res.string.four_players)
 
         }
-        is MatchGroups, is GamesGroups -> {
+        MatchGroups::class.qualifiedName + "/{idGame}", GamesGroups::class.qualifiedName -> {
             stringResource(Res.string.two_vs_two)
+        }
+        else -> {
+            stringResource(Res.string.app_name)
         }
     }
     Text(text)
-}*/
+}
 
 @Serializable
 object Home
