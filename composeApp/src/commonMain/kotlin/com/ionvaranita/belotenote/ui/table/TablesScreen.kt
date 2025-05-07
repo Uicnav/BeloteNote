@@ -70,6 +70,8 @@ import com.ionvaranita.belotenote.datalayer.database.entity.players3.Game3PEntit
 import com.ionvaranita.belotenote.datalayer.database.entity.players4.Game4PEntity
 import com.ionvaranita.belotenote.domain.model.WinningPointsUi
 import com.ionvaranita.belotenote.ui.GamePath
+import com.ionvaranita.belotenote.ui.LocalAppDatabase
+import com.ionvaranita.belotenote.ui.LocalNavHostController
 import com.ionvaranita.belotenote.ui.viewmodel.game.Game2GroupsViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.game.Game2PViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.game.Game3PViewModel
@@ -85,18 +87,20 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun TableScreen(navController: NavController, appDatabase: AppDatabase, gamePath: GamePath) {
+fun TableScreen(gamePath: GamePath) {
     when (gamePath) {
-        GamePath.TWO -> Tables2P(navController = navController, appDatabase = appDatabase)
-        GamePath.THREE -> Tables3P(navController = navController, appDatabase = appDatabase)
-        GamePath.FOUR -> Tables4P(navController = navController, appDatabase = appDatabase)
-        GamePath.GROUP -> Tables2Groups(navController = navController, appDatabase = appDatabase)
+        GamePath.TWO -> Tables2P()
+        GamePath.THREE -> Tables3P()
+        GamePath.FOUR -> Tables4P()
+        GamePath.GROUP -> Tables2Groups()
     }
 
 }
 
 @Composable
-private fun Tables2P(navController: NavController, appDatabase: AppDatabase) {
+private fun Tables2P() {
+    val navController = LocalNavHostController.current
+    val appDatabase = LocalAppDatabase.current
     val viewModel = viewModel { Game2PViewModel(appDatabase) }
     val gamesUiState = viewModel.uiState.collectAsState()
     var shouDialog by remember { mutableStateOf(false) }
@@ -142,7 +146,9 @@ private fun Tables2P(navController: NavController, appDatabase: AppDatabase) {
 }
 
 @Composable
-private fun Tables3P(navController: NavController, appDatabase: AppDatabase) {
+private fun Tables3P() {
+    val navController = LocalNavHostController.current
+    val appDatabase = LocalAppDatabase.current
     val viewModel = viewModel { Game3PViewModel(appDatabase) }
     val gamesUiState = viewModel.uiState.collectAsState()
     var shouDialog by remember { mutableStateOf(false) }
@@ -188,7 +194,9 @@ private fun Tables3P(navController: NavController, appDatabase: AppDatabase) {
 }
 
 @Composable
-private fun Tables4P(navController: NavController, appDatabase: AppDatabase) {
+private fun Tables4P() {
+    val navController = LocalNavHostController.current
+    val appDatabase = LocalAppDatabase.current
     val viewModel = viewModel { Game4PViewModel(appDatabase) }
     val gamesUiState = viewModel.uiState.collectAsState()
     var shouDialog by remember { mutableStateOf(false) }
@@ -238,7 +246,9 @@ private fun Tables4P(navController: NavController, appDatabase: AppDatabase) {
 }
 
 @Composable
-private fun Tables2Groups(navController: NavController, appDatabase: AppDatabase) {
+private fun Tables2Groups() {
+    val navController = LocalNavHostController.current
+    val appDatabase = LocalAppDatabase.current
     val viewModel = viewModel { Game2GroupsViewModel(appDatabase) }
     val gamesUiState = viewModel.uiState.collectAsState()
     var shouDialog by remember { mutableStateOf(false) }
