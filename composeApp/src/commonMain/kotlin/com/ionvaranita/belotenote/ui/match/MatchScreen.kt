@@ -2,6 +2,7 @@ package com.ionvaranita.belotenote.ui.match
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import com.ionvaranita.belotenote.ui.LocalAppDatabase
 import com.ionvaranita.belotenote.ui.LocalNavHostController
 
@@ -31,5 +32,12 @@ internal fun MatchScreen4(idGame: Int) {
 internal fun MatchScreenGroups(idGame: Int) {
     val navController = LocalNavHostController.current
     val appDatabase = LocalAppDatabase.current
+
+}
+
+@Composable
+private fun MatchBase(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+
+
 
 }
