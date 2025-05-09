@@ -5,6 +5,6 @@ import com.ionvaranita.belotenote.domain.repo.game.Games2PRepository
 import com.ionvaranita.belotenote.domain.usecase.UseCase
 
 class InsertGame2PUseCase(private val repository: Games2PRepository) : UseCase<Game2PEntity, Unit> {
-    override suspend fun execute(game2PEntity: Game2PEntity): Unit =  repository.insetGame(game2PEntity = game2PEntity)
+    override suspend fun execute(game2PEntity: Game2PEntity) =  repository.insetGame(game2PEntity = game2PEntity)
 
 }

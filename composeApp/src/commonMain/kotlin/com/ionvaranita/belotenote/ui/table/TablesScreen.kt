@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -110,7 +109,8 @@ internal fun TablesScreen2() {
     }) { paddingValues ->
         if (shouDialog) {
             InsertGame2(appDatabase = appDatabase, onClick = {
-                viewModel.insertGame(game2PUi = it)
+                viewModel.insertGame(game = it)
+
             }, onDismissRequest = {
                 shouDialog = false
             })

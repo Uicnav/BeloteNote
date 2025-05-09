@@ -70,11 +70,10 @@ fun App(appDatabase: AppDatabase) {
                         canNavigateBack = navController.previousBackStackEntry != null
                         currentRoute = navController.currentDestination?.route
                         println("Current route : =========== $currentRoute")
-
                     }
                 }
                 Scaffold(containerColor = Color.Transparent, topBar = {
-                    BeloteAppBar(currentRoute = currentRoute,canNavigateBack = canNavigateBack, navigateUp = { navController.navigateUp() })
+                    BeloteAppBar(currentRoute = currentRoute, canNavigateBack = canNavigateBack, navigateUp = { navController.navigateUp() })
                 }) { innerPadding ->
                     NavHost(navController = navController, startDestination = HomeDest, modifier = Modifier.fillMaxSize().padding(innerPadding)) {
                         composable<HomeDest> {
@@ -124,7 +123,7 @@ fun App(appDatabase: AppDatabase) {
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BeloteAppBar(currentRoute: String?,canNavigateBack: Boolean, navigateUp: () -> Unit, modifier: Modifier = Modifier) {
+fun BeloteAppBar(currentRoute: String?, canNavigateBack: Boolean, navigateUp: () -> Unit, modifier: Modifier = Modifier) {
     TopAppBar(
         title = { ScreenTitle(currentRoute) }, modifier = modifier,
         navigationIcon = {
@@ -138,6 +137,7 @@ fun BeloteAppBar(currentRoute: String?,canNavigateBack: Boolean, navigateUp: () 
         },
              )
 }
+
 @Composable
 private inline fun ScreenTitle(currentRoute: String?) {
     val text = when (currentRoute) {
@@ -152,7 +152,7 @@ private inline fun ScreenTitle(currentRoute: String?) {
             stringResource(Res.string.three_players)
 
         }
-         Match4Dest::class.qualifiedName + "/{idGame}", Games4Dest::class.qualifiedName -> {
+        Match4Dest::class.qualifiedName + "/{idGame}", Games4Dest::class.qualifiedName -> {
             stringResource(Res.string.four_players)
 
         }

@@ -6,6 +6,10 @@ import kotlinx.coroutines.flow.Flow
 import varanita.informatics.shared.database.dao.players2.Game2PDao
 
 class Game2PDataSourceImpl(private val game2PDao: Game2PDao): Game2PDataSource {
+    override suspend fun getGame(idGame: Int): Flow<Game2PEntity> {
+        return game2PDao.getGame(idGame)
+    }
+
     override suspend fun getGames(): Flow<List<Game2PEntity>> {
         return game2PDao.getGames()
     }

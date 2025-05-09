@@ -9,13 +9,13 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface Game2PDao {
     @Insert
-    suspend fun insert(game2PEntity: Game2PEntity): Long
+    suspend fun insert(game2PEntity: Game2PEntity)
 
     @Query("select * from Game2PEntity order by dateGame desc")
     fun getGames(): Flow<List<Game2PEntity>>
 
     @Query("select * from Game2PEntity where idGame = :idGame")
-    suspend fun getGame(idGame: Int): Game2PEntity
+    fun getGame(idGame: Int): Flow<Game2PEntity>
 
     @Query("update Game2PEntity set statusGame = :statusGame, dateGame = :dateGame where idGame = :idGame")
     suspend fun updateStatus(idGame: Int, statusGame: Byte, dateGame: Long): Int

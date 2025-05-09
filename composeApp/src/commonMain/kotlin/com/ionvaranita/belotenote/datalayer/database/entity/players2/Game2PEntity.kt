@@ -13,9 +13,11 @@ data class Game2PEntity(
     val statusGame: Byte = GameStatus.CONTINUE.id,
     val winnerPoints: Short,
     val name1: String,
-    val name2: String
+    val name2: String,
+    val scoreName1: Short = 0,
+    val scoreName2: Short = 0,
                        ) {
     fun toUiModel(): Game2PUi {
-        return Game2PUi(idGame = this.idGame, statusGame = this.statusGame, winningPoints = this.winnerPoints, name1 = this.name1, name2 = this.name2)
+        return Game2PUi(idGame = this.idGame, statusGame = this.statusGame, winningPoints = this.winnerPoints, name1 = this.name1, name2 = this.name2,scoreName1 = this.scoreName1, scoreName2 = this.scoreName2)
     }
 }
