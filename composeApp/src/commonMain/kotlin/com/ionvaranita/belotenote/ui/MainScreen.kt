@@ -20,6 +20,7 @@ import com.ionvaranita.belotenote.Games2Dest
 import com.ionvaranita.belotenote.Games3Dest
 import com.ionvaranita.belotenote.Games4Dest
 import com.ionvaranita.belotenote.GamesGroupsDest
+import com.ionvaranita.belotenote.constants.GLOBAL_ALPHA
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 @OptIn(ExperimentalResourceApi::class)
@@ -47,7 +48,7 @@ fun HomeScreen(onClick: (Any) -> Unit) {
 private fun ColumnScope.MainButton(gamePath: GamePath,onClick: () -> Unit) {
     Button(onClick = {
         onClick()
-    }, modifier = Modifier.fillMaxWidth().weight(1F).padding(16.dp).alpha(.93F), shape = RoundedCornerShape(20.dp)) {
+    }, modifier = Modifier.fillMaxWidth().weight(1F).padding(16.dp).alpha(GLOBAL_ALPHA), shape = RoundedCornerShape(20.dp)) {
         Text(text = gamePath.title, fontSize = 64.sp, fontWeight = FontWeight.Bold)
     }
 }
