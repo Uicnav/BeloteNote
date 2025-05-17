@@ -1,20 +1,24 @@
-package com.ionvaranita.belotenote.datalayer.datasource
+package com.ionvaranita.belotenote.datalayer.datasource.game
 
 import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Game2GroupsEntity
 import com.ionvaranita.belotenote.domain.datasource.game.Game2GroupsDataSource
 import kotlinx.coroutines.flow.Flow
 import varanita.informatics.shared.database.dao.groups2.Game2GroupsDao
 
-class Game2GroupsDataSourceImpl(private val game2GroupsDao: Game2GroupsDao) : Game2GroupsDataSource {
+class Game2GroupsDataSourceImpl(private val dao: Game2GroupsDao) : Game2GroupsDataSource {
+    override suspend fun getGame(idGame: Int): Flow<Game2GroupsEntity> {
+        return dao.getGame(idGame)
+    }
+
     override suspend fun getGames(): Flow<List<Game2GroupsEntity>> {
-        return game2GroupsDao.getGames()
+        return dao.getGames()
     }
 
     override suspend fun insertGame(game: Game2GroupsEntity) {
-        game2GroupsDao.insert(game)
+        dao.insert(game)
     }
 
     override suspend fun deleteGame(idGame: Int) {
-        game2GroupsDao.delete(idGame)
+        dao.delete(idGame)
     }
 }

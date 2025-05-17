@@ -3,8 +3,8 @@ package com.ionvaranita.belotenote.ui.viewmodel.match
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ionvaranita.belotenote.datalayer.database.AppDatabase
-import com.ionvaranita.belotenote.datalayer.datasource.Game2PDataSourceImpl
-import com.ionvaranita.belotenote.datalayer.repo.Games2PRepositoryImpl
+import com.ionvaranita.belotenote.datalayer.datasource.game.Game2PDataSourceImpl
+import com.ionvaranita.belotenote.datalayer.repo.game.Games2PRepositoryImpl
 import com.ionvaranita.belotenote.domain.model.Game2PUi
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGame2PUseCase
 import kotlinx.coroutines.Dispatchers

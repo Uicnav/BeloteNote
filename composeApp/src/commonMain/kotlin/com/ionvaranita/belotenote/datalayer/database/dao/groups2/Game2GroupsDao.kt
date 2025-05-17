@@ -15,7 +15,7 @@ interface Game2GroupsDao {
     fun getGames(): Flow<List<Game2GroupsEntity>>
 
     @Query("select * from Game2GroupsEntity where idGame = :idGame")
-    suspend fun getGame(idGame: Short): Game2GroupsEntity
+    fun getGame(idGame: Int): Flow<Game2GroupsEntity>
 
     @Insert
     suspend fun insert(game2GroupsEntity: Game2GroupsEntity): Long

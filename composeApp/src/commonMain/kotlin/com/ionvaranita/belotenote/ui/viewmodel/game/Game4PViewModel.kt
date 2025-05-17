@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ionvaranita.belotenote.datalayer.database.AppDatabase
 import com.ionvaranita.belotenote.datalayer.database.entity.players4.Game4PEntity
-import com.ionvaranita.belotenote.datalayer.datasource.Game4PDataSourceImpl
-import com.ionvaranita.belotenote.datalayer.repo.Games4PRepositoryImpl
+import com.ionvaranita.belotenote.datalayer.datasource.game.Game4PDataSourceImpl
+import com.ionvaranita.belotenote.datalayer.repo.game.Games4PRepositoryImpl
 import com.ionvaranita.belotenote.domain.model.Game3PUi
 import com.ionvaranita.belotenote.domain.usecase.game.delete.DeleteGame4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGames4PUseCase

@@ -38,9 +38,9 @@ import com.ionvaranita.belotenote.ui.HomeScreen
 import com.ionvaranita.belotenote.ui.LocalAppDatabase
 import com.ionvaranita.belotenote.ui.LocalNavHostController
 import com.ionvaranita.belotenote.ui.match.MatchScreen2
+import com.ionvaranita.belotenote.ui.match.MatchScreen2Groups
 import com.ionvaranita.belotenote.ui.match.MatchScreen3
 import com.ionvaranita.belotenote.ui.match.MatchScreen4
-import com.ionvaranita.belotenote.ui.match.MatchScreenGroups
 import com.ionvaranita.belotenote.ui.table.TablesScreen2
 import com.ionvaranita.belotenote.ui.table.TablesScreen3
 import com.ionvaranita.belotenote.ui.table.TablesScreen4
@@ -108,7 +108,7 @@ fun App(appDatabase: AppDatabase) {
                         }
                         composable<MatchGroupsDest> {
                             val args = it.toRoute<MatchGroupsDest>()
-                            MatchScreenGroups(idGame = args.idGame)
+                            MatchScreen2Groups(idGame = args.idGame)
                         }
                     }
                 }

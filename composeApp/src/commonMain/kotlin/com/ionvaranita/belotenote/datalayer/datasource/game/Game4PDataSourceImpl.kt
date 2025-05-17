@@ -1,4 +1,4 @@
-package com.ionvaranita.belotenote.datalayer.datasource
+package com.ionvaranita.belotenote.datalayer.datasource.game
 
 import com.ionvaranita.belotenote.datalayer.database.entity.players4.Game4PEntity
 import com.ionvaranita.belotenote.domain.datasource.game.Game4PDataSource

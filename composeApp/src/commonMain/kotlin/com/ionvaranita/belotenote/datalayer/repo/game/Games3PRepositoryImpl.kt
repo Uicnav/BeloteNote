@@ -1,4 +1,4 @@
-package com.ionvaranita.belotenote.datalayer.repo
+package com.ionvaranita.belotenote.datalayer.repo.game
 
 import com.ionvaranita.belotenote.datalayer.database.entity.players3.Game3PEntity
 import com.ionvaranita.belotenote.domain.datasource.game.Game3PDataSource

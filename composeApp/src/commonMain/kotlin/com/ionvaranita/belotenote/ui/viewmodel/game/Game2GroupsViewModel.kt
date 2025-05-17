@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ionvaranita.belotenote.datalayer.database.AppDatabase
 import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Game2GroupsEntity
-import com.ionvaranita.belotenote.datalayer.datasource.Game2GroupsDataSourceImpl
-import com.ionvaranita.belotenote.datalayer.repo.Games2GroupsRepositoryImpl
+import com.ionvaranita.belotenote.datalayer.datasource.game.Game2GroupsDataSourceImpl
+import com.ionvaranita.belotenote.datalayer.repo.game.Games2GroupsRepositoryImpl
 import com.ionvaranita.belotenote.domain.model.Game2GroupsUi
 import com.ionvaranita.belotenote.domain.usecase.game.delete.DeleteGame2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGames2GroupsUseCase

@@ -1,5 +1,6 @@
 package com.ionvaranita.belotenote.domain.model
 
+import androidx.room.PrimaryKey
 import com.ionvaranita.belotenote.datalayer.database.entity.WinningPointsEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Game2GroupsEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.Game2PEntity
@@ -38,5 +39,10 @@ data class WinningPointsUi(val winningPoints: Short) {
         return WinningPointsEntity(winningPoints = this.winningPoints)
     }
 }
+
+data class Points2PUi( val idGame: Int, val pointsMe: Short, val pointsYouS: Short, val pointsGame: Short)
+
+
+data class Points2GroupsUi(val idGame: Int, val pointsWe: Short, val pointsYouP: Short, val pointsGame: Short)
 
 data class Score2PUi(val scorMe: Short, val scorYouS: Short)
