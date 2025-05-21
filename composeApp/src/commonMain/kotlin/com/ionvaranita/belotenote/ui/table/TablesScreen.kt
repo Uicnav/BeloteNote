@@ -134,7 +134,6 @@ internal fun TablesScreen2() {
                                 TableTextAtom(game.name2)
                             }
                             Spacer(modifier = Modifier.width(16.dp))
-                            StatusImage(GameStatus.fromId(game.statusGame))
                         }
                     }
                 }
@@ -184,7 +183,6 @@ internal fun TablesScreen3() {
                             }
                             TableTextAtom(game.name3, modifier = Modifier.weight(1F))
                             Spacer(modifier = Modifier.width(16.dp))
-                            StatusImage(GameStatus.fromId(game.statusGame))
                         }
                     }
                 }
@@ -238,7 +236,6 @@ internal fun TablesScreen4() {
                                 TableTextAtom(game.name4)
                             }
                             Spacer(modifier = Modifier.width(16.dp))
-                            StatusImage(GameStatus.fromId(game.statusGame))
                         }
                     }
                 }
