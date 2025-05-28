@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -187,49 +188,61 @@ internal fun MatchScreen2Groups(idGame: Int) {
                         isPressedByDefault3 = true
                     })
                 }
-                Keyboard(modifier = Modifier.fillMaxWidth(), onClick = { text ->
-                    if (text.equals(ADD)) {
-                        scope.launch(Dispatchers.IO) {
-                            viewModel.insertPoints(
-                                Points2GroupsEntity(
-                                    idGame = idGame,
-                                    pointsWe = pointsWe.toShort(),
-                                    pointsGame = pointsGame.toShort(),
-                                    pointsYouP = pointsYouP.toShort()
+                Keyboard(
+                    isPresedGames = isPressedByDefault1,
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { inputKey ->
+                        if (inputKey.equals(ADD)) {
+                            scope.launch(Dispatchers.IO) {
+                                viewModel.insertPoints(
+                                    Points2GroupsEntity(
+                                        idGame = idGame,
+                                        pointsWe = pointsWe.toShort(),
+                                        pointsGame = pointsGame.toShort(),
+                                        pointsYouP = pointsYouP.toShort()
+                                    )
                                 )
-                            )
-                        }
-                    } else {
-                        if (isPressedByDefault1) {
-                            if (text.equals(DELETE)) {
-                                pointsGame = pointsGame.dropLast(1)
-                            } else if (text.equals(MINUS_10) || text.equals(BOLT)) {
+                            }
+                        } else {
+                            if (isPressedByDefault1) {
 
-                            } else {
-                                pointsGame += text
+                                manageUserInputKey(
+                                    inputText = pointsGame,
+                                    inputKey = inputKey
+                                ) { text ->
+                                    pointsGame = text
+                                }
                             }
-                        }
-                        if (isPressedByDefault2) {
-                            if (text.equals(DELETE)) {
-                                pointsWe = pointsWe.dropLast(1)
-                            } else if (text.equals(MINUS_10) || text.equals(BOLT)) {
-                                pointsWe = text
-                            } else {
-                                pointsWe += text
+                            if (isPressedByDefault2) {
+                                manageUserInputKey(
+                                    inputText = pointsWe,
+                                    inputKey = inputKey
+                                ) { text ->
+                                    pointsWe = text
+                                    if (inputKey.equals(MINUS_10) || inputKey.equals(BOLT)) {
+                                        if (pointsYouP.equals(MINUS_10) || pointsYouP.equals(BOLT)) {
+                                            pointsYouP = ""
+                                        }
+                                    }
+                                }
                             }
-                        }
-                        if (isPressedByDefault3) {
-                            if (text.equals(DELETE)) {
-                                pointsYouP = pointsYouP.dropLast(1)
-                            } else if (text.equals(MINUS_10) || text.equals(BOLT)) {
-                                pointsYouP = text
-                            } else {
-                                pointsYouP += text
-                            }
-                        }
-                    }
+                            if (isPressedByDefault3) {
+                                manageUserInputKey(
+                                    inputText = pointsYouP,
+                                    inputKey = inputKey
+                                ) { text ->
+                                    pointsYouP = text
+                                    if (inputKey.equals(MINUS_10) || inputKey.equals(BOLT)) {
+                                        if (pointsWe.equals(MINUS_10) || pointsWe.equals(BOLT)) {
+                                            pointsWe = ""
+                                        }
+                                    }
+                                }
 
-                })
+                            }
+                        }
+
+                    })
 
             }
 
@@ -242,6 +255,25 @@ internal fun MatchScreen2Groups(idGame: Int) {
             }
         }
 
+    }
+}
+
+private fun manageUserInputKey(
+    inputText: String,
+    inputKey: String,
+    onInputTextChanged: (String) -> Unit
+) {
+    if (inputKey.equals(DELETE)) {
+        onInputTextChanged(inputText.dropLast(1))
+    } else if (inputKey.equals(MINUS_10) || inputKey.equals(BOLT)) {
+        onInputTextChanged(inputKey)
+
+    } else if (inputKey.equals(ZERO) && inputText.isEmpty()) {
+        onInputTextChanged(inputText)
+    } else {
+        if (!inputText.equals(BOLT) && !inputText.equals(MINUS_10) && inputText.length < 3) onInputTextChanged(
+            inputText + inputKey
+        )
     }
 }
 
@@ -296,17 +328,25 @@ fun RowScope.TouchableText(
 ) {
 
     Text(
-        text = text,
+        text = text.take(3),
         style = MaterialTheme.typography.titleLarge,
-        modifier = modifier.weight(1F).clip(shape = RoundedCornerShape(16.dp)).background(if (isPressed) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.tertiary).padding(16.dp)
-            .clickable {
+        modifier = modifier.weight(1F).clip(shape = RoundedCornerShape(16.dp))
+            .background(if (isPressed) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.tertiary)
+            .padding(16.dp).clickable {
                 onClick()
-            }, textAlign = TextAlign.Center)
+            },
+        textAlign = TextAlign.Center
+    )
 }
 
 
 @Composable
-private fun Keyboard(onClick: (String) -> Unit, modifier: Modifier = Modifier) {
+private fun Keyboard(
+    isPresedGames: Boolean = false,
+    onClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val keyAlpha = if (!isPresedGames) 1f else 0f
     Column(modifier = modifier.fillMaxWidth()) {
         Row(modifier = Modifier.fillMaxWidth()) {
             KeyAtom(text = ONE, onClick = onClick)
@@ -323,8 +363,12 @@ private fun Keyboard(onClick: (String) -> Unit, modifier: Modifier = Modifier) {
             KeyAtom(text = ZERO, onClick = onClick)
         }
         Row(modifier = Modifier.fillMaxWidth()) {
-            KeyAtom(text = BOLT, onClick = onClick)
-            KeyAtom(text = MINUS_10, onClick = onClick)
+            KeyAtom(text = BOLT, onClick = onClick, modifier = Modifier.graphicsLayer {
+                alpha = keyAlpha
+            })
+            KeyAtom(text = MINUS_10, onClick = onClick, modifier = Modifier.graphicsLayer {
+                alpha = keyAlpha
+            })
             AddIcon(
                 modifier = Modifier.weight(1F).clickable {
                     onClick(ADD)
@@ -346,7 +390,7 @@ private const val SIX = "6"
 private const val SEVEN = "7"
 private const val EIGHT = "8"
 private const val NINE = "9"
-private const val ZERO = "9"
+private const val ZERO = "0"
 private const val BOLT = "B"
 private const val MINUS_10 = "-10"
 private const val ADD = "add"
