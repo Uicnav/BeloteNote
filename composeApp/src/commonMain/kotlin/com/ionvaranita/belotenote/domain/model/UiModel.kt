@@ -2,10 +2,13 @@ package com.ionvaranita.belotenote.domain.model
 
 import androidx.room.PrimaryKey
 import com.ionvaranita.belotenote.datalayer.database.entity.WinningPointsEntity
+import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Bolt2GroupsEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Game2GroupsEntity
+import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Points2GroupsEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.Game2PEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players3.Game3PEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players4.Game4PEntity
+import com.ionvaranita.belotenote.ui.match.BOLT
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -43,6 +46,20 @@ data class WinningPointsUi(val winningPoints: Short) {
 data class Points2PUi( val idGame: Int, val pointsMe: Short, val pointsYouS: Short, val pointsGame: Short)
 
 
-data class Points2GroupsUi(val idGame: Int, val pointsWe: Short, val pointsYouP: Short, val pointsGame: Short)
+data class Points2GroupsUi(val idRow: Long = 0,val idGame: Int, var pointsWe: String, var pointsYouP: String, val pointsGame: String,var boltWe:Boolean = false, var boltYouP: Boolean = false) {
+    fun toDataClass(lastPoints: Points2GroupsEntity): Points2GroupsEntity {
+        return Points2GroupsEntity(idGame = this.idGame, pointsWe = (this.pointsWe.toShortCustom() + lastPoints.pointsWe).toShort(), pointsYouP = (this.pointsYouP.toShortCustom() + lastPoints.pointsYouP).toShort(), pointsGame = this.pointsGame.toShort(), boltWe = this.boltWe, boltYouP = this.boltYouP)
+    }
+}
 
-data class Score2PUi(val scorMe: Short, val scorYouS: Short)
+data class Bolt2GroupsUi(val idRow: Long, val idGame: Int, val idPersonBolt: Int) {
+    fun toDataClass(): Bolt2GroupsEntity {
+        return Bolt2GroupsEntity(idRow = this.idRow, idGame = this.idGame, idPersonBolt = this.idPersonBolt)
+    }
+}
+
+fun String.toShortCustom(): Short {
+   return if (this.equals(BOLT)) {
+        0
+    } else this.toShort()
+}

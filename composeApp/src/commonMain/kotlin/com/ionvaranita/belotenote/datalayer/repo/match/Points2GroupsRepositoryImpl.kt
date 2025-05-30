@@ -15,12 +15,28 @@ class Points2GroupsRepositoryImpl(private val datasource: Points2GroupsDataSourc
        return datasource.getPoints(idGame)
     }
 
-    override suspend fun getLastPoints(idGame: Int): Points2GroupsEntity {
-        TODO("Not yet implemented")
+    override suspend fun getLastPoints(idGame: Int): Points2GroupsEntity? {
+        return datasource.getLastPoints(idGame)
     }
 
     override suspend fun delete(idGame: Int): Int {
         return datasource.delete(idGame)
+    }
+
+    override suspend fun countBoltsByWe(idGame: Int): Int {
+        return datasource.countBoltsByWe(idGame)
+    }
+
+    override suspend fun countBoltsByYouP(idGame: Int): Int {
+        return datasource.countBoltsByYouP(idGame)
+    }
+
+    override suspend fun deleteAllBoltWe(idGame: Int) {
+        datasource.deleteAllBoltWe(idGame)
+    }
+
+    override suspend fun deleteAllBoltYouP(idGame: Int) {
+        datasource.deleteAllBoltYouP(idGame)
     }
 
 }

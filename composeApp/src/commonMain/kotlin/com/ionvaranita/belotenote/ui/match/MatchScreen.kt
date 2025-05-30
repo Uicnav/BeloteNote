@@ -195,11 +195,11 @@ internal fun MatchScreen2Groups(idGame: Int) {
                         if (inputKey.equals(ADD)) {
                             scope.launch(Dispatchers.IO) {
                                 viewModel.insertPoints(
-                                    Points2GroupsEntity(
+                                    Points2GroupsUi(
                                         idGame = idGame,
-                                        pointsWe = pointsWe.toShort(),
-                                        pointsGame = pointsGame.toShort(),
-                                        pointsYouP = pointsYouP.toShort()
+                                        pointsWe = pointsWe,
+                                        pointsGame = pointsGame,
+                                        pointsYouP = pointsYouP
                                     )
                                 )
                             }
@@ -391,7 +391,7 @@ private const val SEVEN = "7"
 private const val EIGHT = "8"
 private const val NINE = "9"
 private const val ZERO = "0"
-private const val BOLT = "B"
+const val BOLT = "B"
 private const val MINUS_10 = "-10"
 private const val ADD = "add"
 private const val DELETE = "delete"

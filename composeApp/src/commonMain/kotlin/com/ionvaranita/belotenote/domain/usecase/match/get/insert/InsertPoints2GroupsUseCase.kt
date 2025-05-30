@@ -5,8 +5,8 @@ import com.ionvaranita.belotenote.domain.repo.match.Points2GroupsRepository
 import com.ionvaranita.belotenote.domain.usecase.UseCase
 
 class InsertPoints2GroupsUseCase(private val repository: Points2GroupsRepository) :
-    UseCase<Points2GroupsEntity, Unit> {
-    override suspend fun execute(points: Points2GroupsEntity) {
-        repository.insert(points)
+    UseCase<Points2GroupsEntity, Long> {
+    override suspend fun execute(points: Points2GroupsEntity): Long  {
+        return repository.insert(points)
     }
 }

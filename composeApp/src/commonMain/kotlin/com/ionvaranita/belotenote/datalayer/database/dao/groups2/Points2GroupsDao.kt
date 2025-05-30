@@ -18,8 +18,20 @@ interface Points2GroupsDao {
     fun getPoints(idGame: Int): Flow<List<Points2GroupsEntity>>
 
     @Query("select * from Points2GroupsEntity where id = (select max(id) from Points2GroupsEntity where idGame = :idGame)")
-    suspend fun getLastPoints(idGame: Int): Points2GroupsEntity
+    suspend fun getLastPoints(idGame: Int): Points2GroupsEntity?
 
     @Query("delete from Points2GroupsEntity where idGame = :idGame")
     suspend fun delete(idGame: Int): Int
+
+    @Query("SELECT COUNT(*) FROM Points2GroupsEntity WHERE idGame = :idGame AND boltWe = true")
+    suspend fun countBoltsByWe(idGame: Int): Int
+
+    @Query("SELECT COUNT(*) FROM Points2GroupsEntity WHERE idGame = :idGame AND boltYouP = true")
+    suspend fun countBoltsByYouP(idGame: Int): Int
+
+    @Query("UPDATE Points2GroupsEntity SET boltWe = false WHERE boltWe = true AND idGame = :idGame")
+    suspend fun deleteAllBoltWe(idGame: Int)
+
+    @Query("UPDATE Points2GroupsEntity SET boltWe = false WHERE boltYouP = true AND idGame = :idGame")
+    suspend fun deleteAllBoltYouP(idGame: Int)
 }
