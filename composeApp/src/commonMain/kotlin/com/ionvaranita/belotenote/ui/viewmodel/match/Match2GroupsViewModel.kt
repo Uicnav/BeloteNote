@@ -11,10 +11,9 @@ import com.ionvaranita.belotenote.datalayer.repo.match.Points2GroupsRepositoryIm
 import com.ionvaranita.belotenote.domain.model.Game2GroupsUi
 import com.ionvaranita.belotenote.domain.model.Points2GroupsUi
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGame2GroupsUseCase
-import com.ionvaranita.belotenote.domain.usecase.match.get.CountBoltWe2GroupsUseCase
-import com.ionvaranita.belotenote.domain.usecase.match.get.CountBoltYouP2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetLastPoints2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetPoints2GroupsUseCase
+import com.ionvaranita.belotenote.domain.usecase.match.get.delete.DeleteLastRowPoints2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.get.insert.InsertPoints2GroupsUseCase
 import com.ionvaranita.belotenote.ui.match.BOLT
 import kotlinx.coroutines.CoroutineDispatcher
@@ -36,6 +35,8 @@ class Match2GroupsViewModel(private val appDatabase: AppDatabase, private val id
     private val getPointsUseCase = GetPoints2GroupsUseCase(repositoryPoints)
     private val getLastPoints2GroupsUseCase = GetLastPoints2GroupsUseCase(repositoryPoints)
     private val insertPointsUseCase = InsertPoints2GroupsUseCase(repositoryPoints)
+    private val deleteLastRowPoints2GroupsUseCase =
+        DeleteLastRowPoints2GroupsUseCase(repositoryPoints)
 
     private val _uiState = MutableStateFlow<MatchGroupsUiState>(MatchGroupsUiState.Loading)
     val uiState: StateFlow<MatchGroupsUiState> = _uiState
@@ -79,6 +80,8 @@ class Match2GroupsViewModel(private val appDatabase: AppDatabase, private val id
     var isMinus10We = false
     var isMinus10YouP = false
 
+    private var minus10Inserted = false
+
 
     fun insertPoints(
         model: Points2GroupsUi, dispatcher: CoroutineDispatcher = Dispatchers.IO
@@ -88,6 +91,7 @@ class Match2GroupsViewModel(private val appDatabase: AppDatabase, private val id
                 if (!isMinus10We && countBoltWe != 0 && countBoltWe % 2 == 0) {
                     isMinus10We = true
                     model.pointsWe = "-10"
+                    minus10Inserted = true
                 } else {
                     isMinus10We = false
                     model.boltWe = true
@@ -108,6 +112,16 @@ class Match2GroupsViewModel(private val appDatabase: AppDatabase, private val id
             }
             insertPointsUseCase.execute(model.toDataClass(lastPoints))
         }
+    }
+
+    fun deleteLastPoints(dispatcher: CoroutineDispatcher = Dispatchers.IO) {
+        viewModelScope.launch(dispatcher) {
+            var lastPoints = getLastPoints2GroupsUseCase.execute(idGame)
+            if (lastPoints != null) {
+                deleteLastRowPoints2GroupsUseCase.execute(lastPoints)
+            }
+        }
+
     }
 }
 

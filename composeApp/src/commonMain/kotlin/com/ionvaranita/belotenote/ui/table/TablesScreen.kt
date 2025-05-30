@@ -123,8 +123,8 @@ internal fun TablesScreen2() {
                 }
                 LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize().padding(16.dp), state = gameListState) {
                     items(state.data) { game ->
-                        GameCard(gameId = game.idGame, onDelete = { gameId ->
-                            viewModel.deleteGame(gameId)
+                        GameCard(onDelete = {
+                            viewModel.deleteGame(game.idGame)
                         }, onTap = {
                             val route = Match2Dest(idGame = game.idGame)
                             navController.navigate(route)
@@ -171,8 +171,8 @@ internal fun TablesScreen3() {
                 }
                 LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize().padding(16.dp), state = gameListState) {
                     items(state.data) { game ->
-                        GameCard(gameId = game.idGame, onDelete = { gameId ->
-                            viewModel.deleteGame(gameId)
+                        GameCard(onDelete = {
+                            viewModel.deleteGame(game.idGame)
                         }, onTap = {
                             val route = Match3Dest(idGame = game.idGame)
                             navController.navigate(route)
@@ -221,8 +221,8 @@ internal fun TablesScreen4() {
                         gameListState.animateScrollToItem(state.data.size)
                     }
                     items(state.data) { game ->
-                        GameCard(gameId = game.idGame, onDelete = { gameId ->
-                            viewModel.deleteGame(gameId)
+                        GameCard( onDelete = {
+                            viewModel.deleteGame(game.idGame)
                         }, onTap = {
                             val route = Match4Dest(idGame = game.idGame)
                             navController.navigate(route)
@@ -274,8 +274,8 @@ internal fun TablesScreenGroups() {
                 }
                 LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize().padding(16.dp), state = gameListState) {
                     items(state.data) { game ->
-                        GameCard(gameId = game.idGame, onDelete = { gameId ->
-                            viewModel.deleteGame(gameId)
+                        GameCard( onDelete = {
+                            viewModel.deleteGame(game.idGame)
                         }, onTap = {
                             val route = MatchGroupsDest(idGame = game.idGame)
                             navController.navigate(route)
@@ -312,7 +312,7 @@ fun ConfirmDeleteDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
 }
 
 @Composable
-fun GameCard(modifier: Modifier = Modifier, gameId: Int, onDelete: (Int) -> Unit, onTap: () -> Unit, content: @Composable RowScope.() -> Unit) {
+fun GameCard(modifier: Modifier = Modifier, onDelete: () -> Unit, onTap: () -> Unit = {}, content: @Composable RowScope.() -> Unit) {
     var showDialog by remember { mutableStateOf(false) }
     val offsetX = remember { Animatable(0f) }
     val scope = rememberCoroutineScope()
@@ -352,7 +352,7 @@ fun GameCard(modifier: Modifier = Modifier, gameId: Int, onDelete: (Int) -> Unit
 
     if (showDialog) {
         ConfirmDeleteDialog(onConfirm = {
-            onDelete(gameId)
+            onDelete()
             showDialog = false
             scope.launch { offsetX.snapTo(0f) }
         }, onDismiss = {

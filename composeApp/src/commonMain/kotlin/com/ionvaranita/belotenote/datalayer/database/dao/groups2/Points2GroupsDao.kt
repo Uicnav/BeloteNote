@@ -1,6 +1,7 @@
 package com.ionvaranita.belotenote.datalayer.database.dao.groups2
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Points2GroupsEntity
@@ -22,16 +23,6 @@ interface Points2GroupsDao {
 
     @Query("delete from Points2GroupsEntity where idGame = :idGame")
     suspend fun delete(idGame: Int): Int
-
-    @Query("SELECT COUNT(*) FROM Points2GroupsEntity WHERE idGame = :idGame AND boltWe = true")
-    suspend fun countBoltsByWe(idGame: Int): Int
-
-    @Query("SELECT COUNT(*) FROM Points2GroupsEntity WHERE idGame = :idGame AND boltYouP = true")
-    suspend fun countBoltsByYouP(idGame: Int): Int
-
-    @Query("UPDATE Points2GroupsEntity SET boltWe = false WHERE boltWe = true AND idGame = :idGame")
-    suspend fun deleteAllBoltWe(idGame: Int)
-
-    @Query("UPDATE Points2GroupsEntity SET boltWe = false WHERE boltYouP = true AND idGame = :idGame")
-    suspend fun deleteAllBoltYouP(idGame: Int)
+    @Delete
+    suspend fun delete(row: Points2GroupsEntity)
 }

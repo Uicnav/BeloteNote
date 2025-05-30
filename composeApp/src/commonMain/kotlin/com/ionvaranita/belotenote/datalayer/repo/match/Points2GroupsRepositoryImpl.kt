@@ -23,20 +23,8 @@ class Points2GroupsRepositoryImpl(private val datasource: Points2GroupsDataSourc
         return datasource.delete(idGame)
     }
 
-    override suspend fun countBoltsByWe(idGame: Int): Int {
-        return datasource.countBoltsByWe(idGame)
-    }
-
-    override suspend fun countBoltsByYouP(idGame: Int): Int {
-        return datasource.countBoltsByYouP(idGame)
-    }
-
-    override suspend fun deleteAllBoltWe(idGame: Int) {
-        datasource.deleteAllBoltWe(idGame)
-    }
-
-    override suspend fun deleteAllBoltYouP(idGame: Int) {
-        datasource.deleteAllBoltYouP(idGame)
+    override suspend fun delete(row: Points2GroupsEntity) {
+        datasource.delete(row)
     }
 
 }

@@ -1,7 +1,5 @@
 package com.ionvaranita.belotenote.domain.repo.match
 
-import androidx.room.Query
-import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Game2GroupsEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Points2GroupsEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -14,11 +12,6 @@ interface Points2GroupsRepository {
 
     suspend fun delete(idGame: Int): Int
 
-    suspend fun countBoltsByWe(idGame: Int): Int
 
-    suspend fun countBoltsByYouP(idGame: Int): Int
-
-    suspend fun deleteAllBoltWe(idGame: Int)
-
-    suspend fun deleteAllBoltYouP(idGame: Int)
+    suspend fun delete(row: Points2GroupsEntity)
 }

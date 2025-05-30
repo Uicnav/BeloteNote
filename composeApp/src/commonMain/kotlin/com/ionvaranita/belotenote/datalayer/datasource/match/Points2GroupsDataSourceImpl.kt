@@ -23,19 +23,7 @@ class Points2GroupsDataSourceImpl(private val dao: Points2GroupsDao) :
         return dao.delete(idGame)
     }
 
-    override suspend fun countBoltsByWe(idGame: Int): Int {
-        return dao.countBoltsByWe(idGame)
-    }
-
-    override suspend fun countBoltsByYouP(idGame: Int): Int {
-        return dao.countBoltsByYouP(idGame)
-    }
-
-    override suspend fun deleteAllBoltWe(idGame: Int) {
-        dao.deleteAllBoltWe(idGame)
-    }
-
-    override suspend fun deleteAllBoltYouP(idGame: Int) {
-        dao.deleteAllBoltYouP(idGame)
+    override suspend fun delete(row: Points2GroupsEntity) {
+        dao.delete(row)
     }
 }

@@ -12,11 +12,5 @@ interface Points2GroupsDataSource {
 
     suspend fun delete(idGame: Int): Int
 
-    suspend fun countBoltsByWe(idGame: Int): Int
-
-    suspend fun countBoltsByYouP(idGame: Int): Int
-
-    suspend fun deleteAllBoltWe(idGame: Int)
-
-    suspend fun deleteAllBoltYouP(idGame: Int)
+    suspend fun delete(row: Points2GroupsEntity)
 }
