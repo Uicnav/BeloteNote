@@ -6,13 +6,11 @@ import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.ionvaranita.belotenote.datalayer.database.dao.WinningPointsDao
-import com.ionvaranita.belotenote.datalayer.database.dao.groups2.Bolt2GroupsDao
 import com.ionvaranita.belotenote.datalayer.database.dao.groups2.Points2GroupsDao
 import com.ionvaranita.belotenote.datalayer.database.dao.players4.Points4PDao
 import com.ionvaranita.belotenote.datalayer.database.entity.BoltManagerEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.ExtendedGameEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.WinningPointsEntity
-import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Bolt2GroupsEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Game2GroupsEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Points2GroupsEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.Game2PEntity
@@ -24,7 +22,6 @@ import com.ionvaranita.belotenote.datalayer.database.entity.players4.Points4PEnt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.runBlocking
-import varanita.informatics.shared.database.dao.BoltManagerDao
 import varanita.informatics.shared.database.dao.ExtendedGameDao
 import varanita.informatics.shared.database.dao.groups2.Game2GroupsDao
 import varanita.informatics.shared.database.dao.players2.Game2PDao
@@ -37,8 +34,8 @@ import varanita.informatics.shared.database.dao.players4.Game4PDao
  * Created by ionvaranita on 20/11/17.
  */
 @Database(
-    entities = [Game2PEntity::class, Points2PEntity::class, Game3PEntity::class, Points3PEntity::class, Game4PEntity::class, Points4PEntity::class, Game2GroupsEntity::class, Points2GroupsEntity::class, ExtendedGameEntity::class, Bolt2GroupsEntity::class, BoltManagerEntity::class, WinningPointsEntity::class],
-    version = 6,
+    entities = [Game2PEntity::class, Points2PEntity::class, Game3PEntity::class, Points3PEntity::class, Game4PEntity::class, Points4PEntity::class, Game2GroupsEntity::class, Points2GroupsEntity::class, ExtendedGameEntity::class, BoltManagerEntity::class, WinningPointsEntity::class],
+    version = 7,
     exportSchema = false
 )
 @ConstructedBy(AppDatabaseConstructor::class)
@@ -65,10 +62,6 @@ abstract class AppDatabase : RoomDatabase(), DB {
 
     //GLOBAL
     abstract fun winnerPointsDao(): WinningPointsDao
-
-    abstract fun bolt2GroupsDao(): Bolt2GroupsDao
-
-    abstract fun boltManagerDao(): BoltManagerDao
 
     abstract fun extendedGameDao(): ExtendedGameDao
 
