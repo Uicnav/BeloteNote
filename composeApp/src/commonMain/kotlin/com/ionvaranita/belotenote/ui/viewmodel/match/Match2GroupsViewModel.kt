@@ -13,8 +13,8 @@ import com.ionvaranita.belotenote.domain.model.Points2GroupsUi
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGame2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetLastPoints2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetPoints2GroupsUseCase
-import com.ionvaranita.belotenote.domain.usecase.match.get.delete.DeleteLastRowPoints2GroupsUseCase
-import com.ionvaranita.belotenote.domain.usecase.match.get.insert.InsertPoints2GroupsUseCase
+import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteLastRowPoints2GroupsUseCase
+import com.ionvaranita.belotenote.domain.usecase.match.insert.InsertPoints2GroupsUseCase
 import com.ionvaranita.belotenote.ui.match.BOLT
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
-class Match2GroupsViewModel(private val appDatabase: AppDatabase, private val idGame: Int) :
+class Match2GroupsViewModel(appDatabase: AppDatabase, private val idGame: Int) :
     ViewModel() {
     private val repositoryGame =
         Games2GroupsRepositoryImpl(Game2GroupsDataSourceImpl(appDatabase.game2GroupsDao()))
@@ -110,7 +110,7 @@ class Match2GroupsViewModel(private val appDatabase: AppDatabase, private val id
             if (lastPoints == null) {
                 lastPoints = Points2GroupsEntity(idGame = idGame)
             }
-            insertPointsUseCase.execute(model.toDataClass(lastPoints))
+            insertPointsUseCase.execute(model.add(lastPoints))
         }
     }
 

@@ -24,7 +24,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +43,7 @@ import belotenote.composeapp.generated.resources.game
 import com.ionvaranita.belotenote.StatusImage
 import com.ionvaranita.belotenote.constants.GameStatus
 import com.ionvaranita.belotenote.domain.model.Points2GroupsUi
+import com.ionvaranita.belotenote.domain.model.Points2PUi
 import com.ionvaranita.belotenote.domain.model.toShortCustom
 import com.ionvaranita.belotenote.ui.LocalAppDatabase
 import com.ionvaranita.belotenote.ui.LocalNavHostController
@@ -60,42 +60,172 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 internal fun MatchScreen2(idGame: Int) {
-    val navController = LocalNavHostController.current
     val appDatabase = LocalAppDatabase.current
-    val viewModel = viewModel { Match2PPViewModel(appDatabase) }
+    val viewModel = viewModel { Match2PPViewModel(appDatabase, idGame) }
     val matchUiState = viewModel.uiState.collectAsState()
-    LaunchedEffect(Unit) {
-        viewModel.getMatchData(idGame)
-    }
+    val scope = rememberCoroutineScope()
     MatchWrapper {
         when (val matchState = matchUiState.value) {
             is Match2PUiState.Success -> {
                 val game = matchState.data.game
-                Column(
-                    modifier = Modifier.weight(1F),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    StatusImage(
-                        gameStatus = GameStatus.fromId(game.statusGame),
-                        modifier = Modifier.padding(8.dp)
-                    )
-                    TableTextAtom(text = stringResource(Res.string.game))
-                }
-                Column(
-                    modifier = Modifier.weight(1F),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    TableTextAtom(text = game.scoreName1.toString())
-                    TableTextAtom(text = game.name1)
+                Row {
+                    Column(
+                        modifier = Modifier.weight(1F),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        StatusImage(
+                            gameStatus = GameStatus.fromId(game.statusGame),
+                            modifier = Modifier.padding(8.dp)
+                        )
+                        TableTextAtom(text = stringResource(Res.string.game))
+                    }
+                    Column(
+                        modifier = Modifier.weight(1F),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        TableTextAtom(text = game.scoreName1.toString())
+                        TableTextAtom(text = game.name1)
+                    }
+
+                    Column(
+                        modifier = Modifier.weight(1F),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        TableTextAtom(text = game.scoreName2.toString())
+                        TableTextAtom(text = game.name2)
+                    }
                 }
 
-                Column(
-                    modifier = Modifier.weight(1F),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    TableTextAtom(text = game.scoreName2.toString())
-                    TableTextAtom(text = game.name2)
+
+                val points = matchState.data.points
+                var pointsGame by remember { mutableStateOf("") }
+                var pointsMe by remember { mutableStateOf("") }
+                var pointsYouS by remember { mutableStateOf("") }
+                var isPressedPoints by remember { mutableStateOf(true) }
+                var isPressedMe by remember { mutableStateOf(false) }
+                var isPressedYouS by remember { mutableStateOf(false) }
+                val pointsListState = rememberLazyListState()
+                scope.launch {
+                    pointsListState.animateScrollToItem(points.size)
                 }
+
+                LazyColumn(
+                    modifier = Modifier.weight(1F),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    state = pointsListState
+                ) {
+
+                    itemsIndexed(points) { index: Int, item: Points2PUi ->
+                        val isLast = index == points.lastIndex
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (isLast) {
+                                GameCard(
+                                    onDelete = {
+                                        scope.launch {
+                                            viewModel.deleteLastPoints()
+                                        }
+                                    }) {
+                                    PointsTextAtom(text = item.pointsGame)
+                                    PointsTextAtom(text = item.pointsMe)
+                                    PointsTextAtom(text = item.pointsYouS)
+                                }
+                            } else {
+                                PointsTextAtom(text = item.pointsGame)
+                                PointsTextAtom(text = item.pointsMe)
+                                PointsTextAtom(text = item.pointsYouS)
+                            }
+                        }
+                        if (index % 2 == 1) {
+                            HorizontalDivider(
+                                thickness = 1.dp,
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            )
+                        }
+                    }
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth().wrapContentHeight()
+                ) {
+                    TouchableText(text = pointsGame, isPressed = isPressedPoints, onClick = {
+
+                        isPressedPoints = true
+                        isPressedMe = false
+                        isPressedYouS = false
+
+                    })
+
+                    TouchableText(text = pointsMe, isPressed = isPressedMe, onClick = {
+
+                        isPressedPoints = false
+                        isPressedMe = true
+                        isPressedYouS = false
+
+                    })
+                    TouchableText(text = pointsYouS, isPressed = isPressedYouS, onClick = {
+                        isPressedPoints = false
+                        isPressedMe = false
+                        isPressedYouS = true
+                    })
+                }
+                Keyboard(
+                    isPresedGames = isPressedPoints,
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { inputKey ->
+                        if (inputKey.equals(ADD)) {
+                            scope.launch(Dispatchers.IO) {
+                                viewModel.insertPoints(
+                                    Points2PUi(
+                                        idGame = idGame,
+                                        pointsMe = pointsMe,
+                                        pointsGame = pointsGame,
+                                        pointsYouS = pointsYouS
+                                    )
+                                )
+                            }
+                        } else {
+                            if (isPressedPoints) {
+
+                                manageUserInputKey(
+                                    inputText = pointsGame, inputKey = inputKey
+                                ) { text ->
+                                    pointsGame = text
+                                }
+                            }
+                            if (isPressedMe) {
+                                manageUserInputKey(
+                                    inputText = pointsMe, inputKey = inputKey
+                                ) { text ->
+                                    pointsMe = text
+                                    if (inputKey.equals(MINUS_10) || inputKey.equals(BOLT)) {
+                                        if (pointsYouS.equals(MINUS_10) || pointsYouS.equals(BOLT)) {
+                                            pointsYouS = ""
+
+                                        }
+                                    }
+                                    if (pointsGame.isNotEmpty()) {
+                                        pointsYouS = (pointsGame.toShortCustom() - text.toShortCustom()).toCustomString()
+                                    }
+                                }
+                            }
+                            if (isPressedYouS) {
+                                manageUserInputKey(
+                                    inputText = pointsYouS, inputKey = inputKey
+                                ) { text ->
+                                    pointsYouS = text
+                                    if (inputKey.equals(MINUS_10) || inputKey.equals(BOLT)) {
+                                        if (pointsMe.equals(MINUS_10) || pointsMe.equals(BOLT)) {
+                                            pointsMe = ""
+                                        }
+                                    }
+                                    if (pointsGame.isNotEmpty()) {
+                                        pointsMe = (pointsGame.toShortCustom() - text.toShortCustom()).toCustomString()
+                                    }
+                                }
+
+                            }
+                        }
+
+                    })
             }
 
             is Match2PUiState.Error -> {
@@ -112,7 +242,6 @@ internal fun MatchScreen2(idGame: Int) {
 
 @Composable
 internal fun MatchScreen2Groups(idGame: Int) {
-    val navController = LocalNavHostController.current
     val appDatabase = LocalAppDatabase.current
     val viewModel = viewModel { Match2GroupsViewModel(appDatabase, idGame) }
     val matchUiState = viewModel.uiState.collectAsState()
@@ -152,9 +281,9 @@ internal fun MatchScreen2Groups(idGame: Int) {
                 var pointsGame by remember { mutableStateOf("") }
                 var pointsWe by remember { mutableStateOf("") }
                 var pointsYouP by remember { mutableStateOf("") }
-                var isPressed1 by remember { mutableStateOf(true) }
-                var isPressed2 by remember { mutableStateOf(false) }
-                var isPressed3 by remember { mutableStateOf(false) }
+                var isPressedPoints by remember { mutableStateOf(true) }
+                var isPressedWe by remember { mutableStateOf(false) }
+                var isPressedYouP by remember { mutableStateOf(false) }
                 val pointsListState = rememberLazyListState()
                 scope.launch {
                     pointsListState.animateScrollToItem(points.size)
@@ -197,29 +326,29 @@ internal fun MatchScreen2Groups(idGame: Int) {
                 Row(
                     modifier = Modifier.fillMaxWidth().wrapContentHeight()
                 ) {
-                    TouchableText(text = pointsGame, isPressed = isPressed1, onClick = {
+                    TouchableText(text = pointsGame, isPressed = isPressedPoints, onClick = {
 
-                        isPressed1 = true
-                        isPressed2 = false
-                        isPressed3 = false
-
-                    })
-
-                    TouchableText(text = pointsWe, isPressed = isPressed2, onClick = {
-
-                        isPressed1 = false
-                        isPressed2 = true
-                        isPressed3 = false
+                        isPressedPoints = true
+                        isPressedWe = false
+                        isPressedYouP = false
 
                     })
-                    TouchableText(text = pointsYouP, isPressed = isPressed3, onClick = {
-                        isPressed1 = false
-                        isPressed2 = false
-                        isPressed3 = true
+
+                    TouchableText(text = pointsWe, isPressed = isPressedWe, onClick = {
+
+                        isPressedPoints = false
+                        isPressedWe = true
+                        isPressedYouP = false
+
+                    })
+                    TouchableText(text = pointsYouP, isPressed = isPressedYouP, onClick = {
+                        isPressedPoints = false
+                        isPressedWe = false
+                        isPressedYouP = true
                     })
                 }
                 Keyboard(
-                    isPresedGames = isPressed1,
+                    isPresedGames = isPressedPoints,
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { inputKey ->
                         if (inputKey.equals(ADD)) {
@@ -234,7 +363,7 @@ internal fun MatchScreen2Groups(idGame: Int) {
                                 )
                             }
                         } else {
-                            if (isPressed1) {
+                            if (isPressedPoints) {
 
                                 manageUserInputKey(
                                     inputText = pointsGame, inputKey = inputKey
@@ -242,7 +371,7 @@ internal fun MatchScreen2Groups(idGame: Int) {
                                     pointsGame = text
                                 }
                             }
-                            if (isPressed2) {
+                            if (isPressedWe) {
                                 manageUserInputKey(
                                     inputText = pointsWe, inputKey = inputKey
                                 ) { text ->
@@ -258,7 +387,7 @@ internal fun MatchScreen2Groups(idGame: Int) {
                                     }
                                 }
                             }
-                            if (isPressed3) {
+                            if (isPressedYouP) {
                                 manageUserInputKey(
                                     inputText = pointsYouP, inputKey = inputKey
                                 ) { text ->

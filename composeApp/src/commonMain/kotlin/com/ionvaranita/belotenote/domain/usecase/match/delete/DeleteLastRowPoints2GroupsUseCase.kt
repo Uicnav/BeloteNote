@@ -1,4 +1,4 @@
-package com.ionvaranita.belotenote.domain.usecase.match.get.delete
+package com.ionvaranita.belotenote.domain.usecase.match.delete
 
 import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Points2GroupsEntity
 import com.ionvaranita.belotenote.domain.repo.match.Points2GroupsRepository
