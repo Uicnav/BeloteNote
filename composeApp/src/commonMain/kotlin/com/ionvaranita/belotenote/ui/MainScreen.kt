@@ -16,10 +16,11 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ionvaranita.belotenote.Games2
-import com.ionvaranita.belotenote.Games3
-import com.ionvaranita.belotenote.Games4
-import com.ionvaranita.belotenote.GamesGroups
+import com.ionvaranita.belotenote.Games2Dest
+import com.ionvaranita.belotenote.Games3Dest
+import com.ionvaranita.belotenote.Games4Dest
+import com.ionvaranita.belotenote.GamesGroupsDest
+import com.ionvaranita.belotenote.constants.GLOBAL_ALPHA
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 @OptIn(ExperimentalResourceApi::class)
@@ -28,16 +29,16 @@ fun HomeScreen(onClick: (Any) -> Unit) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(verticalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxSize()) {
             MainButton(gamePath = GamePath.TWO, onClick = {
-                onClick(Games2)
+                onClick(Games2Dest)
             })
             MainButton(gamePath = GamePath.THREE, onClick ={
-                onClick(Games3)
+                onClick(Games3Dest)
             })
             MainButton(gamePath = GamePath.FOUR, onClick ={
-                onClick(Games4)
+                onClick(Games4Dest)
             })
             MainButton(gamePath = GamePath.GROUP, onClick = {
-                onClick(GamesGroups)
+                onClick(GamesGroupsDest)
             })
         }
     }
@@ -47,7 +48,7 @@ fun HomeScreen(onClick: (Any) -> Unit) {
 private fun ColumnScope.MainButton(gamePath: GamePath,onClick: () -> Unit) {
     Button(onClick = {
         onClick()
-    }, modifier = Modifier.fillMaxWidth().weight(1F).padding(16.dp).alpha(.93F), shape = RoundedCornerShape(20.dp)) {
+    }, modifier = Modifier.fillMaxWidth().weight(1F).padding(16.dp).alpha(GLOBAL_ALPHA), shape = RoundedCornerShape(20.dp)) {
         Text(text = gamePath.title, fontSize = 64.sp, fontWeight = FontWeight.Bold)
     }
 }

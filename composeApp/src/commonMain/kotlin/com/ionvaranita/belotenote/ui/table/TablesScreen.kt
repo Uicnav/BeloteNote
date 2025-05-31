@@ -1,10 +1,16 @@
 package com.ionvaranita.belotenote.ui.table
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -18,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -25,6 +32,7 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
@@ -43,23 +51,25 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import belotenote.composeapp.generated.resources.Res
 import belotenote.composeapp.generated.resources.alert_dialog_winner_points
 import belotenote.composeapp.generated.resources.dialog_fragment_insert_manually_winner_points
-import com.ionvaranita.belotenote.ID_GAME
-import com.ionvaranita.belotenote.Match2
-import com.ionvaranita.belotenote.Match3
-import com.ionvaranita.belotenote.Match4
-import com.ionvaranita.belotenote.MatchGroups
+import belotenote.composeapp.generated.resources.ic_delete_white
+import com.ionvaranita.belotenote.Match2Dest
+import com.ionvaranita.belotenote.Match3Dest
+import com.ionvaranita.belotenote.Match4Dest
+import com.ionvaranita.belotenote.MatchGroupsDest
 import com.ionvaranita.belotenote.StatusImage
 import com.ionvaranita.belotenote.constants.GameStatus
 import com.ionvaranita.belotenote.datalayer.database.AppDatabase
@@ -68,7 +78,8 @@ import com.ionvaranita.belotenote.datalayer.database.entity.players2.Game2PEntit
 import com.ionvaranita.belotenote.datalayer.database.entity.players3.Game3PEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players4.Game4PEntity
 import com.ionvaranita.belotenote.domain.model.WinningPointsUi
-import com.ionvaranita.belotenote.ui.GamePath
+import com.ionvaranita.belotenote.ui.LocalAppDatabase
+import com.ionvaranita.belotenote.ui.LocalNavHostController
 import com.ionvaranita.belotenote.ui.viewmodel.game.Game2GroupsViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.game.Game2PViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.game.Game3PViewModel
@@ -80,31 +91,26 @@ import com.ionvaranita.belotenote.ui.viewmodel.game.Games4PUiState
 import com.ionvaranita.belotenote.ui.viewmodel.game.WinningPointsState
 import com.ionvaranita.belotenote.ui.viewmodel.game.WinningPointsViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun TableScreen(navController: NavController, appDatabase: AppDatabase, gamePath: GamePath) {
-    when (gamePath) {
-        GamePath.TWO -> Tables2P(navController = navController, appDatabase = appDatabase)
-        GamePath.THREE -> Tables3P(navController = navController, appDatabase = appDatabase)
-        GamePath.FOUR -> Tables4P(navController = navController, appDatabase = appDatabase)
-        GamePath.GROUP -> Tables2Groups(navController = navController, appDatabase = appDatabase)
-    }
-
-}
-
-@Composable
-private fun Tables2P(navController: NavController, appDatabase: AppDatabase) {
+internal fun TablesScreen2() {
+    val navController = LocalNavHostController.current
+    val appDatabase = LocalAppDatabase.current
     val viewModel = viewModel { Game2PViewModel(appDatabase) }
     val gamesUiState = viewModel.uiState.collectAsState()
     var shouDialog by remember { mutableStateOf(false) }
-
+    val gameListState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
     TablesBase(onInsertGameClick = {
         shouDialog = true
     }) { paddingValues ->
         if (shouDialog) {
             InsertGame2(appDatabase = appDatabase, onClick = {
-                viewModel.insertGame(game2PUi = it)
+                viewModel.insertGame(game = it)
+
             }, onDismissRequest = {
                 shouDialog = false
             })
@@ -112,10 +118,15 @@ private fun Tables2P(navController: NavController, appDatabase: AppDatabase) {
 
         when (val state = gamesUiState.value) {
             is Games2PUiState.Success -> {
-                LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                scope.launch {
+                    gameListState.animateScrollToItem(state.data.size)
+                }
+                LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize().padding(16.dp), state = gameListState) {
                     items(state.data) { game ->
-                        GameCard(modifier = Modifier.clickable {
-                            val route = Match2(idGame = game.idGame.toInt())
+                        GameCard(onDelete = {
+                            viewModel.deleteGame(game.idGame)
+                        }, onTap = {
+                            val route = Match2Dest(idGame = game.idGame)
                             navController.navigate(route)
                         }) {
                             Column(modifier = Modifier.weight(1F)) {
@@ -123,7 +134,6 @@ private fun Tables2P(navController: NavController, appDatabase: AppDatabase) {
                                 TableTextAtom(game.name2)
                             }
                             Spacer(modifier = Modifier.width(16.dp))
-                            StatusImage(GameStatus.fromId(game.statusGame))
                         }
                     }
                 }
@@ -135,11 +145,14 @@ private fun Tables2P(navController: NavController, appDatabase: AppDatabase) {
 }
 
 @Composable
-private fun Tables3P(navController: NavController, appDatabase: AppDatabase) {
+internal fun TablesScreen3() {
+    val navController = LocalNavHostController.current
+    val appDatabase = LocalAppDatabase.current
     val viewModel = viewModel { Game3PViewModel(appDatabase) }
     val gamesUiState = viewModel.uiState.collectAsState()
     var shouDialog by remember { mutableStateOf(false) }
-
+    val gameListState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
     TablesBase(onInsertGameClick = {
         shouDialog = true
     }) { paddingValues ->
@@ -153,10 +166,15 @@ private fun Tables3P(navController: NavController, appDatabase: AppDatabase) {
 
         when (val state = gamesUiState.value) {
             is Games3PUiState.Success -> {
-                LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                scope.launch {
+                    gameListState.animateScrollToItem(state.data.size)
+                }
+                LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize().padding(16.dp), state = gameListState) {
                     items(state.data) { game ->
-                        GameCard(modifier = Modifier.clickable {
-                            val route = Match3(idGame = game.idGame.toInt())
+                        GameCard(onDelete = {
+                            viewModel.deleteGame(game.idGame)
+                        }, onTap = {
+                            val route = Match3Dest(idGame = game.idGame)
                             navController.navigate(route)
                         }) {
                             Column(modifier = Modifier.weight(1F)) {
@@ -165,7 +183,6 @@ private fun Tables3P(navController: NavController, appDatabase: AppDatabase) {
                             }
                             TableTextAtom(game.name3, modifier = Modifier.weight(1F))
                             Spacer(modifier = Modifier.width(16.dp))
-                            StatusImage(GameStatus.fromId(game.statusGame))
                         }
                     }
                 }
@@ -177,10 +194,14 @@ private fun Tables3P(navController: NavController, appDatabase: AppDatabase) {
 }
 
 @Composable
-private fun Tables4P(navController: NavController, appDatabase: AppDatabase) {
+internal fun TablesScreen4() {
+    val navController = LocalNavHostController.current
+    val appDatabase = LocalAppDatabase.current
     val viewModel = viewModel { Game4PViewModel(appDatabase) }
     val gamesUiState = viewModel.uiState.collectAsState()
     var shouDialog by remember { mutableStateOf(false) }
+    val gameListState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
 
     TablesBase(onInsertGameClick = {
         shouDialog = true
@@ -195,10 +216,15 @@ private fun Tables4P(navController: NavController, appDatabase: AppDatabase) {
 
         when (val state = gamesUiState.value) {
             is Games4PUiState.Success -> {
-                LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize().padding(16.dp), state = gameListState) {
+                    scope.launch {
+                        gameListState.animateScrollToItem(state.data.size)
+                    }
                     items(state.data) { game ->
-                        GameCard(modifier = Modifier.clickable {
-                            val route = Match4(idGame = game.idGame.toInt())
+                        GameCard( onDelete = {
+                            viewModel.deleteGame(game.idGame)
+                        }, onTap = {
+                            val route = Match4Dest(idGame = game.idGame)
                             navController.navigate(route)
                         }) {
                             Column(modifier = Modifier.weight(1F)) {
@@ -210,7 +236,6 @@ private fun Tables4P(navController: NavController, appDatabase: AppDatabase) {
                                 TableTextAtom(game.name4)
                             }
                             Spacer(modifier = Modifier.width(16.dp))
-                            StatusImage(GameStatus.fromId(game.statusGame))
                         }
                     }
                 }
@@ -222,10 +247,14 @@ private fun Tables4P(navController: NavController, appDatabase: AppDatabase) {
 }
 
 @Composable
-private fun Tables2Groups(navController: NavController, appDatabase: AppDatabase) {
+internal fun TablesScreenGroups() {
+    val navController = LocalNavHostController.current
+    val appDatabase = LocalAppDatabase.current
     val viewModel = viewModel { Game2GroupsViewModel(appDatabase) }
     val gamesUiState = viewModel.uiState.collectAsState()
     var shouDialog by remember { mutableStateOf(false) }
+    val gameListState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
 
     TablesBase(onInsertGameClick = {
         shouDialog = true
@@ -240,18 +269,21 @@ private fun Tables2Groups(navController: NavController, appDatabase: AppDatabase
 
         when (val state = gamesUiState.value) {
             is Games2GroupsUiState.Success -> {
-                LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                scope.launch {
+                    gameListState.animateScrollToItem(state.data.size)
+                }
+                LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize().padding(16.dp), state = gameListState) {
                     items(state.data) { game ->
-                        GameCard(modifier = Modifier.clickable {
-                            val route = MatchGroups(idGame = game.idGame.toInt())
+                        GameCard( onDelete = {
+                            viewModel.deleteGame(game.idGame)
+                        }, onTap = {
+                            val route = MatchGroupsDest(idGame = game.idGame)
                             navController.navigate(route)
                         }) {
-                            Column(modifier = Modifier.weight(1F)) {
-                                TableTextAtom(game.name1)
-                                TableTextAtom(game.name2)
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(text = game.name1)
+                                Text(text = game.name2)
                             }
-                            Spacer(modifier = Modifier.width(16.dp))
-                            StatusImage(GameStatus.fromId(game.statusGame))
                         }
                     }
                 }
@@ -262,16 +294,71 @@ private fun Tables2Groups(navController: NavController, appDatabase: AppDatabase
     }
 }
 
-private fun String.replaceIdGame(idGameValue: Short): String {
-    return this.replace(oldValue = "{$ID_GAME}", newValue = idGameValue.toString())
+@Composable
+fun ConfirmDeleteDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    AlertDialog(onDismissRequest = onDismiss, title = {
+        Text(text = "Confirm Delete")
+    }, text = {
+        Text(text = "Are you sure you want to delete this game?")
+    }, confirmButton = {
+        Button(onClick = onConfirm) {
+            Text("Yes")
+        }
+    }, dismissButton = {
+        Button(onClick = onDismiss) {
+            Text("No")
+        }
+    })
 }
 
 @Composable
-fun GameCard(modifier: Modifier = Modifier, content: @Composable RowScope.() -> Unit) {
-    Card(modifier = modifier.padding(16.dp).alpha(.97F)) {
-        Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            content()
+fun GameCard(modifier: Modifier = Modifier, onDelete: () -> Unit, onTap: () -> Unit = {}, content: @Composable RowScope.() -> Unit) {
+    var showDialog by remember { mutableStateOf(false) }
+    val offsetX = remember { Animatable(0f) }
+    val scope = rememberCoroutineScope()
+    val swipeThreshold = -150f
+
+    Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
+        Box(modifier = Modifier.matchParentSize().clip(shape = CardDefaults.shape).background(Color.Red).padding(end = 16.dp), contentAlignment = Alignment.CenterEnd) {
+            Image(painter = painterResource(Res.drawable.ic_delete_white), contentDescription = null, modifier = modifier.width(44.dp))
         }
+
+        Card(modifier = modifier.offset { IntOffset(offsetX.value.toInt(), 0) }.pointerInput(Unit) {
+            detectHorizontalDragGestures(onDragEnd = {
+                if (offsetX.value <= swipeThreshold) {
+                    showDialog = true
+                } else {
+                    scope.launch {
+                        offsetX.animateTo(0f, animationSpec = tween(300))
+                    }
+                }
+            }) { change, dragAmount ->
+                change.consume()
+                val newOffset = offsetX.value + dragAmount
+                scope.launch {
+                    offsetX.snapTo(newOffset.coerceIn(-300f, 0f))
+                }
+            }
+        }.pointerInput(Unit) {
+            detectTapGestures(onTap = {
+                onTap()
+            })
+        }) {
+            Row(modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                content()
+            }
+        }
+    }
+
+    if (showDialog) {
+        ConfirmDeleteDialog(onConfirm = {
+            onDelete()
+            showDialog = false
+            scope.launch { offsetX.snapTo(0f) }
+        }, onDismiss = {
+            showDialog = false
+            scope.launch { offsetX.snapTo(0f) }
+        })
     }
 }
 

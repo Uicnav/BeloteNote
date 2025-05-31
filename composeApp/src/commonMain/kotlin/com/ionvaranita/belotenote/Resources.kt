@@ -3,9 +3,12 @@ package com.ionvaranita.belotenote
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -28,7 +31,8 @@ private fun GreenCircle(modifier: Modifier) {
 }
 
 @Composable
-fun StatusImage(gameStatus: GameStatus?, modifier: Modifier = Modifier) {
+fun ColumnScope.StatusImage(gameStatus: GameStatus?, modifier: Modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally)) {
+
     when (gameStatus) {
         GameStatus.TO_START, GameStatus.CONTINUE -> {
             GreenCircle(modifier)
