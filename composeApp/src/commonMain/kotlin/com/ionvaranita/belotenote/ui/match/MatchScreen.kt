@@ -1,31 +1,25 @@
 package com.ionvaranita.belotenote.ui.match
 
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -42,17 +36,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import belotenote.composeapp.generated.resources.Res
 import belotenote.composeapp.generated.resources.game
-import belotenote.composeapp.generated.resources.ic_delete_white
 import com.ionvaranita.belotenote.StatusImage
 import com.ionvaranita.belotenote.constants.GameStatus
 import com.ionvaranita.belotenote.domain.model.Points2GroupsUi
+import com.ionvaranita.belotenote.domain.model.toShortCustom
 import com.ionvaranita.belotenote.ui.LocalAppDatabase
 import com.ionvaranita.belotenote.ui.LocalNavHostController
 import com.ionvaranita.belotenote.ui.table.GameCard
@@ -63,7 +55,6 @@ import com.ionvaranita.belotenote.ui.viewmodel.match.MatchGroupsUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -161,14 +152,21 @@ internal fun MatchScreen2Groups(idGame: Int) {
                 var pointsGame by remember { mutableStateOf("") }
                 var pointsWe by remember { mutableStateOf("") }
                 var pointsYouP by remember { mutableStateOf("") }
-                var isPressedByDefault1 by remember { mutableStateOf(true) }
-                var isPressedByDefault2 by remember { mutableStateOf(false) }
-                var isPressedByDefault3 by remember { mutableStateOf(false) }
+                var isPressed1 by remember { mutableStateOf(true) }
+                var isPressed2 by remember { mutableStateOf(false) }
+                var isPressed3 by remember { mutableStateOf(false) }
+                val pointsListState = rememberLazyListState()
+                scope.launch {
+                    pointsListState.animateScrollToItem(points.size)
+                }
+
                 LazyColumn(
                     modifier = Modifier.weight(1F),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    state = pointsListState
                 ) {
-                    itemsIndexed(points) {index: Int, item: Points2GroupsUi ->
+
+                    itemsIndexed(points) { index: Int, item: Points2GroupsUi ->
                         val isLast = index == points.lastIndex
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             if (isLast) {
@@ -177,8 +175,7 @@ internal fun MatchScreen2Groups(idGame: Int) {
                                         scope.launch {
                                             viewModel.deleteLastPoints()
                                         }
-                                    }
-                                ) {
+                                    }) {
                                     PointsTextAtom(text = item.pointsGame)
                                     PointsTextAtom(text = item.pointsWe)
                                     PointsTextAtom(text = item.pointsYouP)
@@ -188,36 +185,41 @@ internal fun MatchScreen2Groups(idGame: Int) {
                                 PointsTextAtom(text = item.pointsWe)
                                 PointsTextAtom(text = item.pointsYouP)
                             }
-
+                        }
+                        if (index % 2 == 1) {
+                            HorizontalDivider(
+                                thickness = 1.dp,
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            )
                         }
                     }
                 }
                 Row(
                     modifier = Modifier.fillMaxWidth().wrapContentHeight()
                 ) {
-                    TouchableText(text = pointsGame, isPressed = isPressedByDefault1, onClick = {
+                    TouchableText(text = pointsGame, isPressed = isPressed1, onClick = {
 
-                        isPressedByDefault1 = true
-                        isPressedByDefault2 = false
-                        isPressedByDefault3 = false
-
-                    })
-
-                    TouchableText(text = pointsWe, isPressed = isPressedByDefault2, onClick = {
-
-                        isPressedByDefault1 = false
-                        isPressedByDefault2 = true
-                        isPressedByDefault3 = false
+                        isPressed1 = true
+                        isPressed2 = false
+                        isPressed3 = false
 
                     })
-                    TouchableText(text = pointsYouP, isPressed = isPressedByDefault3, onClick = {
-                        isPressedByDefault1 = false
-                        isPressedByDefault2 = false
-                        isPressedByDefault3 = true
+
+                    TouchableText(text = pointsWe, isPressed = isPressed2, onClick = {
+
+                        isPressed1 = false
+                        isPressed2 = true
+                        isPressed3 = false
+
+                    })
+                    TouchableText(text = pointsYouP, isPressed = isPressed3, onClick = {
+                        isPressed1 = false
+                        isPressed2 = false
+                        isPressed3 = true
                     })
                 }
                 Keyboard(
-                    isPresedGames = isPressedByDefault1,
+                    isPresedGames = isPressed1,
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { inputKey ->
                         if (inputKey.equals(ADD)) {
@@ -232,38 +234,42 @@ internal fun MatchScreen2Groups(idGame: Int) {
                                 )
                             }
                         } else {
-                            if (isPressedByDefault1) {
+                            if (isPressed1) {
 
                                 manageUserInputKey(
-                                    inputText = pointsGame,
-                                    inputKey = inputKey
+                                    inputText = pointsGame, inputKey = inputKey
                                 ) { text ->
                                     pointsGame = text
                                 }
                             }
-                            if (isPressedByDefault2) {
+                            if (isPressed2) {
                                 manageUserInputKey(
-                                    inputText = pointsWe,
-                                    inputKey = inputKey
+                                    inputText = pointsWe, inputKey = inputKey
                                 ) { text ->
                                     pointsWe = text
                                     if (inputKey.equals(MINUS_10) || inputKey.equals(BOLT)) {
                                         if (pointsYouP.equals(MINUS_10) || pointsYouP.equals(BOLT)) {
                                             pointsYouP = ""
+
                                         }
+                                    }
+                                    if (pointsGame.isNotEmpty()) {
+                                        pointsYouP = (pointsGame.toShortCustom() - text.toShortCustom()).toCustomString()
                                     }
                                 }
                             }
-                            if (isPressedByDefault3) {
+                            if (isPressed3) {
                                 manageUserInputKey(
-                                    inputText = pointsYouP,
-                                    inputKey = inputKey
+                                    inputText = pointsYouP, inputKey = inputKey
                                 ) { text ->
                                     pointsYouP = text
                                     if (inputKey.equals(MINUS_10) || inputKey.equals(BOLT)) {
                                         if (pointsWe.equals(MINUS_10) || pointsWe.equals(BOLT)) {
                                             pointsWe = ""
                                         }
+                                    }
+                                    if (pointsGame.isNotEmpty()) {
+                                        pointsWe = (pointsGame.toShortCustom() - text.toShortCustom()).toCustomString()
                                     }
                                 }
 
@@ -286,10 +292,15 @@ internal fun MatchScreen2Groups(idGame: Int) {
     }
 }
 
+fun Int.toCustomString():String {
+    if (this<0) {
+        return ""
+    }
+    return this.toString()
+}
+
 private fun manageUserInputKey(
-    inputText: String,
-    inputKey: String,
-    onInputTextChanged: (String) -> Unit
+    inputText: String, inputKey: String, onInputTextChanged: (String) -> Unit
 ) {
     if (inputKey.equals(DELETE)) {
         onInputTextChanged(inputText.dropLast(1))
@@ -370,9 +381,7 @@ fun RowScope.TouchableText(
 
 @Composable
 private fun Keyboard(
-    isPresedGames: Boolean = false,
-    onClick: (String) -> Unit,
-    modifier: Modifier = Modifier
+    isPresedGames: Boolean = false, onClick: (String) -> Unit, modifier: Modifier = Modifier
 ) {
     val keyAlpha = if (!isPresedGames) 1f else 0f
     Column(modifier = modifier.fillMaxWidth()) {

@@ -59,7 +59,7 @@ data class Bolt2GroupsUi(val idRow: Long, val idGame: Int, val idPersonBolt: Int
 }
 
 fun String.toShortCustom(): Short {
-   return if (this.equals(BOLT)) {
+   return if (this.isEmpty() || this == BOLT) {
         0
     } else this.toShort()
 }
