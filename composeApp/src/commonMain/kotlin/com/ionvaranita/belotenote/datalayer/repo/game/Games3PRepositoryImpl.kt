@@ -10,6 +10,10 @@ class Games3PRepositoryImpl(private val games3PDataSource: Game3PDataSource) : G
         return games3PDataSource.getGames()
     }
 
+    override suspend fun getGame(idGame: Int): Flow<Game3PEntity> {
+        return games3PDataSource.getGame(idGame)
+    }
+
     override suspend fun insetGame(game: Game3PEntity) {
         games3PDataSource.insertGame(game)
     }

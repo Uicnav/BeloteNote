@@ -10,7 +10,7 @@ import com.ionvaranita.belotenote.domain.model.Points3PUi
 data class Points3PEntity(
     @PrimaryKey(autoGenerate = true) var id: Int = 0,
     val idGame: Int,
-    val pointsGame: Short,
+    val pointsGame: Short = 0,
     val pointsP1: Short = 0,
     val pointsP2: Short = 0,
     val pointsP3: Short = 0,

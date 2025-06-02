@@ -1,4 +1,4 @@
-package varanita.informatics.shared.database.dao.players3
+package com.ionvaranita.belotenote.datalayer.database.dao.players3
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -15,7 +15,7 @@ interface Game3PDao {
     fun getGames(): Flow<List<Game3PEntity>>
 
     @Query("select * from Game3PEntity where idGame = :idGame")
-    suspend fun getGame(idGame: Int): Game3PEntity
+    fun getGame(idGame: Int): Flow<Game3PEntity>
 
     @Query("update Game3PEntity set statusGame = :statusGame, dateGame = :dateGame where idGame = :idGame")
     suspend fun updateStatus(idGame: Int, statusGame: Byte, dateGame: Long): Int

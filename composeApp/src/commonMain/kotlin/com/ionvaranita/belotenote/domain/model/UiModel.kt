@@ -133,12 +133,12 @@ data class Points2PUi(
 data class Points3PUi(
     val idGame: Int,
     val pointsGame: String,
-    val pointsP1: String,
-    val pointsP2: String,
-    val pointsP3: String,
-    val isBoltP1: Boolean = false,
-    val isBoltP2: Boolean = false,
-    val isBoltP3: Boolean = false
+    var pointsP1: String,
+    var pointsP2: String,
+    var pointsP3: String,
+    var isBoltP1: Boolean = false,
+    var isBoltP2: Boolean = false,
+    var isBoltP3: Boolean = false
 ) {
     fun add(lastPoints: Points3PEntity): Points3PEntity {
         return Points3PEntity(

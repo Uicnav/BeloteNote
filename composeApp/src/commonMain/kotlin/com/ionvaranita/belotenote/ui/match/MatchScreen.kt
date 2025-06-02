@@ -1,6 +1,7 @@
 package com.ionvaranita.belotenote.ui.match
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -18,6 +19,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -44,6 +48,7 @@ import com.ionvaranita.belotenote.StatusImage
 import com.ionvaranita.belotenote.constants.GameStatus
 import com.ionvaranita.belotenote.domain.model.Points2GroupsUi
 import com.ionvaranita.belotenote.domain.model.Points2PUi
+import com.ionvaranita.belotenote.domain.model.Points3PUi
 import com.ionvaranita.belotenote.domain.model.toShortCustom
 import com.ionvaranita.belotenote.ui.LocalAppDatabase
 import com.ionvaranita.belotenote.ui.LocalNavHostController
@@ -51,6 +56,8 @@ import com.ionvaranita.belotenote.ui.table.GameCard
 import com.ionvaranita.belotenote.ui.viewmodel.match.Match2GroupsViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.match.Match2PPViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.match.Match2PUiState
+import com.ionvaranita.belotenote.ui.viewmodel.match.Match3PPViewModel
+import com.ionvaranita.belotenote.ui.viewmodel.match.Match3PUiState
 import com.ionvaranita.belotenote.ui.viewmodel.match.MatchGroupsUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -75,7 +82,6 @@ internal fun MatchScreen2(idGame: Int) {
                     ) {
                         StatusImage(
                             gameStatus = GameStatus.fromId(game.statusGame),
-                            modifier = Modifier.padding(8.dp)
                         )
                         TableTextAtom(text = stringResource(Res.string.game))
                     }
@@ -238,6 +244,256 @@ internal fun MatchScreen2(idGame: Int) {
         }
 
     }
+}
+
+@Composable
+internal fun MatchScreen3(idGame: Int) {
+
+    val appDatabase = LocalAppDatabase.current
+    val viewModel = viewModel { Match3PPViewModel(appDatabase, idGame) }
+    val matchUiState = viewModel.uiState.collectAsState()
+    val scope = rememberCoroutineScope()
+    MatchWrapper {
+        when (val matchState = matchUiState.value) {
+            is Match3PUiState.Success -> {
+                val game = matchState.data.game
+                Row {
+                    Column(
+                        modifier = Modifier.weight(1F),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        StatusImage(
+                            gameStatus = GameStatus.fromId(game.statusGame),
+                        )
+                        TableTextAtom(text = stringResource(Res.string.game))
+                    }
+                    Column(
+                        modifier = Modifier.weight(1F),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        TableTextAtom(text = game.scoreName1.toString())
+                        TableTextAtom(text = game.name1)
+                    }
+
+                    Column(
+                        modifier = Modifier.weight(1F),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        TableTextAtom(text = game.scoreName2.toString())
+                        TableTextAtom(text = game.name2)
+                    }
+                    Column(
+                        modifier = Modifier.weight(1F),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        TableTextAtom(text = game.scoreName3.toString())
+                        TableTextAtom(text = game.name3)
+                    }
+                }
+
+
+                val points = matchState.data.points
+                var pointsGame by remember { mutableStateOf("") }
+                var pointsP1 by remember { mutableStateOf("") }
+                var pointsP2 by remember { mutableStateOf("") }
+                var pointsP3 by remember { mutableStateOf("") }
+                var isPressedPoints by remember { mutableStateOf(true) }
+                var isPressedP1 by remember { mutableStateOf(false) }
+                var isPressedP2 by remember { mutableStateOf(false) }
+                var isPressedP3 by remember { mutableStateOf(false) }
+                val pointsListState = rememberLazyListState()
+                scope.launch {
+                    pointsListState.animateScrollToItem(points.size)
+                }
+
+                LazyColumn(
+                    modifier = Modifier.weight(1F),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    state = pointsListState
+                ) {
+
+                    itemsIndexed(points) { index: Int, item: Points3PUi ->
+                        val isLast = index == points.lastIndex
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (isLast) {
+                                GameCard(
+                                    onDelete = {
+                                        scope.launch {
+                                            viewModel.deleteLastPoints()
+                                        }
+                                    }) {
+                                    PointsTextAtom(text = item.pointsGame)
+                                    PointsTextAtom(text = item.pointsP1)
+                                    PointsTextAtom(text = item.pointsP2)
+                                    PointsTextAtom(text = item.pointsP3)
+                                }
+                            } else {
+                                PointsTextAtom(text = item.pointsGame)
+                                PointsTextAtom(text = item.pointsP1)
+                                PointsTextAtom(text = item.pointsP2)
+                                PointsTextAtom(text = item.pointsP3)
+                            }
+                        }
+                        if (index % 3 == 2) {
+                            HorizontalDivider(
+                                thickness = 1.dp,
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            )
+                        }
+                    }
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth().wrapContentHeight()
+                ) {
+                    TouchableText(text = pointsGame, isPressed = isPressedPoints, onClick = {
+
+                        isPressedPoints = true
+                        isPressedP1 = false
+                        isPressedP2 = false
+                        isPressedP3 = false
+
+                    })
+
+                    TouchableText(text = pointsP1, isPressed = isPressedP1, onClick = {
+
+                        isPressedPoints = false
+                        isPressedP1 = true
+                        isPressedP2 = false
+                        isPressedP3 = false
+
+                    })
+                    TouchableText(text = pointsP2, isPressed = isPressedP2, onClick = {
+                        isPressedPoints = false
+                        isPressedP1 = false
+                        isPressedP2 = true
+                        isPressedP3 = false
+                    })
+                    TouchableText(text = pointsP3, isPressed = isPressedP3, onClick = {
+                        isPressedPoints = false
+                        isPressedP1 = false
+                        isPressedP2 = false
+                        isPressedP3 = true
+                    })
+                }
+                Keyboard(
+                    isPresedGames = isPressedPoints,
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { inputKey ->
+                        if (inputKey.equals(ADD)) {
+                            scope.launch(Dispatchers.IO) {
+                                viewModel.insertPoints(
+                                    Points3PUi(
+                                        idGame = idGame,
+                                        pointsP1 = pointsP1,
+                                        pointsGame = pointsGame,
+                                        pointsP2 = pointsP2,
+                                        pointsP3 = pointsP3
+                                    )
+                                )
+                            }
+                        } else {
+                            if (isPressedPoints) {
+
+                                manageUserInputKey(
+                                    inputText = pointsGame, inputKey = inputKey
+                                ) { text ->
+                                    pointsGame = text
+                                }
+                            }
+                            if (isPressedP1) {
+                                manageUserInputKey(
+                                    inputText = pointsP1, inputKey = inputKey
+                                ) { text ->
+                                    pointsP1 = text
+                                    if (inputKey.equals(MINUS_10) || inputKey.equals(BOLT)) {
+                                        if (pointsP2.equals(MINUS_10) || pointsP2.equals(BOLT)) {
+                                            pointsP2 = ""
+                                        }
+                                        if (pointsP3.equals(MINUS_10) || pointsP3.equals(BOLT)) {
+                                            pointsP3 = ""
+                                        }
+                                    }
+                                    if (pointsGame.isNotEmpty()){
+                                        if (pointsP3.isNotEmpty() && pointsP2.isEmpty()) {
+                                            pointsP2 = (pointsGame.toShortCustom() - pointsP1.toShortCustom() - pointsP3.toShortCustom()).toCustomString()
+                                        }
+                                        if (pointsP2.isNotEmpty() && pointsP3.isEmpty()) {
+                                            pointsP3 = (pointsGame.toShortCustom() - pointsP1.toShortCustom() - pointsP2.toShortCustom()).toCustomString()
+                                        }
+                                    }
+                                }
+                            }
+                            if (isPressedP2) {
+                                manageUserInputKey(
+                                    inputText = pointsP2, inputKey = inputKey
+                                ) { text ->
+                                    pointsP2 = text
+                                    if (inputKey.equals(MINUS_10) || inputKey.equals(BOLT)) {
+                                        if (pointsP1.equals(MINUS_10) || pointsP1.equals(BOLT)) {
+                                            pointsP1 = ""
+                                        }
+                                        if (pointsP3.equals(MINUS_10) || pointsP3.equals(BOLT)) {
+                                            pointsP3 = ""
+                                        }
+                                    }
+                                    if (pointsGame.isNotEmpty()){
+                                        if (pointsP1.isNotEmpty() && pointsP3.isEmpty()) {
+                                            pointsP3 = (pointsGame.toShortCustom() - pointsP2.toShortCustom() - pointsP1.toShortCustom()).toCustomString()
+                                        }
+                                        if (pointsP3.isNotEmpty() && pointsP1.isEmpty()) {
+                                            pointsP1 = (pointsGame.toShortCustom() - pointsP2.toShortCustom() - pointsP3.toShortCustom()).toCustomString()
+                                        }
+                                    }
+                                }
+
+                            }
+                            if (isPressedP3) {
+                                manageUserInputKey(
+                                    inputText = pointsP3, inputKey = inputKey
+                                ) { text ->
+                                    pointsP3 = text
+                                    if (inputKey.equals(MINUS_10) || inputKey.equals(BOLT)) {
+                                        if (pointsP1.equals(MINUS_10) || pointsP1.equals(BOLT)) {
+                                            pointsP1 = ""
+                                        }
+                                        if (pointsP2.equals(MINUS_10) || pointsP2.equals(BOLT)) {
+                                            pointsP2 = ""
+                                        }
+                                    }
+                                    if (pointsGame.isNotEmpty()){
+                                        if (pointsP1.isNotEmpty() && pointsP2.isEmpty()) {
+                                            pointsP2 = (pointsGame.toShortCustom() - pointsP3.toShortCustom() - pointsP1.toShortCustom()).toCustomString()
+                                        }
+                                        if (pointsP2.isNotEmpty() && pointsP1.isEmpty()) {
+                                            pointsP1 = (pointsGame.toShortCustom() - pointsP3.toShortCustom() - pointsP2.toShortCustom()).toCustomString()
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+
+                    })
+            }
+
+            is Match3PUiState.Error -> {
+
+            }
+
+            Match3PUiState.Loading -> {
+                CircularProgressIndicator()
+            }
+        }
+
+    }
+
+}
+
+@Composable
+internal fun MatchScreen4(idGame: Int) {
+    val navController = LocalNavHostController.current
+    val appDatabase = LocalAppDatabase.current
+
 }
 
 @Composable
@@ -471,7 +727,7 @@ private fun MatchWrapper(
 ) {
 
     Column(
-        modifier = modifier.padding(16.dp).wrapContentSize().clip(shape = RoundedCornerShape(16.dp))
+        modifier = modifier.padding(8.dp).wrapContentSize().clip(shape = RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surfaceContainerHighest),
     ) {
         content()
@@ -513,7 +769,7 @@ private fun Keyboard(
     isPresedGames: Boolean = false, onClick: (String) -> Unit, modifier: Modifier = Modifier
 ) {
     val keyAlpha = if (!isPresedGames) 1f else 0f
-    Column(modifier = modifier.fillMaxWidth()) {
+    Column(modifier = modifier.fillMaxWidth().padding(top = 4.dp)) {
         Row(modifier = Modifier.fillMaxWidth()) {
             KeyAtom(text = ONE, onClick = onClick)
             KeyAtom(text = TWO, onClick = onClick)
@@ -566,23 +822,11 @@ private const val DELETE = "delete"
 private fun RowScope.KeyAtom(
     text: String, onClick: (String) -> Unit, modifier: Modifier = Modifier
 ) {
-    Text(text = text, maxLines = 1, modifier = modifier.padding(16.dp).weight(1F).clickable {
+    Card(modifier = modifier.padding(4.dp).weight(1F).clickable {
         onClick(text)
-    }, textAlign = TextAlign.Center, style = MaterialTheme.typography.displayLarge)
-}
-
-@Composable
-internal fun MatchScreen3(idGame: Int) {
-    val navController = LocalNavHostController.current
-    val appDatabase = LocalAppDatabase.current
-
-}
-
-@Composable
-internal fun MatchScreen4(idGame: Int) {
-    val navController = LocalNavHostController.current
-    val appDatabase = LocalAppDatabase.current
-
+    }, elevation = CardDefaults.cardElevation(4.dp)) {
+        Text(text = text, maxLines = 1, textAlign = TextAlign.Center, style = MaterialTheme.typography.displayLarge, modifier = Modifier.align(Alignment.CenterHorizontally).padding(8.dp))
+    }
 }
 
 
