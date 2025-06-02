@@ -1,7 +1,6 @@
 package com.ionvaranita.belotenote.ui.match
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -21,7 +20,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -143,8 +141,7 @@ internal fun MatchScreen2(idGame: Int) {
                         }
                         if (index % 2 == 1) {
                             HorizontalDivider(
-                                thickness = 1.dp,
-                                modifier = Modifier.padding(vertical = 4.dp)
+                                thickness = 1.dp, modifier = Modifier.padding(vertical = 4.dp)
                             )
                         }
                     }
@@ -209,7 +206,8 @@ internal fun MatchScreen2(idGame: Int) {
                                         }
                                     }
                                     if (pointsGame.isNotEmpty()) {
-                                        pointsYouS = (pointsGame.toShortCustom() - text.toShortCustom()).toCustomString()
+                                        pointsYouS =
+                                            (pointsGame.toShortCustom() - text.toShortCustom()).toCustomString()
                                     }
                                 }
                             }
@@ -224,7 +222,8 @@ internal fun MatchScreen2(idGame: Int) {
                                         }
                                     }
                                     if (pointsGame.isNotEmpty()) {
-                                        pointsMe = (pointsGame.toShortCustom() - text.toShortCustom()).toCustomString()
+                                        pointsMe =
+                                            (pointsGame.toShortCustom() - text.toShortCustom()).toCustomString()
                                     }
                                 }
 
@@ -336,8 +335,7 @@ internal fun MatchScreen3(idGame: Int) {
                         }
                         if (index % 3 == 2) {
                             HorizontalDivider(
-                                thickness = 1.dp,
-                                modifier = Modifier.padding(vertical = 4.dp)
+                                thickness = 1.dp, modifier = Modifier.padding(vertical = 4.dp)
                             )
                         }
                     }
@@ -413,12 +411,14 @@ internal fun MatchScreen3(idGame: Int) {
                                             pointsP3 = ""
                                         }
                                     }
-                                    if (pointsGame.isNotEmpty()){
+                                    if (pointsGame.isNotEmpty()) {
                                         if (pointsP3.isNotEmpty() && pointsP2.isEmpty()) {
-                                            pointsP2 = (pointsGame.toShortCustom() - pointsP1.toShortCustom() - pointsP3.toShortCustom()).toCustomString()
+                                            pointsP2 =
+                                                (pointsGame.toShortCustom() - pointsP1.toShortCustom() - pointsP3.toShortCustom()).toCustomString()
                                         }
                                         if (pointsP2.isNotEmpty() && pointsP3.isEmpty()) {
-                                            pointsP3 = (pointsGame.toShortCustom() - pointsP1.toShortCustom() - pointsP2.toShortCustom()).toCustomString()
+                                            pointsP3 =
+                                                (pointsGame.toShortCustom() - pointsP1.toShortCustom() - pointsP2.toShortCustom()).toCustomString()
                                         }
                                     }
                                 }
@@ -436,12 +436,14 @@ internal fun MatchScreen3(idGame: Int) {
                                             pointsP3 = ""
                                         }
                                     }
-                                    if (pointsGame.isNotEmpty()){
+                                    if (pointsGame.isNotEmpty()) {
                                         if (pointsP1.isNotEmpty() && pointsP3.isEmpty()) {
-                                            pointsP3 = (pointsGame.toShortCustom() - pointsP2.toShortCustom() - pointsP1.toShortCustom()).toCustomString()
+                                            pointsP3 =
+                                                (pointsGame.toShortCustom() - pointsP2.toShortCustom() - pointsP1.toShortCustom()).toCustomString()
                                         }
                                         if (pointsP3.isNotEmpty() && pointsP1.isEmpty()) {
-                                            pointsP1 = (pointsGame.toShortCustom() - pointsP2.toShortCustom() - pointsP3.toShortCustom()).toCustomString()
+                                            pointsP1 =
+                                                (pointsGame.toShortCustom() - pointsP2.toShortCustom() - pointsP3.toShortCustom()).toCustomString()
                                         }
                                     }
                                 }
@@ -460,12 +462,14 @@ internal fun MatchScreen3(idGame: Int) {
                                             pointsP2 = ""
                                         }
                                     }
-                                    if (pointsGame.isNotEmpty()){
+                                    if (pointsGame.isNotEmpty()) {
                                         if (pointsP1.isNotEmpty() && pointsP2.isEmpty()) {
-                                            pointsP2 = (pointsGame.toShortCustom() - pointsP3.toShortCustom() - pointsP1.toShortCustom()).toCustomString()
+                                            pointsP2 =
+                                                (pointsGame.toShortCustom() - pointsP3.toShortCustom() - pointsP1.toShortCustom()).toCustomString()
                                         }
                                         if (pointsP2.isNotEmpty() && pointsP1.isEmpty()) {
-                                            pointsP1 = (pointsGame.toShortCustom() - pointsP3.toShortCustom() - pointsP2.toShortCustom()).toCustomString()
+                                            pointsP1 =
+                                                (pointsGame.toShortCustom() - pointsP3.toShortCustom() - pointsP2.toShortCustom()).toCustomString()
                                         }
                                     }
                                 }
@@ -573,8 +577,7 @@ internal fun MatchScreen2Groups(idGame: Int) {
                         }
                         if (index % 2 == 1) {
                             HorizontalDivider(
-                                thickness = 1.dp,
-                                modifier = Modifier.padding(vertical = 4.dp)
+                                thickness = 1.dp, modifier = Modifier.padding(vertical = 4.dp)
                             )
                         }
                     }
@@ -639,7 +642,8 @@ internal fun MatchScreen2Groups(idGame: Int) {
                                         }
                                     }
                                     if (pointsGame.isNotEmpty()) {
-                                        pointsYouP = (pointsGame.toShortCustom() - text.toShortCustom()).toCustomString()
+                                        pointsYouP =
+                                            (pointsGame.toShortCustom() - text.toShortCustom()).toCustomString()
                                     }
                                 }
                             }
@@ -654,7 +658,8 @@ internal fun MatchScreen2Groups(idGame: Int) {
                                         }
                                     }
                                     if (pointsGame.isNotEmpty()) {
-                                        pointsWe = (pointsGame.toShortCustom() - text.toShortCustom()).toCustomString()
+                                        pointsWe =
+                                            (pointsGame.toShortCustom() - text.toShortCustom()).toCustomString()
                                     }
                                 }
 
@@ -677,8 +682,8 @@ internal fun MatchScreen2Groups(idGame: Int) {
     }
 }
 
-fun Int.toCustomString():String {
-    if (this<0) {
+fun Int.toCustomString(): String {
+    if (this < 0) {
         return ""
     }
     return this.toString()
@@ -688,7 +693,12 @@ private fun manageUserInputKey(
     inputText: String, inputKey: String, onInputTextChanged: (String) -> Unit
 ) {
     if (inputKey.equals(DELETE)) {
-        onInputTextChanged(inputText.dropLast(1))
+        if (inputText.equals(MINUS_10)) {
+            onInputTextChanged("")
+
+        } else {
+            onInputTextChanged(inputText.dropLast(1))
+        }
     } else if (inputKey.equals(MINUS_10) || inputKey.equals(BOLT)) {
         onInputTextChanged(inputKey)
 
@@ -702,21 +712,21 @@ private fun manageUserInputKey(
 }
 
 @Composable
-fun RowScope.AddIcon(modifier: Modifier = Modifier, tint: Color = Color.Black) {
+fun ColumnScope.AddIcon(modifier: Modifier = Modifier, tint: Color = Color.Black) {
     Icon(
         imageVector = Icons.Filled.Add,
         contentDescription = "Add Icon",
-        modifier = modifier.size(24.dp).align(Alignment.CenterVertically),
+        modifier = modifier.padding(8.dp).size(24.dp).align(Alignment.CenterHorizontally),
         tint = tint
     )
 }
 
 @Composable
-fun RowScope.BackspaceIcon(modifier: Modifier = Modifier, tint: Color = Color.Black) {
+fun ColumnScope.BackspaceIcon(modifier: Modifier = Modifier, tint: Color = Color.Black) {
     Icon(
         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
         contentDescription = "Backspace Icon",
-        modifier = modifier.size(24.dp).align(Alignment.CenterVertically),
+        modifier = modifier.padding(8.dp).size(24.dp).align(Alignment.CenterHorizontally),
         tint = tint
     )
 }
@@ -791,14 +801,18 @@ private fun Keyboard(
             KeyAtom(text = MINUS_10, onClick = onClick, modifier = Modifier.graphicsLayer {
                 alpha = keyAlpha
             })
-            AddIcon(
-                modifier = Modifier.weight(1F).clickable {
-                    onClick(ADD)
-                })
-            BackspaceIcon(
-                modifier = Modifier.weight(1F).clickable {
-                    onClick(DELETE)
-                })
+            Card(modifier = modifier.padding(4.dp).weight(1F).padding(4.dp).clickable {
+                onClick(ADD)
+            }, elevation = CardDefaults.cardElevation(4.dp)) {
+                AddIcon()
+            }
+            Card(modifier = modifier.padding(4.dp).weight(1F).padding(4.dp).clickable {
+                onClick(DELETE)
+
+            }, elevation = CardDefaults.cardElevation(4.dp)) {
+                BackspaceIcon()
+            }
+
         }
     }
 }
@@ -825,7 +839,13 @@ private fun RowScope.KeyAtom(
     Card(modifier = modifier.padding(4.dp).weight(1F).clickable {
         onClick(text)
     }, elevation = CardDefaults.cardElevation(4.dp)) {
-        Text(text = text, maxLines = 1, textAlign = TextAlign.Center, style = MaterialTheme.typography.displayLarge, modifier = Modifier.align(Alignment.CenterHorizontally).padding(8.dp))
+        Text(
+            text = text,
+            maxLines = 1,
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.displayLarge,
+            modifier = Modifier.align(Alignment.CenterHorizontally).padding(8.dp)
+        )
     }
 }
 
