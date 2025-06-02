@@ -20,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.navigation.compose.NavHost
@@ -33,6 +34,7 @@ import belotenote.composeapp.generated.resources.four_players
 import belotenote.composeapp.generated.resources.three_players
 import belotenote.composeapp.generated.resources.two_players
 import belotenote.composeapp.generated.resources.two_vs_two
+import com.ionvaranita.belotenote.constants.GLOBAL_ALPHA
 import com.ionvaranita.belotenote.datalayer.database.AppDatabase
 import com.ionvaranita.belotenote.ui.HomeScreen
 import com.ionvaranita.belotenote.ui.LocalAppDatabase
@@ -72,7 +74,7 @@ fun App(appDatabase: AppDatabase) {
                         println("Current route : =========== $currentRoute")
                     }
                 }
-                Scaffold(containerColor = Color.Transparent, topBar = {
+                Scaffold(containerColor = Color.Transparent, modifier = Modifier.alpha(GLOBAL_ALPHA), topBar = {
                     BeloteAppBar(currentRoute = currentRoute, canNavigateBack = canNavigateBack, navigateUp = { navController.navigateUp() })
                 }) { innerPadding ->
                     NavHost(navController = navController, startDestination = HomeDest, modifier = Modifier.fillMaxSize().padding(innerPadding)) {

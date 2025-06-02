@@ -26,7 +26,7 @@ import varanita.informatics.shared.database.dao.ExtendedGameDao
 import varanita.informatics.shared.database.dao.groups2.Game2GroupsDao
 import varanita.informatics.shared.database.dao.players2.Game2PDao
 import varanita.informatics.shared.database.dao.players2.Points2PDao
-import varanita.informatics.shared.database.dao.players3.Game3PDao
+import com.ionvaranita.belotenote.datalayer.database.dao.players3.Game3PDao
 import varanita.informatics.shared.database.dao.players3.Points3PDao
 import varanita.informatics.shared.database.dao.players4.Game4PDao
 
