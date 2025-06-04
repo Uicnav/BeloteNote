@@ -102,9 +102,9 @@ internal fun MatchScreen2(idGame: Int) {
 
 
                 val points = matchState.data.points
-                var pointsGame by remember { mutableStateOf("") }
-                var pointsMe by remember { mutableStateOf("") }
-                var pointsYouS by remember { mutableStateOf("") }
+                var pointsGame by remember { mutableStateOf("0") }
+                var pointsMe by remember { mutableStateOf("0") }
+                var pointsYouS by remember { mutableStateOf("0") }
                 var isPressedPoints by remember { mutableStateOf(true) }
                 var isPressedMe by remember { mutableStateOf(false) }
                 var isPressedYouS by remember { mutableStateOf(false) }
@@ -292,10 +292,10 @@ internal fun MatchScreen3(idGame: Int) {
 
 
                 val points = matchState.data.points
-                var pointsGame by remember { mutableStateOf("") }
-                var pointsP1 by remember { mutableStateOf("") }
-                var pointsP2 by remember { mutableStateOf("") }
-                var pointsP3 by remember { mutableStateOf("") }
+                var pointsGame by remember { mutableStateOf("0") }
+                var pointsP1 by remember { mutableStateOf("0") }
+                var pointsP2 by remember { mutableStateOf("0") }
+                var pointsP3 by remember { mutableStateOf("0") }
                 var isPressedPoints by remember { mutableStateOf(true) }
                 var isPressedP1 by remember { mutableStateOf(false) }
                 var isPressedP2 by remember { mutableStateOf(false) }
@@ -538,9 +538,9 @@ internal fun MatchScreen2Groups(idGame: Int) {
 
                 }
                 val points = matchState.data.points
-                var pointsGame by remember { mutableStateOf("") }
-                var pointsWe by remember { mutableStateOf("") }
-                var pointsYouP by remember { mutableStateOf("") }
+                var pointsGame by remember { mutableStateOf("0") }
+                var pointsWe by remember { mutableStateOf("0") }
+                var pointsYouP by remember { mutableStateOf("0") }
                 var isPressedPoints by remember { mutableStateOf(true) }
                 var isPressedWe by remember { mutableStateOf(false) }
                 var isPressedYouP by remember { mutableStateOf(false) }
