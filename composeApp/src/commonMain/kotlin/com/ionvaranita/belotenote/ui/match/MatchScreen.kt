@@ -1,23 +1,40 @@
 package com.ionvaranita.belotenote.ui.match
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -26,6 +43,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,11 +55,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import belotenote.composeapp.generated.resources.Res
 import belotenote.composeapp.generated.resources.game
+import belotenote.composeapp.generated.resources.ic_writting_indicator
 import com.ionvaranita.belotenote.StatusImage
 import com.ionvaranita.belotenote.constants.GameStatus
 import com.ionvaranita.belotenote.domain.model.Points2GroupsUi
@@ -59,7 +79,9 @@ import com.ionvaranita.belotenote.ui.viewmodel.match.Match3PUiState
 import com.ionvaranita.belotenote.ui.viewmodel.match.MatchGroupsUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -758,19 +780,81 @@ private fun RowScope.PointsTextAtom(text: String, modifier: Modifier = Modifier)
 
 @Composable
 fun RowScope.TouchableText(
-    text: String, isPressed: Boolean = false, onClick: () -> Unit, modifier: Modifier = Modifier
+    text: String,
+    isPressed: Boolean = false,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
+    var showIndicator by remember { mutableStateOf(true) }
 
-    Text(
-        text = text.take(3),
-        style = MaterialTheme.typography.titleLarge,
-        modifier = modifier.weight(1F).clip(shape = RoundedCornerShape(16.dp))
+    if (isPressed && text.isEmpty()) {
+        LaunchedEffect(Unit) {
+            while (true) {
+                showIndicator = !showIndicator
+                delay(500) // blink speed
+            }
+        }
+    }
+
+    Box(
+        modifier = modifier
+            .weight(1f)
+            .clip(RoundedCornerShape(16.dp))
             .background(if (isPressed) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.tertiary)
-            .padding(16.dp).clickable {
-                onClick()
-            },
-        textAlign = TextAlign.Center
+            .clickable { onClick() }
+            .padding(8.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center, modifier = Modifier.widthIn(64.dp, 120.dp)
+            .heightIn(16.dp, 32.dp)) {
+            Text(
+                text = text.take(3),
+                style = MaterialTheme.typography.titleLarge,
+                textAlign = TextAlign.Center
+            )
+            if (isPressed && text.isEmpty()) {
+                WritingPenIcon()
+            }
+        }
+    }
+}
+
+@Composable
+fun WritingPenIcon(modifier: Modifier = Modifier) {
+    val transition = rememberInfiniteTransition(label = "pen_move")
+    val offsetX by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 10f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 400, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "pen_offset"
     )
+
+    Image(
+        painter = painterResource(Res.drawable.ic_writting_indicator),
+        contentDescription = "Writing Pen",
+        modifier = modifier
+            .offset(x = offsetX.dp)
+    )
+}
+
+
+@Composable
+fun IndicatorIcon(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .size(12.dp)
+            .background(Color.Red, shape = CircleShape),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size(4.dp)
+                .background(Color.White, shape = CircleShape)
+        )
+    }
 }
 
 
