@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ionvaranita.belotenote.datalayer.database.AppDatabase
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.Points2PEntity
-import com.ionvaranita.belotenote.datalayer.database.entity.players2.UpdateStatusAndScoreGame2P
+import com.ionvaranita.belotenote.datalayer.database.entity.players2.UpdateStatusAndScoreGameParams
 import com.ionvaranita.belotenote.datalayer.datasource.game.Game2PDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.datasource.match.Points2PDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.repo.game.Games2PRepositoryImpl
@@ -131,12 +131,12 @@ class Match2PPViewModel(private val appDatabase: AppDatabase, private val idGame
             val pointsYouS = updatedModel.pointsYouS
             if (pointsMe >= winningPoints) {
                 if (pointsMe > pointsYouS) {
-                    updateStatusScoreName1Game2PUseCase.execute(UpdateStatusAndScoreGame2P(idGame= idGame, score = scoreName1.plus(1).toShort()))
+                    updateStatusScoreName1Game2PUseCase.execute(UpdateStatusAndScoreGameParams(idGame= idGame, score = scoreName1.plus(1).toShort()))
                 }
             }
             if (pointsYouS >= winningPoints) {
                 if (pointsYouS > pointsMe) {
-                    updateStatusScoreName2Game2PUseCase.execute(UpdateStatusAndScoreGame2P(idGame= idGame, score = scoreName2.plus(1).toShort()))
+                    updateStatusScoreName2Game2PUseCase.execute(UpdateStatusAndScoreGameParams(idGame= idGame, score = scoreName2.plus(1).toShort()))
                 }
             }
             insertPointsUseCase.execute(updatedModel)

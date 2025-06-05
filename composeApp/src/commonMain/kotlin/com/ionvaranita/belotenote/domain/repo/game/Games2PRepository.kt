@@ -9,13 +9,13 @@ interface Games2PRepository {
     suspend fun getGames(): Flow<List<Game2PEntity>>
     suspend fun insetGame(game2PEntity: Game2PEntity)
     suspend fun deleteGame(idGame: Int)
-    suspend fun updateStatusAndScoreName1(
+    suspend fun updateStatusFinishedAndScoreName1(
         idGame: Int,
         statusGame: Byte = GameStatus.FINISHED.id,
         scoreName1: Short
     ): Int
 
-    suspend fun updateStatusAndScoreName2(
+    suspend fun updateStatusFinishedAndScoreName2(
         idGame: Int,
         statusGame: Byte = GameStatus.FINISHED.id,
         scoreName2: Short

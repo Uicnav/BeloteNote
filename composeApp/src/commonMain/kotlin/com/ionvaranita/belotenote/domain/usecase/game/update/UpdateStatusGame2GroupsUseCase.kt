@@ -1,10 +1,10 @@
 package com.ionvaranita.belotenote.domain.usecase.game.update
 
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.UpdateStatusAndScoreGameParams
-import com.ionvaranita.belotenote.domain.repo.game.Games2PRepository
+import com.ionvaranita.belotenote.domain.repo.game.Games2GroupsRepository
 import com.ionvaranita.belotenote.domain.usecase.UseCase
 
-class UpdateStatusScoreName1Game2PUseCase(private val repository: Games2PRepository) :
+class UpdateStatusScoreGame2GroupsName1UseCase(private val repository: Games2GroupsRepository) :
     UseCase<UpdateStatusAndScoreGameParams, Int> {
     override suspend fun execute(params: UpdateStatusAndScoreGameParams): Int {
         return repository.updateStatusFinishedAndScoreName1(
@@ -16,7 +16,7 @@ class UpdateStatusScoreName1Game2PUseCase(private val repository: Games2PReposit
 
 }
 
-class UpdateStatusScoreName2Game2PUseCase(private val repository: Games2PRepository) :
+class UpdateStatusScoreGame2GroupsName2UseCase(private val repository: Games2GroupsRepository) :
     UseCase<UpdateStatusAndScoreGameParams, Int> {
     override suspend fun execute(params: UpdateStatusAndScoreGameParams): Int {
         return repository.updateStatusFinishedAndScoreName2(

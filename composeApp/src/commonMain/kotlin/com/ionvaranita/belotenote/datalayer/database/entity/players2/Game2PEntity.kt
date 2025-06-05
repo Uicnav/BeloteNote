@@ -30,7 +30,7 @@ data class Game2PEntity(
     }
 }
 
-data class UpdateStatusAndScoreGame2P(
+data class UpdateStatusAndScoreGameParams(
     val idGame: Int,
     val statusGame: Byte = GameStatus.FINISHED.id, val score: Short,
 )

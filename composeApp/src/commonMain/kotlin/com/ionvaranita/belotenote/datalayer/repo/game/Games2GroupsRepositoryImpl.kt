@@ -23,4 +23,20 @@ class Games2GroupsRepositoryImpl(private val datasource: Game2GroupsDataSource) 
         datasource.deleteGame(idGame)
     }
 
+    override suspend fun updateStatusFinishedAndScoreName1(
+        idGame: Int,
+        statusGame: Byte,
+        scoreName1: Short
+    ): Int {
+        return datasource.updateStatusFinishedAndScoreName1(idGame, statusGame, scoreName1)
+    }
+
+    override suspend fun updateStatusFinishedAndScoreName2(
+        idGame: Int,
+        statusGame: Byte,
+        scoreName2: Short
+    ): Int {
+        return datasource.updateStatusFinishedAndScoreName2(idGame, statusGame, scoreName2)
+    }
+
 }

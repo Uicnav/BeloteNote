@@ -21,4 +21,20 @@ class Game2GroupsDataSourceImpl(private val dao: Game2GroupsDao) : Game2GroupsDa
     override suspend fun deleteGame(idGame: Int) {
         dao.delete(idGame)
     }
+
+    override suspend fun updateStatusFinishedAndScoreName1(
+        idGame: Int,
+        statusGame: Byte,
+        scoreName1: Short
+    ): Int {
+        return dao.updateStatusAndScoreName1(idGame, statusGame, scoreName1)
+    }
+
+    override suspend fun updateStatusFinishedAndScoreName2(
+        idGame: Int,
+        statusGame: Byte,
+        scoreName2: Short
+    ): Int {
+        return dao.updateStatusAndScoreName2(idGame, statusGame, scoreName2)
+    }
 }

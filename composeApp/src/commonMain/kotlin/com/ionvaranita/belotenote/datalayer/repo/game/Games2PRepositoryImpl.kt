@@ -22,7 +22,7 @@ class Games2PRepositoryImpl(private val dataSource: Game2PDataSource): Games2PRe
         dataSource.deleteGame(idGame)
     }
 
-    override suspend fun updateStatusAndScoreName1(
+    override suspend fun updateStatusFinishedAndScoreName1(
         idGame: Int,
         statusGame: Byte,
         scoreName1: Short
@@ -30,7 +30,7 @@ class Games2PRepositoryImpl(private val dataSource: Game2PDataSource): Games2PRe
         return dataSource.updateStatusAndScoreName1(idGame, statusGame, scoreName1)
     }
 
-    override suspend fun updateStatusAndScoreName2(
+    override suspend fun updateStatusFinishedAndScoreName2(
         idGame: Int,
         statusGame: Byte,
         scoreName2: Short
