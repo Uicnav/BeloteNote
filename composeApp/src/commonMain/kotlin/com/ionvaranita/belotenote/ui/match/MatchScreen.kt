@@ -15,14 +15,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
@@ -34,7 +32,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -55,7 +52,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -145,12 +141,11 @@ internal fun MatchScreen2(idGame: Int) {
                         val isLast = index == points.lastIndex
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             if (isLast) {
-                                GameCard(
-                                    onDelete = {
-                                        scope.launch {
-                                            viewModel.deleteLastPoints()
-                                        }
-                                    }) {
+                                GameCard(onDelete = {
+                                    scope.launch {
+                                        viewModel.deleteLastPoints()
+                                    }
+                                }) {
                                     PointsTextAtom(text = item.pointsGame)
                                     PointsTextAtom(text = item.pointsMe)
                                     PointsTextAtom(text = item.pointsYouS)
@@ -192,8 +187,7 @@ internal fun MatchScreen2(idGame: Int) {
                         isPressedYouS = true
                     })
                 }
-                Keyboard(
-                    isPresedGames = isPressedPoints,
+                Keyboard(isPresedGames = isPressedPoints,
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { inputKey ->
                         if (inputKey.equals(ADD)) {
@@ -337,12 +331,11 @@ internal fun MatchScreen3(idGame: Int) {
                         val isLast = index == points.lastIndex
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             if (isLast) {
-                                GameCard(
-                                    onDelete = {
-                                        scope.launch {
-                                            viewModel.deleteLastPoints()
-                                        }
-                                    }) {
+                                GameCard(onDelete = {
+                                    scope.launch {
+                                        viewModel.deleteLastPoints()
+                                    }
+                                }) {
                                     PointsTextAtom(text = item.pointsGame)
                                     PointsTextAtom(text = item.pointsP1)
                                     PointsTextAtom(text = item.pointsP2)
@@ -395,8 +388,7 @@ internal fun MatchScreen3(idGame: Int) {
                         isPressedP3 = true
                     })
                 }
-                Keyboard(
-                    isPresedGames = isPressedPoints,
+                Keyboard(isPresedGames = isPressedPoints,
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { inputKey ->
                         if (inputKey.equals(ADD)) {
@@ -581,12 +573,11 @@ internal fun MatchScreen2Groups(idGame: Int) {
                         val isLast = index == points.lastIndex
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             if (isLast) {
-                                GameCard(
-                                    onDelete = {
-                                        scope.launch {
-                                            viewModel.deleteLastPoints()
-                                        }
-                                    }) {
+                                GameCard(onDelete = {
+                                    scope.launch {
+                                        viewModel.deleteLastPoints()
+                                    }
+                                }) {
                                     PointsTextAtom(text = item.pointsGame)
                                     PointsTextAtom(text = item.pointsWe)
                                     PointsTextAtom(text = item.pointsYouP)
@@ -628,8 +619,7 @@ internal fun MatchScreen2Groups(idGame: Int) {
                         isPressedYouP = true
                     })
                 }
-                Keyboard(
-                    isPresedGames = isPressedPoints,
+                Keyboard(isPresedGames = isPressedPoints,
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { inputKey ->
                         if (inputKey.equals(ADD)) {
@@ -780,10 +770,7 @@ private fun RowScope.PointsTextAtom(text: String, modifier: Modifier = Modifier)
 
 @Composable
 fun RowScope.TouchableText(
-    text: String,
-    isPressed: Boolean = false,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    text: String, isPressed: Boolean = false, onClick: () -> Unit, modifier: Modifier = Modifier
 ) {
     var showIndicator by remember { mutableStateOf(true) }
 
@@ -796,17 +783,15 @@ fun RowScope.TouchableText(
         }
     }
 
-    Box(
-        modifier = modifier
-            .weight(1f)
-            .clip(RoundedCornerShape(16.dp))
-            .background(if (isPressed) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.tertiary)
-            .clickable { onClick() }
-            .padding(8.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center, modifier = Modifier.widthIn(64.dp, 120.dp)
-            .heightIn(16.dp, 32.dp)) {
+    Box(modifier = modifier.weight(1f).clip(RoundedCornerShape(16.dp))
+        .background(if (isPressed) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.tertiary)
+        .clickable { onClick() }.padding(8.dp).height(32.dp),
+        contentAlignment = Alignment.Center) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.widthIn(64.dp, 120.dp).heightIn(16.dp, 32.dp)
+        ) {
             Text(
                 text = text.take(3),
                 style = MaterialTheme.typography.titleLarge,
@@ -823,20 +808,16 @@ fun RowScope.TouchableText(
 fun WritingPenIcon(modifier: Modifier = Modifier) {
     val transition = rememberInfiniteTransition(label = "pen_move")
     val offsetX by transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 10f,
-        animationSpec = infiniteRepeatable(
+        initialValue = 0f, targetValue = 10f, animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = 400, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse
-        ),
-        label = "pen_offset"
+        ), label = "pen_offset"
     )
 
     Image(
         painter = painterResource(Res.drawable.ic_writting_indicator),
         contentDescription = "Writing Pen",
-        modifier = modifier
-            .offset(x = offsetX.dp)
+        modifier = modifier.offset(x = offsetX.dp)
     )
 }
 
@@ -844,15 +825,11 @@ fun WritingPenIcon(modifier: Modifier = Modifier) {
 @Composable
 fun IndicatorIcon(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier
-            .size(12.dp)
-            .background(Color.Red, shape = CircleShape),
+        modifier = modifier.size(12.dp).background(Color.Red, shape = CircleShape),
         contentAlignment = Alignment.Center
     ) {
         Box(
-            modifier = Modifier
-                .size(4.dp)
-                .background(Color.White, shape = CircleShape)
+            modifier = Modifier.size(4.dp).background(Color.White, shape = CircleShape)
         )
     }
 }

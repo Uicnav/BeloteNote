@@ -16,22 +16,22 @@ import androidx.compose.ui.unit.dp
 import com.ionvaranita.belotenote.constants.GameStatus
 
 @Composable
-private fun RedCircle(modifier: Modifier = Modifier.size(24.dp)) {
-    Box(modifier = modifier.clip(CircleShape).background(if (isSystemInDarkTheme()) Color(0xFFE57373) else Color(0xFFF44336)))
+private fun RedCircle(modifier: Modifier) {
+    Box(modifier = modifier.size(24.dp).clip(CircleShape).background(Color.Red))
 }
 
 @Composable
-private fun YellowCircle(modifier: Modifier = Modifier.size(24.dp)) {
-    Box(modifier = modifier.clip(CircleShape).background(if (isSystemInDarkTheme()) Color(0xFFFFF176) else Color(0xFFFFEB3B)))
+private fun YellowCircle(modifier: Modifier) {
+    Box(modifier = modifier.size(24.dp).clip(CircleShape).background(Color.Yellow))
 }
 
 @Composable
 private fun GreenCircle(modifier: Modifier) {
-    Box(modifier = modifier.size(24.dp).clip(CircleShape).background(if (isSystemInDarkTheme()) Color(0xFF81C784) else Color(0xFF4CAF50)))
+    Box(modifier = modifier.size(24.dp).clip(CircleShape).background(Color.Green))
 }
 
 @Composable
-fun ColumnScope.StatusImage(gameStatus: GameStatus?, modifier: Modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally)) {
+fun StatusImage(gameStatus: GameStatus?, modifier: Modifier = Modifier.padding(16.dp)){
 
     when (gameStatus) {
         GameStatus.TO_START, GameStatus.CONTINUE -> {
