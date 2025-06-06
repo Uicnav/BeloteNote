@@ -37,4 +37,8 @@ class Game2GroupsDataSourceImpl(private val dao: Game2GroupsDao) : Game2GroupsDa
     ): Int {
         return dao.updateStatusAndScoreName2(idGame, statusGame, scoreName2)
     }
+
+    override suspend fun updateOnlyStatus(idGame: Int, gameStatus: Byte) {
+        dao.updateOnlyStatus(idGame, gameStatus)
+    }
 }

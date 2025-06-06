@@ -24,8 +24,11 @@ interface Game2PDao {
     @Query("update Game2PEntity set statusGame = :statusGame, scoreName2 = :scoreName2  where idGame = :idGame")
     suspend fun updateStatusAndScoreName2(idGame: Int, statusGame: Byte  = GameStatus.FINISHED.id, scoreName2: Short): Int
 
-    @Query("update Game2PEntity set statusGame = :statusGame, winnerPoints = :winnerPoints, dateGame = :dateGame where idGame = :idGame")
-    suspend fun update(idGame: Int, statusGame: Byte, winnerPoints: Short, dateGame: Long): Int
+    @Query("update Game2PEntity set statusGame = :statusGame, winningPoints= :winningPoints  where idGame = :idGame")
+    suspend fun updateStatusWinningPoints(idGame: Int, statusGame: Byte, winningPoints: Short): Int
+
+    @Query("update Game2PEntity set statusGame = :statusGame, winningPoints = :winningPoints, dateGame = :dateGame where idGame = :idGame")
+    suspend fun update(idGame: Int, statusGame: Byte, winningPoints: Short, dateGame: Long): Int
 
     @Query("delete from Game2PEntity where idGame = :idGame")
     suspend fun delete(idGame: Int)

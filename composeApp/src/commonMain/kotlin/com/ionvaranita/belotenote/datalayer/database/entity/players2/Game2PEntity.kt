@@ -11,7 +11,7 @@ data class Game2PEntity(
     @PrimaryKey(autoGenerate = true) val idGame: Int = 0,
     val dateGame: Long = getCurrentTime(), // Default value
     val statusGame: Byte = GameStatus.CONTINUE.id,
-    val winnerPoints: Short,
+    val winningPoints: Short,
     val name1: String,
     val name2: String,
     val scoreName1: Short = 0,
@@ -21,7 +21,7 @@ data class Game2PEntity(
         return Game2PUi(
             idGame = this.idGame,
             statusGame = this.statusGame,
-            winningPoints = this.winnerPoints,
+            winningPoints = this.winningPoints,
             name1 = this.name1,
             name2 = this.name2,
             scoreName1 = this.scoreName1,
@@ -33,4 +33,10 @@ data class Game2PEntity(
 data class UpdateStatusAndScoreGameParams(
     val idGame: Int,
     val statusGame: Byte = GameStatus.FINISHED.id, val score: Short,
+)
+
+data class UpdateStatusWinningPointsGameParams(
+    val idGame: Int,
+    val statusGame: Byte,
+    val winningPoints: Short
 )

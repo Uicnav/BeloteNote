@@ -1,5 +1,6 @@
 package com.ionvaranita.belotenote.datalayer.repo.game
 
+import com.ionvaranita.belotenote.constants.GameStatus
 import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Game2GroupsEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.Game2PEntity
 import com.ionvaranita.belotenote.domain.datasource.game.Game2GroupsDataSource
@@ -37,6 +38,10 @@ class Games2GroupsRepositoryImpl(private val datasource: Game2GroupsDataSource) 
         scoreName2: Short
     ): Int {
         return datasource.updateStatusFinishedAndScoreName2(idGame, statusGame, scoreName2)
+    }
+
+    override suspend fun updateOnlyStatus(idGame: Int, gameStatus: Byte) {
+        datasource.updateOnlyStatus(idGame, gameStatus)
     }
 
 }

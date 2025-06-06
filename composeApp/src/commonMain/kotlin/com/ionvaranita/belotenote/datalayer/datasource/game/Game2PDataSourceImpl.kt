@@ -38,4 +38,8 @@ class Game2PDataSourceImpl(private val dao: Game2PDao): Game2PDataSource {
         return dao.updateStatusAndScoreName2(idGame, statusGame, scoreName2)
     }
 
+    override suspend fun updateStatusWinningPoints(idGame: Int, gameStatus: Byte, winningPoints: Short) {
+        dao.updateStatusWinningPoints(idGame = idGame, statusGame = gameStatus, winningPoints)
+    }
+
 }

@@ -33,6 +33,9 @@ interface Game2GroupsDao {
     @Query("update Game2GroupsEntity set statusGame = :statusGame, scoreName1 = :scoreName1  where idGame = :idGame")
     suspend fun updateStatusAndScoreName1(idGame: Int, statusGame: Byte  = GameStatus.FINISHED.id, scoreName1: Short): Int
 
-    @Query("update Game2GroupsEntity set statusGame = :statusGame, scoreName2 = :scoreName2  where idGame = :idGame")
+    @Query("update Game2GroupsEntity set statusGame = :statusGame, scoreName2 = :scoreName2   where idGame = :idGame")
     suspend fun updateStatusAndScoreName2(idGame: Int, statusGame: Byte  = GameStatus.FINISHED.id, scoreName2: Short): Int
+
+    @Query("update Game2GroupsEntity set statusGame = :statusGame  where idGame = :idGame")
+    suspend fun updateOnlyStatus(idGame: Int, statusGame: Byte): Int
 }

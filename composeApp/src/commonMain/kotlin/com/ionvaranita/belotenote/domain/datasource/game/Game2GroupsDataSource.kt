@@ -21,4 +21,6 @@ interface Game2GroupsDataSource {
         statusGame: Byte = GameStatus.FINISHED.id,
         scoreName2: Short
     ): Int
+
+    suspend fun updateOnlyStatus(idGame: Int, gameStatus: Byte)
 }

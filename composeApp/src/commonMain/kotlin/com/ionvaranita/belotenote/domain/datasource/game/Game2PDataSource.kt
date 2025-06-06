@@ -15,4 +15,6 @@ interface Game2PDataSource {
     suspend fun updateStatusAndScoreName2(
         idGame: Int, statusGame: Byte, scoreName2: Short
     ): Int
+
+    suspend fun updateStatusWinningPoints(idGame: Int, gameStatus: Byte, winningPoints: Short)
 }

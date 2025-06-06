@@ -2,7 +2,6 @@ package com.ionvaranita.belotenote.domain.repo.game
 
 import com.ionvaranita.belotenote.constants.GameStatus
 import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Game2GroupsEntity
-import com.ionvaranita.belotenote.datalayer.database.entity.players2.Game2PEntity
 import kotlinx.coroutines.flow.Flow
 
 interface Games2GroupsRepository {
@@ -21,4 +20,5 @@ interface Games2GroupsRepository {
         statusGame: Byte = GameStatus.FINISHED.id,
         scoreName2: Short
     ): Int
+    suspend fun updateOnlyStatus(idGame: Int, gameStatus: Byte)
 }
