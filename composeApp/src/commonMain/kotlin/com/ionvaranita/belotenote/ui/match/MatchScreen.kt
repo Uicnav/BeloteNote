@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.ContextualFlowRowScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,6 +33,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -52,10 +54,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import belotenote.composeapp.generated.resources.Res
+import belotenote.composeapp.generated.resources.alert_dialog_finish_match
+import belotenote.composeapp.generated.resources.alert_dialog_finished
+import belotenote.composeapp.generated.resources.alert_dialog_playing
+import belotenote.composeapp.generated.resources.alert_dialog_to_extend
 import belotenote.composeapp.generated.resources.game
 import belotenote.composeapp.generated.resources.ic_writting_indicator
 import com.ionvaranita.belotenote.StatusImage
@@ -79,6 +88,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -89,6 +99,7 @@ internal fun MatchScreen2(idGame: Int) {
     val viewModel = viewModel { Match2PPViewModel(appDatabase, idGame) }
     val matchUiState = viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
+    var showInfoGameDialog by remember { mutableStateOf(false) }
     MatchWrapper {
         when (val matchState = matchUiState.value) {
             is Match2PUiState.Success -> {
@@ -100,8 +111,18 @@ internal fun MatchScreen2(idGame: Int) {
                     ) {
                         StatusImage(
                             gameStatus = GameStatus.fromId(game.statusGame),
+                            modifier = Modifier.clickable {
+                                showInfoGameDialog = true
+                            }
                         )
                         TableTextAtom(text = stringResource(Res.string.game))
+                    }
+                    if (showInfoGameDialog) {
+                        InfoGameDialog(onDismiss = {
+                            showInfoGameDialog = false }, infoGame = InfoGame(status = viewModel.statusGame.value, winningPoints =game.winningPoints.toString()), onConfirm = {
+                                viewModel.updateOnlyStatus(GameStatus.FINISHED)
+                            showInfoGameDialog =false
+                        })
                     }
                     Column(
                         modifier = Modifier.weight(1F),
@@ -937,6 +958,52 @@ private fun RowScope.KeyAtom(
         )
     }
 }
+
+@Composable
+private fun InfoGameDialog(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+    infoGame: InfoGame,
+) {
+    val statusGameText = when(infoGame.status) {
+        GameStatus.CONTINUE -> {
+            stringResource(Res.string.alert_dialog_playing)
+        }
+        GameStatus.FINISHED -> {
+            stringResource(Res.string.alert_dialog_finished)
+
+        }
+        GameStatus.EXTENDED,GameStatus.EXTENDED_MANDATORY -> {
+            stringResource(Res.string.alert_dialog_to_extend)
+        }
+
+    }
+    Dialog(onDismissRequest = onDismiss) {
+        Box(
+            modifier = Modifier
+                .padding(24.dp)
+                .fillMaxWidth()
+                .background(Color.White, shape = RoundedCornerShape(16.dp))
+                .padding(24.dp)
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+
+                Text(text = statusGameText, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Text(text = infoGame.winningPoints, fontSize = 16.sp)
+                Button(onClick = onConfirm) {
+                    Text(text = stringResource(Res.string.alert_dialog_finish_match))
+                }
+            }
+        }
+    }
+}
+
+data class InfoGame(val status: GameStatus, val winningPoints: String)
+
 
 
 @Preview

@@ -31,10 +31,10 @@ private fun GreenCircle(modifier: Modifier) {
 }
 
 @Composable
-fun StatusImage(gameStatus: GameStatus?, modifier: Modifier = Modifier.padding(16.dp)){
+fun StatusImage(gameStatus: GameStatus?, modifier: Modifier = Modifier.padding(8.dp)){
 
     when (gameStatus) {
-        GameStatus.TO_START, GameStatus.CONTINUE -> {
+        GameStatus.CONTINUE -> {
             GreenCircle(modifier)
         }
         GameStatus.EXTENDED, GameStatus.EXTENDED_MANDATORY -> {

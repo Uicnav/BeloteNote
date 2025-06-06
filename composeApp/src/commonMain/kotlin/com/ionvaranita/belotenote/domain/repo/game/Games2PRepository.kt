@@ -21,4 +21,5 @@ interface Games2PRepository {
         scoreName2: Short
     ): Int
     suspend fun updateStatusWinningPoints(idGame: Int, gameStatus: Byte, winningPoints: Short)
+    suspend fun updateOnlyStatus(idGame: Int, gameStatus: Byte)
 }

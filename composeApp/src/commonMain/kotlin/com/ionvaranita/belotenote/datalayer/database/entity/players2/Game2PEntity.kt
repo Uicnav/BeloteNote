@@ -40,3 +40,8 @@ data class UpdateStatusWinningPointsGameParams(
     val statusGame: Byte,
     val winningPoints: Short
 )
+
+data class UpdateOnlyStatusGameParams(
+    val idGame: Int,
+    val statusGame: Byte,
+)

@@ -2,7 +2,6 @@ package com.ionvaranita.belotenote.constants
 
 
 enum class GameStatus(val id: Byte) {
-    TO_START(0),
     FINISHED(1),
     CONTINUE(2),
     EXTENDED(3),
