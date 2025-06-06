@@ -1,5 +1,7 @@
 package com.ionvaranita.belotenote.ui.match
 
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -13,9 +15,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.ContextualFlowRowScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -65,8 +67,11 @@ import belotenote.composeapp.generated.resources.alert_dialog_finish_match
 import belotenote.composeapp.generated.resources.alert_dialog_finished
 import belotenote.composeapp.generated.resources.alert_dialog_playing
 import belotenote.composeapp.generated.resources.alert_dialog_to_extend
+import belotenote.composeapp.generated.resources.dialog_are_you_sure
 import belotenote.composeapp.generated.resources.game
 import belotenote.composeapp.generated.resources.ic_writting_indicator
+import belotenote.composeapp.generated.resources.no
+import com.ionvaranita.belotenote.Circle
 import com.ionvaranita.belotenote.StatusImage
 import com.ionvaranita.belotenote.constants.GameStatus
 import com.ionvaranita.belotenote.domain.model.Points2GroupsUi
@@ -88,7 +93,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -100,6 +104,7 @@ internal fun MatchScreen2(idGame: Int) {
     val matchUiState = viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
     var showInfoGameDialog by remember { mutableStateOf(false) }
+    var showUpdateStatusGameDialog by remember { mutableStateOf(false) }
     MatchWrapper {
         when (val matchState = matchUiState.value) {
             is Match2PUiState.Success -> {
@@ -120,8 +125,16 @@ internal fun MatchScreen2(idGame: Int) {
                     if (showInfoGameDialog) {
                         InfoGameDialog(onDismiss = {
                             showInfoGameDialog = false }, infoGame = InfoGame(status = viewModel.statusGame.value, winningPoints =game.winningPoints.toString()), onConfirm = {
-                                viewModel.updateOnlyStatus(GameStatus.FINISHED)
                             showInfoGameDialog =false
+                            showUpdateStatusGameDialog = true
+                        }, showFinishMatch = viewModel.statusGame.value == GameStatus.CONTINUE)
+                    }
+                    if (showUpdateStatusGameDialog && viewModel.statusGame.value == GameStatus.CONTINUE) {
+                        UpdateStatusGameDialog(onDismiss = {
+                            showUpdateStatusGameDialog = false
+                        }, onConfirm = {
+                            viewModel.updateOnlyStatus(GameStatus.FINISHED)
+                            showUpdateStatusGameDialog = false
                         })
                     }
                     Column(
@@ -964,6 +977,7 @@ private fun InfoGameDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
     infoGame: InfoGame,
+    showFinishMatch: Boolean
 ) {
     val statusGameText = when(infoGame.status) {
         GameStatus.CONTINUE -> {
@@ -994,12 +1008,60 @@ private fun InfoGameDialog(
 
                 Text(text = statusGameText, fontSize = 18.sp, fontWeight = FontWeight.Bold)
                 Text(text = infoGame.winningPoints, fontSize = 16.sp)
+                if (showFinishMatch) {
+                    Button(onClick = onConfirm) {
+                        Text(text = stringResource(Res.string.alert_dialog_finish_match))
+                    }
+                }
+                }
+
+        }
+    }
+}
+@Composable
+private fun UpdateStatusGameDialog(
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+    modifier: Modifier = Modifier) {
+    Dialog(onDismissRequest = onDismiss, ) {
+        Column(modifier = modifier.background(Color.White, shape = RoundedCornerShape(16.dp)).padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Spacer(Modifier.height(16.dp))
+            Text(text = stringResource(Res.string.dialog_are_you_sure), style = MaterialTheme.typography.titleLarge)
+            Spacer(Modifier.height(16.dp))
+            AnimatedColorCircle()
+            Spacer(Modifier.height(16.dp))
+            Row {
+                Button(onClick = onDismiss) {
+                    Text(text= stringResource(Res.string.no))
+                }
                 Button(onClick = onConfirm) {
-                    Text(text = stringResource(Res.string.alert_dialog_finish_match))
+                    Text(text= stringResource(Res.string.alert_dialog_finish_match))
                 }
             }
         }
     }
+}
+
+@Composable
+fun AnimatedColorCircle() {
+    var startAnimation by remember { mutableStateOf(false) }
+
+    val animatedColor by animateColorAsState(
+        targetValue = if (startAnimation) Color.Red else Color.Green,
+        animationSpec = tween(durationMillis = 2000),
+        label = ""
+    )
+
+    LaunchedEffect(Unit) {
+        startAnimation = true
+    }
+
+    Circle(
+        modifier = Modifier
+            .size(24.dp)
+            .clip(CircleShape)
+            .background(animatedColor)
+    )
 }
 
 data class InfoGame(val status: GameStatus, val winningPoints: String)
