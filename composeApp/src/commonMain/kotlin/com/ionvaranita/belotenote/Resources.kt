@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -18,22 +19,27 @@ fun Circle(modifier: Modifier) {
 }
 
 @Composable
-fun StatusImage(gameStatus: GameStatus?, modifier: Modifier = Modifier.padding(8.dp)){
+fun StatusImage(gameStatus: GameStatus?, modifier: Modifier = Modifier.padding(8.dp)) {
+    Box(modifier = modifier) {
+        when (gameStatus) {
+            GameStatus.CONTINUE -> {
+                Circle(Modifier.align(Alignment.Center).size(24.dp).clip(CircleShape).background(Color.Green))
+            }
 
-    when (gameStatus) {
-        GameStatus.CONTINUE -> {
-            Circle(modifier.size(24.dp).clip(CircleShape).background(Color.Green))
-        }
-        GameStatus.EXTENDED, GameStatus.EXTENDED_MANDATORY -> {
-            Circle(modifier.size(24.dp).clip(CircleShape).background(Color.Yellow))
-        }
-        GameStatus.FINISHED -> {
-            Circle(modifier.size(24.dp).clip(CircleShape).background(Color.Red))
-        }
-        else -> {
-            throw IllegalStateException()
+            GameStatus.EXTENDED, GameStatus.EXTENDED_MANDATORY -> {
+                Circle(Modifier.align(Alignment.Center).size(24.dp).clip(CircleShape).background(Color.Yellow))
+            }
+
+            GameStatus.FINISHED -> {
+                Circle(Modifier.align(Alignment.Center).size(24.dp).clip(CircleShape).background(Color.Red))
+            }
+
+            else -> {
+                throw IllegalStateException()
+            }
         }
     }
+
 }
 
 

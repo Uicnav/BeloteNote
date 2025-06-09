@@ -1,6 +1,5 @@
 package com.ionvaranita.belotenote.ui.match
 
-import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -109,50 +108,53 @@ internal fun MatchScreen2(idGame: Int) {
         when (val matchState = matchUiState.value) {
             is Match2PUiState.Success -> {
                 val game = matchState.data.game
-                Row {
-                    Column(
-                        modifier = Modifier.weight(1F),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        StatusImage(
-                            gameStatus = GameStatus.fromId(game.statusGame),
-                            modifier = Modifier.clickable {
-                                showInfoGameDialog = true
-                            }
-                        )
-                        TableTextAtom(text = stringResource(Res.string.game))
-                    }
-                    if (showInfoGameDialog) {
-                        InfoGameDialog(onDismiss = {
-                            showInfoGameDialog = false }, infoGame = InfoGame(status = viewModel.statusGame.value, winningPoints =game.winningPoints.toString()), onConfirm = {
-                            showInfoGameDialog =false
-                            showUpdateStatusGameDialog = true
-                        }, showFinishMatch = viewModel.statusGame.value == GameStatus.CONTINUE)
-                    }
-                    if (showUpdateStatusGameDialog && viewModel.statusGame.value == GameStatus.CONTINUE) {
-                        UpdateStatusGameDialog(onDismiss = {
-                            showUpdateStatusGameDialog = false
-                        }, onConfirm = {
-                            viewModel.updateOnlyStatus(GameStatus.FINISHED)
-                            showUpdateStatusGameDialog = false
-                        })
-                    }
-                    Column(
-                        modifier = Modifier.weight(1F),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        TableTextAtom(text = game.scoreName1.toString())
-                        TableTextAtom(text = game.name1)
-                    }
+                Row(
+                    modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+                ) {
+                    StatusImage(
+                        gameStatus = GameStatus.fromId(game.statusGame),
+                        modifier = Modifier.clickable {
+                            showInfoGameDialog = true
+                        }.weight(1F))
+                    PointsTextAtom(text = game.scoreName1.toString())
+                    PointsTextAtom(text = game.scoreName2.toString())
 
-                    Column(
-                        modifier = Modifier.weight(1F),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        TableTextAtom(text = game.scoreName2.toString())
-                        TableTextAtom(text = game.name2)
-                    }
+
                 }
+                Row(
+                    modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+                ) {
+                    PointsTextAtom(text = stringResource(Res.string.game))
+                    PointsTextAtom(text = game.name1)
+                    PointsTextAtom(text = game.name2)
+
+
+                }
+                if (showInfoGameDialog) {
+                    InfoGameDialog(
+                        onDismiss = {
+                            showInfoGameDialog = false
+                        },
+                        infoGame = InfoGame(
+                            status = viewModel.statusGame.value,
+                            winningPoints = game.winningPoints.toString()
+                        ),
+                        onConfirm = {
+                            showInfoGameDialog = false
+                            showUpdateStatusGameDialog = true
+                        },
+                        showFinishMatch = viewModel.statusGame.value == GameStatus.CONTINUE
+                    )
+                }
+                if (showUpdateStatusGameDialog && viewModel.statusGame.value == GameStatus.CONTINUE) {
+                    UpdateStatusGameDialog(onDismiss = {
+                        showUpdateStatusGameDialog = false
+                    }, onConfirm = {
+                        viewModel.updateOnlyStatus(GameStatus.FINISHED)
+                        showUpdateStatusGameDialog = false
+                    })
+                }
+
 
 
                 val points = matchState.data.points
@@ -330,38 +332,29 @@ internal fun MatchScreen3(idGame: Int) {
         when (val matchState = matchUiState.value) {
             is Match3PUiState.Success -> {
                 val game = matchState.data.game
-                Row {
-                    Column(
-                        modifier = Modifier.weight(1F),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        StatusImage(
-                            gameStatus = GameStatus.fromId(game.statusGame),
-                        )
-                        TableTextAtom(text = stringResource(Res.string.game))
-                    }
-                    Column(
-                        modifier = Modifier.weight(1F),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        TableTextAtom(text = game.scoreName1.toString())
-                        TableTextAtom(text = game.name1)
-                    }
+                Row(
+                    modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+                ) {
+                    StatusImage(
+                        gameStatus = GameStatus.fromId(game.statusGame),
+                        modifier = Modifier.clickable {
+                            //showInfoGameDialog = true
+                        }.weight(1F))
+                    PointsTextAtom(text = game.scoreName1.toString())
+                    PointsTextAtom(text = game.scoreName2.toString())
+                    PointsTextAtom(text = game.scoreName3.toString())
 
-                    Column(
-                        modifier = Modifier.weight(1F),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        TableTextAtom(text = game.scoreName2.toString())
-                        TableTextAtom(text = game.name2)
-                    }
-                    Column(
-                        modifier = Modifier.weight(1F),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        TableTextAtom(text = game.scoreName3.toString())
-                        TableTextAtom(text = game.name3)
-                    }
+
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+                ) {
+                    PointsTextAtom(text = stringResource(Res.string.game))
+                    PointsTextAtom(text = game.name1)
+                    PointsTextAtom(text = game.name2)
+                    PointsTextAtom(text = game.name3)
+
+
                 }
 
 
@@ -582,32 +575,27 @@ internal fun MatchScreen2Groups(idGame: Int) {
     MatchWrapper {
         when (val matchState = matchUiState.value) {
             is MatchGroupsUiState.Success -> {
-                Row(modifier = Modifier) {
-                    val game = matchState.data.game
-                    Column(
-                        modifier = Modifier.weight(1F),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        StatusImage(
-                            gameStatus = GameStatus.fromId(game.statusGame)
-                        )
-                        TableTextAtom(text = stringResource(Res.string.game))
-                    }
-                    Column(
-                        modifier = Modifier.weight(1F),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        TableTextAtom(text = game.scoreName1.toString())
-                        TableTextAtom(text = game.name1)
-                    }
+                val game = matchState.data.game
+                Row(
+                    modifier = Modifier.weight(1F), verticalAlignment = Alignment.CenterVertically
+                ) {
+                    StatusImage(
+                        gameStatus = GameStatus.fromId(game.statusGame),
+                        modifier = Modifier.clickable {
+                            //showInfoGameDialog = true
+                        }.weight(1F))
+                    PointsTextAtom(text = game.scoreName1.toString())
+                    PointsTextAtom(text = game.scoreName2.toString())
 
-                    Column(
-                        modifier = Modifier.weight(1F),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        TableTextAtom(text = game.scoreName2.toString())
-                        TableTextAtom(text = game.name2)
-                    }
+
+                }
+                Row(
+                    modifier = Modifier.weight(1F), verticalAlignment = Alignment.CenterVertically
+                ) {
+                    PointsTextAtom(text = stringResource(Res.string.game))
+                    PointsTextAtom(text = game.name1)
+                    PointsTextAtom(text = game.name2)
+
 
                 }
                 val points = matchState.data.points
@@ -818,11 +806,6 @@ private fun MatchWrapper(
 }
 
 @Composable
-private fun ColumnScope.TableTextAtom(text: String, modifier: Modifier = Modifier) {
-    Text(text = text, modifier = modifier.padding(16.dp).align(Alignment.CenterHorizontally))
-}
-
-@Composable
 private fun RowScope.PointsTextAtom(text: String, modifier: Modifier = Modifier) {
     Text(text = text, modifier = modifier.padding(8.dp).weight(1F), textAlign = TextAlign.Center)
 }
@@ -974,31 +957,27 @@ private fun RowScope.KeyAtom(
 
 @Composable
 private fun InfoGameDialog(
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit,
-    infoGame: InfoGame,
-    showFinishMatch: Boolean
+    onDismiss: () -> Unit, onConfirm: () -> Unit, infoGame: InfoGame, showFinishMatch: Boolean
 ) {
-    val statusGameText = when(infoGame.status) {
+    val statusGameText = when (infoGame.status) {
         GameStatus.CONTINUE -> {
             stringResource(Res.string.alert_dialog_playing)
         }
+
         GameStatus.FINISHED -> {
             stringResource(Res.string.alert_dialog_finished)
 
         }
-        GameStatus.EXTENDED,GameStatus.EXTENDED_MANDATORY -> {
+
+        GameStatus.EXTENDED, GameStatus.EXTENDED_MANDATORY -> {
             stringResource(Res.string.alert_dialog_to_extend)
         }
 
     }
     Dialog(onDismissRequest = onDismiss) {
         Box(
-            modifier = Modifier
-                .padding(24.dp)
-                .fillMaxWidth()
-                .background(Color.White, shape = RoundedCornerShape(16.dp))
-                .padding(24.dp)
+            modifier = Modifier.padding(24.dp).fillMaxWidth()
+                .background(Color.White, shape = RoundedCornerShape(16.dp)).padding(24.dp)
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -1013,29 +992,35 @@ private fun InfoGameDialog(
                         Text(text = stringResource(Res.string.alert_dialog_finish_match))
                     }
                 }
-                }
+            }
 
         }
     }
 }
+
 @Composable
 private fun UpdateStatusGameDialog(
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit,
-    modifier: Modifier = Modifier) {
-    Dialog(onDismissRequest = onDismiss, ) {
-        Column(modifier = modifier.background(Color.White, shape = RoundedCornerShape(16.dp)).padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+    onDismiss: () -> Unit, onConfirm: () -> Unit, modifier: Modifier = Modifier
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Column(
+            modifier = modifier.background(Color.White, shape = RoundedCornerShape(16.dp))
+                .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Spacer(Modifier.height(16.dp))
-            Text(text = stringResource(Res.string.dialog_are_you_sure), style = MaterialTheme.typography.titleLarge)
+            Text(
+                text = stringResource(Res.string.dialog_are_you_sure),
+                style = MaterialTheme.typography.titleLarge
+            )
             Spacer(Modifier.height(16.dp))
             AnimatedColorCircle()
             Spacer(Modifier.height(16.dp))
             Row {
                 Button(onClick = onDismiss) {
-                    Text(text= stringResource(Res.string.no))
+                    Text(text = stringResource(Res.string.no))
                 }
                 Button(onClick = onConfirm) {
-                    Text(text= stringResource(Res.string.alert_dialog_finish_match))
+                    Text(text = stringResource(Res.string.alert_dialog_finish_match))
                 }
             }
         }
@@ -1057,15 +1042,11 @@ fun AnimatedColorCircle() {
     }
 
     Circle(
-        modifier = Modifier
-            .size(24.dp)
-            .clip(CircleShape)
-            .background(animatedColor)
+        modifier = Modifier.size(24.dp).clip(CircleShape).background(animatedColor)
     )
 }
 
 data class InfoGame(val status: GameStatus, val winningPoints: String)
-
 
 
 @Preview
