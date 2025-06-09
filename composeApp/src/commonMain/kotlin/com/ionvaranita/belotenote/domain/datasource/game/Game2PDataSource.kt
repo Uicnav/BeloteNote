@@ -8,4 +8,14 @@ interface Game2PDataSource {
     suspend fun getGames(): Flow<List<Game2PEntity>>
     suspend fun insertGame(game2PEntity: Game2PEntity)
     suspend fun deleteGame(idGame: Int)
+    suspend fun updateStatusAndScoreName1(
+        idGame: Int, statusGame: Byte, scoreName1: Short
+    ): Int
+
+    suspend fun updateStatusAndScoreName2(
+        idGame: Int, statusGame: Byte, scoreName2: Short
+    ): Int
+
+    suspend fun updateStatusWinningPoints(idGame: Int, gameStatus: Byte, winningPoints: Short)
+    suspend fun updateOnlyStatus(idGame: Int, gameStatus: Byte)
 }

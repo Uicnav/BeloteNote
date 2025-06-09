@@ -26,4 +26,8 @@ class Points2PRepositoryImpl(private val datasource: Points2PDataSource) : Point
         datasource.delete(row)
     }
 
+    override suspend fun deleteAllPoints(idGame: Int) {
+        datasource.deleteAllPoints(idGame)
+    }
+
 }

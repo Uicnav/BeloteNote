@@ -1,9 +1,15 @@
 package com.ionvaranita.belotenote.ui.viewmodel.match
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ionvaranita.belotenote.constants.GameStatus
 import com.ionvaranita.belotenote.datalayer.database.AppDatabase
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.Points2PEntity
+import com.ionvaranita.belotenote.datalayer.database.entity.players2.UpdateOnlyStatusGameParams
+import com.ionvaranita.belotenote.datalayer.database.entity.players2.UpdateStatusWinningPointsGameParams
+import com.ionvaranita.belotenote.datalayer.database.entity.players2.UpdateStatusAndScoreGameParams
 import com.ionvaranita.belotenote.datalayer.datasource.game.Game2PDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.datasource.match.Points2PDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.repo.game.Games2PRepositoryImpl
@@ -11,6 +17,12 @@ import com.ionvaranita.belotenote.datalayer.repo.match.Points2PRepositoryImpl
 import com.ionvaranita.belotenote.domain.model.Game2PUi
 import com.ionvaranita.belotenote.domain.model.Points2PUi
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGame2PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateOnlyStatusGame2GroupsUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateOnlyStatusGame2PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusWinningPointsGame2PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName1Game2PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName2Game2PUseCase
+import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteAllPoints2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteLastRowPoints2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetLastPoints2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetPoints2PUseCase
@@ -24,6 +36,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import kotlin.properties.Delegates
 
 class Match2PPViewModel(private val appDatabase: AppDatabase, private val idGame: Int) :
     ViewModel() {
@@ -38,15 +51,31 @@ class Match2PPViewModel(private val appDatabase: AppDatabase, private val idGame
     private val insertPointsUseCase = InsertPoints2PUseCase(repositoryPoints)
     private val deleteLastRowPoints2GroupsUseCase = DeleteLastRowPoints2PUseCase(repositoryPoints)
 
+    private val updateStatusScoreName1Game2PUseCase =
+        UpdateStatusScoreName1Game2PUseCase(repositoryGame)
+    private val updateStatusScoreName2Game2PUseCase =
+        UpdateStatusScoreName2Game2PUseCase(repositoryGame)
+
+    private val updateStatusWinningPointsGame2PUseCase = UpdateStatusWinningPointsGame2PUseCase(repositoryGame)
+    private val updateOnlyStatusGame2PUseCase = UpdateOnlyStatusGame2PUseCase(repositoryGame)
+    private val deleteAllPoints2PUseCase = DeleteAllPoints2PUseCase(repositoryPoints)
+
     private val _uiState = MutableStateFlow<Match2PUiState>(Match2PUiState.Loading)
     val uiState: StateFlow<Match2PUiState> = _uiState
+    private var winningPoints by Delegates.notNull<Short>()
+    private var scoreName1 by Delegates.notNull<Short>()
+    private var scoreName2 by Delegates.notNull<Short>()
+    private val _statusGame = mutableStateOf(GameStatus.CONTINUE)
+    val statusGame: State<GameStatus> = _statusGame
+
 
     init {
         getMatchData()
     }
 
-    var countBoltMe = 0
-    var countBoltYouS = 0
+    private var countBoltMe = 0
+    private var countBoltYouS = 0
+
 
     private fun getMatchData(dispatcher: CoroutineDispatcher = Dispatchers.IO) =
         viewModelScope.launch(dispatcher) {
@@ -55,6 +84,10 @@ class Match2PPViewModel(private val appDatabase: AppDatabase, private val idGame
                 getGameUseCase.execute(idGame),
                 getPointsUseCase.execute(idGame),
             ) { game, points ->
+                winningPoints = game.winningPoints
+                scoreName1 = game.scoreName1
+                scoreName2 = game.scoreName2
+                _statusGame.value = GameStatus.fromId(game.statusGame)!!
                 countBoltMe = 0
                 countBoltYouS = 0
                 points.forEach { point ->
@@ -77,8 +110,8 @@ class Match2PPViewModel(private val appDatabase: AppDatabase, private val idGame
             }
         }
 
-    var isMinus10Me = false
-    var isMinus10YouS = false
+    private var isMinus10Me = false
+    private var isMinus10YouS = false
 
     private var minus10Inserted = false
 
@@ -110,7 +143,20 @@ class Match2PPViewModel(private val appDatabase: AppDatabase, private val idGame
             if (lastPoints == null) {
                 lastPoints = Points2PEntity(idGame = idGame)
             }
-            insertPointsUseCase.execute(model.add(lastPoints))
+            val updatedModel = model.add(lastPoints)
+            val pointsMe = updatedModel.pointsMe
+            val pointsYouS = updatedModel.pointsYouS
+            if (pointsMe >= winningPoints) {
+                if (pointsMe > pointsYouS) {
+                    updateStatusScoreName1Game2PUseCase.execute(UpdateStatusAndScoreGameParams(idGame= idGame, score = scoreName1.plus(1).toShort()))
+                }
+            }
+            if (pointsYouS >= winningPoints) {
+                if (pointsYouS > pointsMe) {
+                    updateStatusScoreName2Game2PUseCase.execute(UpdateStatusAndScoreGameParams(idGame= idGame, score = scoreName2.plus(1).toShort()))
+                }
+            }
+            insertPointsUseCase.execute(updatedModel)
         }
     }
 
@@ -122,6 +168,19 @@ class Match2PPViewModel(private val appDatabase: AppDatabase, private val idGame
             }
         }
 
+    }
+
+    fun resetGame(winningPoints: Short, dispatcher: CoroutineDispatcher = Dispatchers.IO) {
+        viewModelScope.launch(dispatcher) {
+            updateStatusWinningPointsGame2PUseCase.execute(UpdateStatusWinningPointsGameParams(idGame =  idGame, statusGame = GameStatus.CONTINUE.id, winningPoints = winningPoints))
+            deleteAllPoints2PUseCase.execute(idGame)
+        }
+    }
+
+    fun updateOnlyStatus(statusGame: GameStatus, dispatcher: CoroutineDispatcher = Dispatchers.IO) {
+        viewModelScope.launch(dispatcher) {
+            updateOnlyStatusGame2PUseCase.execute(UpdateOnlyStatusGameParams(idGame = idGame, statusGame = statusGame.id))
+        }
     }
 }
 

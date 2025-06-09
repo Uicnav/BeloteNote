@@ -13,4 +13,6 @@ interface Points2PDataSource {
     suspend fun delete(idGame: Int): Int
 
     suspend fun delete(row: Points2PEntity)
+
+    suspend fun deleteAllPoints(idGame: Int)
 }

@@ -134,6 +134,9 @@ internal fun TablesScreen2() {
                                 TableTextAtom(game.name2)
                             }
                             Spacer(modifier = Modifier.width(16.dp))
+                            StatusImage(
+                                gameStatus = GameStatus.fromId(game.statusGame)
+                            )
                         }
                     }
                 }
@@ -183,6 +186,9 @@ internal fun TablesScreen3() {
                             }
                             TableTextAtom(game.name3, modifier = Modifier.weight(1F))
                             Spacer(modifier = Modifier.width(16.dp))
+                            StatusImage(
+                                gameStatus = GameStatus.fromId(game.statusGame)
+                            )
                         }
                     }
                 }
@@ -236,6 +242,9 @@ internal fun TablesScreen4() {
                                 TableTextAtom(game.name4)
                             }
                             Spacer(modifier = Modifier.width(16.dp))
+                            StatusImage(
+                                gameStatus = GameStatus.fromId(game.statusGame)
+                            )
                         }
                     }
                 }
@@ -284,6 +293,10 @@ internal fun TablesScreenGroups() {
                                 Text(text = game.name1)
                                 Text(text = game.name2)
                             }
+                            Spacer(modifier = Modifier.width(16.dp))
+                            StatusImage(
+                                gameStatus = GameStatus.fromId(game.statusGame)
+                            )
                         }
                     }
                 }
@@ -370,7 +383,7 @@ private fun TableTextAtom(text: String, modifier: Modifier = Modifier) {
 @Composable
 private fun TablesBase(onInsertGameClick: () -> Unit, content: @Composable (PaddingValues) -> Unit) {
     Scaffold(floatingActionButton = {
-        InsertGameFloatingActionButton(onClick = {
+        InsertFloatingActionButton(onClick = {
             onInsertGameClick()
         }, modifier = Modifier)
     }, containerColor = Color.Transparent) { paddingValues ->
@@ -380,7 +393,7 @@ private fun TablesBase(onInsertGameClick: () -> Unit, content: @Composable (Padd
 }
 
 @Composable
-fun InsertGameFloatingActionButton(onClick: () -> Unit, modifier: Modifier) {
+fun InsertFloatingActionButton(onClick: () -> Unit, modifier: Modifier) {
     FloatingActionButton(
         modifier = modifier,
         onClick = { onClick() },
@@ -401,7 +414,7 @@ fun InsertGame2(appDatabase: AppDatabase, onDismissRequest: () -> Unit, onClick:
             p1.isEmpty() -> shaker1.shake()
             p2.isEmpty() -> shaker2.shake()
             else -> {
-                onClick(Game2PEntity(winnerPoints = winningPoints, name1 = p1, name2 = p2))
+                onClick(Game2PEntity(winningPoints = winningPoints, name1 = p1, name2 = p2))
                 onDismissRequest()
             }
         }
@@ -550,11 +563,12 @@ fun InsertGame2Groups(appDatabase: AppDatabase, onDismissRequest: () -> Unit, on
 }
 
 @Composable
-private fun InsertGameDialogBase(onDismissRequest: () -> Unit, onClick: (Short) -> Unit, appDatabase: AppDatabase, content: @Composable () -> Unit) {
+internal fun InsertGameDialogBase(onDismissRequest: () -> Unit, onClick: (Short) -> Unit, appDatabase: AppDatabase, content: (@Composable () -> Unit)? = null) {
+    val viewModel = viewModel { WinningPointsViewModel(appDatabase) }
+    var winningPoints by remember { mutableStateOf("") }
+    var showError by remember { mutableStateOf(false) }
     Dialog(onDismissRequest = { onDismissRequest() }) { // Draw a rectangle shape with rounded corners inside the dialog
-        var winningPoints by remember { mutableStateOf("") }
-        val viewModel = viewModel { WinningPointsViewModel(appDatabase) }
-        var showError by remember { mutableStateOf(false) }
+
         Card(
             modifier = Modifier.fillMaxWidth().height(375.dp).padding(16.dp),
             shape = RoundedCornerShape(16.dp),
@@ -564,7 +578,7 @@ private fun InsertGameDialogBase(onDismissRequest: () -> Unit, onClick: (Short) 
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
                   ) {
-                content()
+                content?.invoke()
                 var isChecked by remember { mutableStateOf(false) }
 
                 Row(modifier = Modifier.padding(16.dp).fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {

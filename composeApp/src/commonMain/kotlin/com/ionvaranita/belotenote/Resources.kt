@@ -1,9 +1,7 @@
 package com.ionvaranita.belotenote
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -16,37 +14,32 @@ import androidx.compose.ui.unit.dp
 import com.ionvaranita.belotenote.constants.GameStatus
 
 @Composable
-private fun RedCircle(modifier: Modifier = Modifier.size(24.dp)) {
-    Box(modifier = modifier.clip(CircleShape).background(if (isSystemInDarkTheme()) Color(0xFFE57373) else Color(0xFFF44336)))
+fun Circle(modifier: Modifier) {
+    Box(modifier = modifier)
 }
 
 @Composable
-private fun YellowCircle(modifier: Modifier = Modifier.size(24.dp)) {
-    Box(modifier = modifier.clip(CircleShape).background(if (isSystemInDarkTheme()) Color(0xFFFFF176) else Color(0xFFFFEB3B)))
-}
+fun StatusImage(gameStatus: GameStatus?, modifier: Modifier = Modifier.padding(8.dp)) {
+    Box(modifier = modifier) {
+        when (gameStatus) {
+            GameStatus.CONTINUE -> {
+                Circle(Modifier.align(Alignment.Center).size(24.dp).clip(CircleShape).background(Color.Green))
+            }
 
-@Composable
-private fun GreenCircle(modifier: Modifier) {
-    Box(modifier = modifier.size(24.dp).clip(CircleShape).background(if (isSystemInDarkTheme()) Color(0xFF81C784) else Color(0xFF4CAF50)))
-}
+            GameStatus.EXTENDED, GameStatus.EXTENDED_MANDATORY -> {
+                Circle(Modifier.align(Alignment.Center).size(24.dp).clip(CircleShape).background(Color.Yellow))
+            }
 
-@Composable
-fun ColumnScope.StatusImage(gameStatus: GameStatus?, modifier: Modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally)) {
+            GameStatus.FINISHED -> {
+                Circle(Modifier.align(Alignment.Center).size(24.dp).clip(CircleShape).background(Color.Red))
+            }
 
-    when (gameStatus) {
-        GameStatus.TO_START, GameStatus.CONTINUE -> {
-            GreenCircle(modifier)
-        }
-        GameStatus.EXTENDED, GameStatus.EXTENDED_MANDATORY -> {
-            YellowCircle(modifier)
-        }
-        GameStatus.FINISHED -> {
-            RedCircle(modifier)
-        }
-        else -> {
-            throw IllegalStateException()
+            else -> {
+                throw IllegalStateException()
+            }
         }
     }
+
 }
 
 

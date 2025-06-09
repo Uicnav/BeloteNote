@@ -26,7 +26,7 @@ data class Game2PUi(
         return Game2PEntity(
             idGame = this.idGame,
             statusGame = this.statusGame,
-            winnerPoints = this.winningPoints,
+            winningPoints = this.winningPoints,
             name1 = this.name1,
             name2 = this.name2,
             scoreName1 = this.scoreName1,

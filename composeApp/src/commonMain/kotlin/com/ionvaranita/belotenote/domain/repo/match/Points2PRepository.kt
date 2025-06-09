@@ -14,4 +14,6 @@ interface Points2PRepository {
 
 
     suspend fun delete(row: Points2PEntity)
+
+    suspend fun deleteAllPoints(idGame: Int)
 }
