@@ -60,6 +60,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import belotenote.composeapp.generated.resources.Res
 import belotenote.composeapp.generated.resources.alert_dialog_finish_match
@@ -70,6 +73,8 @@ import belotenote.composeapp.generated.resources.dialog_are_you_sure
 import belotenote.composeapp.generated.resources.game
 import belotenote.composeapp.generated.resources.ic_writting_indicator
 import belotenote.composeapp.generated.resources.no
+import belotenote.composeapp.generated.resources.ok
+import belotenote.composeapp.generated.resources.winner_is
 import com.ionvaranita.belotenote.Circle
 import com.ionvaranita.belotenote.StatusImage
 import com.ionvaranita.belotenote.constants.GameStatus
@@ -88,9 +93,12 @@ import com.ionvaranita.belotenote.ui.viewmodel.match.Match2PUiState
 import com.ionvaranita.belotenote.ui.viewmodel.match.Match3PPViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.match.Match3PUiState
 import com.ionvaranita.belotenote.ui.viewmodel.match.MatchGroupsUiState
+import com.ionvaranita.belotenote.ui.viewmodel.match.SideEffect
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -104,6 +112,32 @@ internal fun MatchScreen2(idGame: Int) {
     val scope = rememberCoroutineScope()
     var showInfoGameDialog by remember { mutableStateOf(false) }
     var showUpdateStatusGameDialog by remember { mutableStateOf(false) }
+    var showWinnerDialog by remember { mutableStateOf(false) }
+    var winner by remember { mutableStateOf("") }
+    LaunchedEffect(Unit) {
+        viewModel.oneTimeEvent.collectLatest { event ->
+            when (event) {
+
+                is SideEffect.ShowWinner ->{
+                    if(event.message.isNotEmpty()) {
+                        winner = event.message
+                        showWinnerDialog = true
+                    }
+
+                }
+            }
+        }
+    }
+    if (showWinnerDialog) {
+        WinnerDialog(onDismiss = {
+            showWinnerDialog = false
+        }, onConfirm = {
+            showWinnerDialog = false
+        }, winner)
+    }
+
+
+
     MatchWrapper {
         when (val matchState = matchUiState.value) {
             is Match2PUiState.Success -> {
@@ -318,6 +352,21 @@ internal fun MatchScreen2(idGame: Int) {
             }
         }
 
+    }
+}
+
+@Composable
+fun <T : Any> SingleEventEffect(
+    sideEffectFlow: Flow<T>,
+    lifeCycleState: Lifecycle.State = Lifecycle.State.STARTED,
+    collector: (T) -> Unit
+) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(sideEffectFlow) {
+        lifecycleOwner.repeatOnLifecycle(lifeCycleState) {
+            sideEffectFlow.collect(collector)
+        }
     }
 }
 
@@ -992,6 +1041,34 @@ private fun InfoGameDialog(
                         Text(text = stringResource(Res.string.alert_dialog_finish_match))
                     }
                 }
+            }
+
+        }
+    }
+}
+
+@Composable
+private fun WinnerDialog(
+    onDismiss: () -> Unit, onConfirm: () -> Unit,
+    winnerText: String
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Box(
+            modifier = Modifier.padding(24.dp).fillMaxWidth()
+                .background(Color.White, shape = RoundedCornerShape(16.dp)).padding(24.dp)
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+
+                Text(text = stringResource(Res.string.winner_is), fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Text(text = winnerText, fontSize = 18.sp, fontWeight = FontWeight.ExtraBold)
+
+                Button(onClick = onConfirm) {
+                        Text(text = stringResource(Res.string.ok))
+                    }
             }
 
         }
