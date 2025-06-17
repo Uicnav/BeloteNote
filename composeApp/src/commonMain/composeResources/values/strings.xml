@@ -18,12 +18,12 @@
     <string name="dialog_fragment_winner_points">Winning points:</string>
     <string name="dialog_fragment_insert_manually_winner_points">Insert manually winning points</string>
     <string name="dialog_fragment_extend_match_info">We have more winners.</string>
-    <string name="dialog_fragment_extend_match_q">What you want to do?</string>
+    <string name="dialog_fragment_extend_match_q">What do you want to do?</string>
     <string name="dialog_fragment_extend_match">Extend match</string>
     <string name="dialog_fragment_mandatory_extend_match_info1">We have more winners with the same points.</string>
     <string name="dialog_fragment_mandatory_extend_match_info2">It is mandatory to extend the match.</string>
-    <string name="dialog_fragment_win">Win \'%s\'</string>
-    <string name="dialog_fragment_greater_than">greater than %s</string>
+    <string name="dialog_fragment_win">Win %1$s</string>
+    <string name="dialog_fragment_greater_than">greater than %1$s</string>
     <string name="dialog_fragment_player_names">Player names</string>
     <string name="dialog_fragment_team_names">Team names</string>
 
