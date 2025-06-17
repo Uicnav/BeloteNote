@@ -17,7 +17,6 @@ import com.ionvaranita.belotenote.datalayer.repo.match.Points2PRepositoryImpl
 import com.ionvaranita.belotenote.domain.model.Game2PUi
 import com.ionvaranita.belotenote.domain.model.Points2PUi
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGame2PUseCase
-import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateOnlyStatusGame2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateOnlyStatusGame2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusWinningPointsGame2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName1Game2PUseCase
@@ -28,18 +27,17 @@ import com.ionvaranita.belotenote.domain.usecase.match.get.GetLastPoints2PUseCas
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetPoints2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.insert.InsertPoints2PUseCase
 import com.ionvaranita.belotenote.ui.match.BOLT
+import com.ionvaranita.belotenote.utils.IdsPlayer.ID_PERSON_2_1
+import com.ionvaranita.belotenote.utils.IdsPlayer.ID_PERSON_2_2
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
 
@@ -155,19 +153,41 @@ class Match2PPViewModel(private val appDatabase: AppDatabase, private val idGame
             val updatedModel = model.add(lastPoints)
             val pointsMe = updatedModel.pointsMe
             val pointsYouS = updatedModel.pointsYouS
-            if (pointsMe >= winningPoints) {
+
+            if (pointsMe >=  winningPoints && pointsYouS >= winningPoints) {
+                if (pointsMe > pointsYouS) {
+                    _oneTimeEvent.emit(SideEffect.ShowExtended(maxPoints = pointsMe.toString(), winner = Winner(ID_PERSON_2_1, name1)))
+                } else {
+                    _oneTimeEvent.emit(SideEffect.ShowExtended(maxPoints = pointsYouS.toString(), winner = Winner(ID_PERSON_2_2, name2)))
+                }
+                updateOnlyStatusGame2PUseCase.execute(params = UpdateOnlyStatusGameParams(idGame, GameStatus.EXTENDED.id))
+            }
+
+            else if (pointsMe >= winningPoints) {
                 if (pointsMe > pointsYouS) {
                     updateStatusScoreName1Game2PUseCase.execute(UpdateStatusAndScoreGameParams(idGame= idGame, score = scoreName1.plus(1).toShort()))
-                    _oneTimeEvent.emit(SideEffect.ShowWinner(message = name1))
+                    _oneTimeEvent.emit(SideEffect.ShowWinner(winnerName = name1))
                 }
             }
-            if (pointsYouS >= winningPoints) {
+            else if (pointsYouS >= winningPoints) {
                 if (pointsYouS > pointsMe) {
                     updateStatusScoreName2Game2PUseCase.execute(UpdateStatusAndScoreGameParams(idGame= idGame, score = scoreName2.plus(1).toShort()))
-                    _oneTimeEvent.emit(SideEffect.ShowWinner(message = name2))
+                    _oneTimeEvent.emit(SideEffect.ShowWinner(winnerName = name2))
                 }
             }
             insertPointsUseCase.execute(updatedModel)
+        }
+    }
+
+
+    fun updateStatusScoreName(winner: Winner,dispatcher: CoroutineDispatcher = Dispatchers.IO) {
+        viewModelScope.launch(dispatcher) {
+            if (winner.id == ID_PERSON_2_1) {
+                updateStatusScoreName1Game2PUseCase.execute(params = UpdateStatusAndScoreGameParams(idGame = idGame, statusGame = GameStatus.FINISHED.id, score = scoreName1.plus(1).toShort() ))
+
+            } else if (winner.id == ID_PERSON_2_2) {
+                updateStatusScoreName2Game2PUseCase.execute(params = UpdateStatusAndScoreGameParams(idGame = idGame, statusGame = GameStatus.FINISHED.id, score = scoreName2.plus(1).toShort()))
+            }
         }
     }
 
@@ -185,6 +205,12 @@ class Match2PPViewModel(private val appDatabase: AppDatabase, private val idGame
         viewModelScope.launch(dispatcher) {
             updateStatusWinningPointsGame2PUseCase.execute(UpdateStatusWinningPointsGameParams(idGame =  idGame, statusGame = GameStatus.CONTINUE.id, winningPoints = winningPoints))
             deleteAllPoints2PUseCase.execute(idGame)
+        }
+    }
+
+    fun extentGame(winningPoints: Short, dispatcher: CoroutineDispatcher = Dispatchers.IO) {
+        viewModelScope.launch(dispatcher) {
+            updateStatusWinningPointsGame2PUseCase.execute(UpdateStatusWinningPointsGameParams(idGame =  idGame, statusGame = GameStatus.CONTINUE.id, winningPoints = winningPoints))
         }
     }
 
@@ -208,7 +234,9 @@ sealed class Match2PUiState {
     data class Success(val data: MatchData2P) : Match2PUiState()
     data class Error(val exception: Throwable) : Match2PUiState()
 }
-
 sealed interface SideEffect {
-    data class ShowWinner(val message: String) : SideEffect
+    data class ShowWinner(val winnerName: String) : SideEffect
+    data class ShowExtended(val maxPoints: String, val winner: Winner ): SideEffect
 }
+
+data class Winner(val id: Int, val name: String)

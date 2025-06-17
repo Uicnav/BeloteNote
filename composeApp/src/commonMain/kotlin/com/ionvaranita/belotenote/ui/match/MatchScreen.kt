@@ -31,6 +31,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -42,6 +43,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -55,14 +57,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import belotenote.composeapp.generated.resources.Res
 import belotenote.composeapp.generated.resources.alert_dialog_finish_match
@@ -70,6 +71,11 @@ import belotenote.composeapp.generated.resources.alert_dialog_finished
 import belotenote.composeapp.generated.resources.alert_dialog_playing
 import belotenote.composeapp.generated.resources.alert_dialog_to_extend
 import belotenote.composeapp.generated.resources.dialog_are_you_sure
+import belotenote.composeapp.generated.resources.dialog_fragment_extend_match
+import belotenote.composeapp.generated.resources.dialog_fragment_extend_match_info
+import belotenote.composeapp.generated.resources.dialog_fragment_extend_match_q
+import belotenote.composeapp.generated.resources.dialog_fragment_greater_than
+import belotenote.composeapp.generated.resources.dialog_fragment_win
 import belotenote.composeapp.generated.resources.game
 import belotenote.composeapp.generated.resources.ic_writting_indicator
 import belotenote.composeapp.generated.resources.no
@@ -94,10 +100,10 @@ import com.ionvaranita.belotenote.ui.viewmodel.match.Match3PPViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.match.Match3PUiState
 import com.ionvaranita.belotenote.ui.viewmodel.match.MatchGroupsUiState
 import com.ionvaranita.belotenote.ui.viewmodel.match.SideEffect
+import com.ionvaranita.belotenote.ui.viewmodel.match.Winner
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
@@ -106,6 +112,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 internal fun MatchScreen2(idGame: Int) {
+
     val appDatabase = LocalAppDatabase.current
     val viewModel = viewModel { Match2PPViewModel(appDatabase, idGame) }
     val matchUiState = viewModel.uiState.collectAsState()
@@ -113,17 +120,26 @@ internal fun MatchScreen2(idGame: Int) {
     var showInfoGameDialog by remember { mutableStateOf(false) }
     var showUpdateStatusGameDialog by remember { mutableStateOf(false) }
     var showWinnerDialog by remember { mutableStateOf(false) }
+    var showExtended by remember { mutableStateOf(false) }
     var winner by remember { mutableStateOf("") }
+    var winnerData by remember { mutableStateOf<Winner?>(null) }
+    var maxPoints by remember { mutableStateOf("") }
     LaunchedEffect(Unit) {
         viewModel.oneTimeEvent.collectLatest { event ->
             when (event) {
 
-                is SideEffect.ShowWinner ->{
-                    if(event.message.isNotEmpty()) {
-                        winner = event.message
+                is SideEffect.ShowWinner -> {
+                    if (event.winnerName.isNotEmpty()) {
+                        winner = event.winnerName
                         showWinnerDialog = true
                     }
 
+                }
+
+                is SideEffect.ShowExtended -> {
+                    winnerData = event.winner
+                    maxPoints = event.maxPoints
+                    showExtended = true
                 }
             }
         }
@@ -136,6 +152,18 @@ internal fun MatchScreen2(idGame: Int) {
         }, winner)
     }
 
+    if (showExtended) {
+        ExtendedDialog(onDismiss = {
+            showExtended = false
+        }, onWin = {
+            viewModel.updateStatusScoreName(winnerData!!)
+            showExtended = false
+        }, onExtend = { winningPoints->
+            viewModel.extentGame(winningPoints)
+            showExtended = false
+        }, winnerText = winnerData?.name!!, maxPoints = maxPoints)
+    }
+
 
 
     MatchWrapper {
@@ -143,20 +171,23 @@ internal fun MatchScreen2(idGame: Int) {
             is Match2PUiState.Success -> {
                 val game = matchState.data.game
                 Row(
-                    modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     StatusImage(
                         gameStatus = GameStatus.fromId(game.statusGame),
                         modifier = Modifier.clickable {
                             showInfoGameDialog = true
-                        }.weight(1F))
+                        }.weight(1F)
+                    )
                     PointsTextAtom(text = game.scoreName1.toString())
                     PointsTextAtom(text = game.scoreName2.toString())
 
 
                 }
                 Row(
-                    modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     PointsTextAtom(text = stringResource(Res.string.game))
                     PointsTextAtom(text = game.name1)
@@ -168,16 +199,13 @@ internal fun MatchScreen2(idGame: Int) {
                     InfoGameDialog(
                         onDismiss = {
                             showInfoGameDialog = false
-                        },
-                        infoGame = InfoGame(
+                        }, infoGame = InfoGame(
                             status = viewModel.statusGame.value,
                             winningPoints = game.winningPoints.toString()
-                        ),
-                        onConfirm = {
+                        ), onConfirm = {
                             showInfoGameDialog = false
                             showUpdateStatusGameDialog = true
-                        },
-                        showFinishMatch = viewModel.statusGame.value == GameStatus.CONTINUE
+                        }, showFinishMatch = viewModel.statusGame.value == GameStatus.CONTINUE
                     )
                 }
                 if (showUpdateStatusGameDialog && viewModel.statusGame.value == GameStatus.CONTINUE) {
@@ -188,7 +216,6 @@ internal fun MatchScreen2(idGame: Int) {
                         showUpdateStatusGameDialog = false
                     })
                 }
-
 
 
                 val points = matchState.data.points
@@ -356,21 +383,6 @@ internal fun MatchScreen2(idGame: Int) {
 }
 
 @Composable
-fun <T : Any> SingleEventEffect(
-    sideEffectFlow: Flow<T>,
-    lifeCycleState: Lifecycle.State = Lifecycle.State.STARTED,
-    collector: (T) -> Unit
-) {
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    LaunchedEffect(sideEffectFlow) {
-        lifecycleOwner.repeatOnLifecycle(lifeCycleState) {
-            sideEffectFlow.collect(collector)
-        }
-    }
-}
-
-@Composable
 internal fun MatchScreen3(idGame: Int) {
 
     val appDatabase = LocalAppDatabase.current
@@ -382,13 +394,15 @@ internal fun MatchScreen3(idGame: Int) {
             is Match3PUiState.Success -> {
                 val game = matchState.data.game
                 Row(
-                    modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     StatusImage(
                         gameStatus = GameStatus.fromId(game.statusGame),
                         modifier = Modifier.clickable {
                             //showInfoGameDialog = true
-                        }.weight(1F))
+                        }.weight(1F)
+                    )
                     PointsTextAtom(text = game.scoreName1.toString())
                     PointsTextAtom(text = game.scoreName2.toString())
                     PointsTextAtom(text = game.scoreName3.toString())
@@ -396,7 +410,8 @@ internal fun MatchScreen3(idGame: Int) {
 
                 }
                 Row(
-                    modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     PointsTextAtom(text = stringResource(Res.string.game))
                     PointsTextAtom(text = game.name1)
@@ -632,7 +647,8 @@ internal fun MatchScreen2Groups(idGame: Int) {
                         gameStatus = GameStatus.fromId(game.statusGame),
                         modifier = Modifier.clickable {
                             //showInfoGameDialog = true
-                        }.weight(1F))
+                        }.weight(1F)
+                    )
                     PointsTextAtom(text = game.scoreName1.toString())
                     PointsTextAtom(text = game.scoreName2.toString())
 
@@ -1049,8 +1065,7 @@ private fun InfoGameDialog(
 
 @Composable
 private fun WinnerDialog(
-    onDismiss: () -> Unit, onConfirm: () -> Unit,
-    winnerText: String
+    onDismiss: () -> Unit, onConfirm: () -> Unit, winnerText: String
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Box(
@@ -1063,16 +1078,101 @@ private fun WinnerDialog(
                 modifier = Modifier.fillMaxWidth()
             ) {
 
-                Text(text = stringResource(Res.string.winner_is), fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Text(
+                    text = stringResource(Res.string.winner_is),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
                 Text(text = winnerText, fontSize = 18.sp, fontWeight = FontWeight.ExtraBold)
 
                 Button(onClick = onConfirm) {
-                        Text(text = stringResource(Res.string.ok))
-                    }
+                    Text(text = stringResource(Res.string.ok))
+                }
             }
 
         }
     }
+}
+
+@Composable
+private fun ExtendedDialog(
+    onDismiss: () -> Unit, onWin: () -> Unit, onExtend:(Short) ->Unit, winnerText: String, maxPoints: String
+) {
+
+    Dialog(onDismissRequest = onDismiss) {
+        var newWinningPoints by remember { mutableStateOf("") }
+
+        Box(
+            modifier = Modifier.padding(24.dp).fillMaxWidth()
+                .background(Color.White, shape = RoundedCornerShape(16.dp)).padding(24.dp)
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+
+
+                TextField(
+                    value = newWinningPoints,
+                    onValueChange = { newText ->
+                        if (!newText.startsWith("0") && newText.all { it.isDigit() }) {
+                            newWinningPoints = newText
+                        }
+                    },
+                    placeholder = {
+                        Text(
+                            text = stringResource(
+                                Res.string.dialog_fragment_greater_than,
+                                maxPoints
+                            ), fontStyle = FontStyle.Italic
+                        )
+                    },
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number
+                    ),
+                )
+                Text(
+                    text = stringResource(Res.string.dialog_fragment_extend_match_info),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = stringResource(Res.string.dialog_fragment_extend_match_q),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.ExtraBold
+                )
+
+
+                Row {
+                    Button(onClick = {
+                        val winningPoints = newWinningPoints.toShortCustom()
+                        if (winningPoints>maxPoints.toShort()){
+                            onExtend(winningPoints)
+                        } else {
+
+                        }
+                    }) {
+                        Text(text = stringResource(Res.string.dialog_fragment_extend_match))
+                    }
+                    Button(onClick = {
+                        onWin()
+                    }) {
+                        Text(
+                            text = stringResource(Res.string.dialog_fragment_win, winnerText),
+                            maxLines = 1
+                        )
+                    }
+                }
+
+            }
+        }
+    }
+
+}
+
+enum class ExtendChoice {
+    EXTEND, WIN
 }
 
 @Composable
