@@ -81,6 +81,8 @@ class Match2PPViewModel(private val appDatabase: AppDatabase, private val idGame
     private var countBoltMe = 0
     private var countBoltYouS = 0
 
+    private var lastPoints: Points2PUi? = null
+
 
     private fun getMatchData(dispatcher: CoroutineDispatcher = Dispatchers.IO) =
         viewModelScope.launch(dispatcher) {
@@ -109,11 +111,13 @@ class Match2PPViewModel(private val appDatabase: AppDatabase, private val idGame
                         ++countBoltYouS
                     }
                 }
+                lastPoints = points.lastOrNull()
                 MatchData2P(game = game, points = points)
             }.catch { exception ->
                 _uiState.value = Match2PUiState.Error(exception)
             }.collect { matchData ->
                 _uiState.value = Match2PUiState.Success(matchData)
+
             }
         }
 
@@ -121,6 +125,8 @@ class Match2PPViewModel(private val appDatabase: AppDatabase, private val idGame
     private var isMinus10YouS = false
 
     private var minus10Inserted = false
+
+
 
 
     fun insertPoints(
@@ -154,15 +160,9 @@ class Match2PPViewModel(private val appDatabase: AppDatabase, private val idGame
             val pointsMe = updatedModel.pointsMe
             val pointsYouS = updatedModel.pointsYouS
 
-            if (pointsMe >=  winningPoints && pointsYouS >= winningPoints) {
-                if (pointsMe > pointsYouS) {
-                    _oneTimeEvent.emit(SideEffect.ShowExtended(maxPoints = pointsMe.toString(), winner = Winner(ID_PERSON_2_1, name1)))
-                } else {
-                    _oneTimeEvent.emit(SideEffect.ShowExtended(maxPoints = pointsYouS.toString(), winner = Winner(ID_PERSON_2_2, name2)))
-                }
+            if (checkIsExtended(updatedModel.toUiModel())) {
                 updateOnlyStatusGame2PUseCase.execute(params = UpdateOnlyStatusGameParams(idGame, GameStatus.EXTENDED.id))
             }
-
             else if (pointsMe >= winningPoints) {
                 if (pointsMe > pointsYouS) {
                     updateStatusScoreName1Game2PUseCase.execute(UpdateStatusAndScoreGameParams(idGame= idGame, score = scoreName1.plus(1).toShort()))
@@ -179,6 +179,29 @@ class Match2PPViewModel(private val appDatabase: AppDatabase, private val idGame
         }
     }
 
+    fun checkIsExtended(
+       dispatcher: CoroutineDispatcher = Dispatchers.IO
+    ) {
+        viewModelScope.launch(dispatcher) {
+            lastPoints?.let { checkIsExtended(it) }
+        }
+    }
+
+    private suspend fun checkIsExtended(points2P: Points2PUi): Boolean {
+        val pointsMe = points2P.pointsMe
+        val pointsYouS = points2P.pointsYouS
+        if (pointsMe.toShort() >=  winningPoints && pointsYouS.toShort()>= winningPoints) {
+            if (pointsMe > pointsYouS) {
+                _oneTimeEvent.emit(SideEffect.ShowExtended(maxPoints = pointsMe.toString(), winner = Winner(ID_PERSON_2_1, name1)))
+            } else if(pointsMe < pointsYouS) {
+                _oneTimeEvent.emit(SideEffect.ShowExtended(maxPoints = pointsYouS.toString(), winner = Winner(ID_PERSON_2_2, name2)))
+            } else {
+                _oneTimeEvent.emit(SideEffect.ShowExtendedMandatory(maxPoints = pointsYouS.toString()))
+            }
+            return true
+        }
+        return false
+    }
 
     fun updateStatusScoreName(winner: Winner,dispatcher: CoroutineDispatcher = Dispatchers.IO) {
         viewModelScope.launch(dispatcher) {
@@ -237,6 +260,7 @@ sealed class Match2PUiState {
 sealed interface SideEffect {
     data class ShowWinner(val winnerName: String) : SideEffect
     data class ShowExtended(val maxPoints: String, val winner: Winner ): SideEffect
+    data class ShowExtendedMandatory(val maxPoints: String ): SideEffect
 }
 
 data class Winner(val id: Int, val name: String)

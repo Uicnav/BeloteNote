@@ -131,17 +131,25 @@ internal fun MatchScreen2(idGame: Int) {
                 is SideEffect.ShowWinner -> {
                     if (event.winnerName.isNotEmpty()) {
                         winner = event.winnerName
-                        showWinnerDialog = true
                     }
-
+                    showWinnerDialog = true
                 }
 
                 is SideEffect.ShowExtended -> {
                     winnerData = event.winner
                     maxPoints = event.maxPoints
                     showExtended = true
+
+                }
+
+                is SideEffect.ShowExtendedMandatory -> {
+                    winnerData = null
+                    maxPoints = event.maxPoints
+                    showExtended = true
+
                 }
             }
+
         }
     }
     if (showWinnerDialog) {
@@ -156,12 +164,14 @@ internal fun MatchScreen2(idGame: Int) {
         ExtendedDialog(onDismiss = {
             showExtended = false
         }, onWin = {
-            viewModel.updateStatusScoreName(winnerData!!)
+            winnerData?.let {
+                viewModel.updateStatusScoreName(it)
+            }
             showExtended = false
-        }, onExtend = { winningPoints->
+        }, onExtend = { winningPoints ->
             viewModel.extentGame(winningPoints)
             showExtended = false
-        }, winnerText = winnerData?.name!!, maxPoints = maxPoints)
+        }, winnerText = winnerData?.name, maxPoints = maxPoints)
     }
 
 
@@ -352,10 +362,14 @@ internal fun MatchScreen2(idGame: Int) {
                             }
 
                         })
-                } else {
+                } else{
                     var shouDialog by remember { mutableStateOf(false) }
                     InsertFloatingActionButton(onClick = {
-                        shouDialog = true
+                        if(viewModel.statusGame.value == GameStatus.EXTENDED || viewModel.statusGame.value == GameStatus.EXTENDED_MANDATORY){
+                            viewModel.checkIsExtended()
+                        } else {
+                            shouDialog = true
+                        }
                     }, modifier = Modifier.align(Alignment.End).padding(16.dp))
                     if (shouDialog) {
                         InsertGameDialogBase(onDismissRequest = {
@@ -1096,7 +1110,11 @@ private fun WinnerDialog(
 
 @Composable
 private fun ExtendedDialog(
-    onDismiss: () -> Unit, onWin: () -> Unit, onExtend:(Short) ->Unit, winnerText: String, maxPoints: String
+    onDismiss: () -> Unit,
+    onWin: () -> Unit,
+    onExtend: (Short) -> Unit,
+    winnerText: String?,
+    maxPoints: String
 ) {
 
     Dialog(onDismissRequest = onDismiss) {
@@ -1123,8 +1141,7 @@ private fun ExtendedDialog(
                     placeholder = {
                         Text(
                             text = stringResource(
-                                Res.string.dialog_fragment_greater_than,
-                                maxPoints
+                                Res.string.dialog_fragment_greater_than, maxPoints
                             ), fontStyle = FontStyle.Italic
                         )
                     },
@@ -1147,7 +1164,7 @@ private fun ExtendedDialog(
                 Row {
                     Button(onClick = {
                         val winningPoints = newWinningPoints.toShortCustom()
-                        if (winningPoints>maxPoints.toShort()){
+                        if (winningPoints > maxPoints.toShort()) {
                             onExtend(winningPoints)
                         } else {
 
@@ -1155,13 +1172,15 @@ private fun ExtendedDialog(
                     }) {
                         Text(text = stringResource(Res.string.dialog_fragment_extend_match))
                     }
-                    Button(onClick = {
-                        onWin()
-                    }) {
-                        Text(
-                            text = stringResource(Res.string.dialog_fragment_win, winnerText),
-                            maxLines = 1
-                        )
+                    winnerText?.let {
+                        Button(onClick = {
+                            onWin()
+                        }) {
+                            Text(
+                                text = stringResource(Res.string.dialog_fragment_win, it),
+                                maxLines = 1
+                            )
+                        }
                     }
                 }
 
