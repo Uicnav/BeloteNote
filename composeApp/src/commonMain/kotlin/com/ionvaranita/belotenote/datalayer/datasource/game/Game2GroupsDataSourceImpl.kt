@@ -3,7 +3,7 @@ package com.ionvaranita.belotenote.datalayer.datasource.game
 import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Game2GroupsEntity
 import com.ionvaranita.belotenote.domain.datasource.game.Game2GroupsDataSource
 import kotlinx.coroutines.flow.Flow
-import varanita.informatics.shared.database.dao.groups2.Game2GroupsDao
+import com.ionvaranita.belotenote.datalayer.database.dao.groups2.Game2GroupsDao
 
 class Game2GroupsDataSourceImpl(private val dao: Game2GroupsDao) : Game2GroupsDataSource {
     override suspend fun getGame(idGame: Int): Flow<Game2GroupsEntity> {
@@ -40,5 +40,13 @@ class Game2GroupsDataSourceImpl(private val dao: Game2GroupsDao) : Game2GroupsDa
 
     override suspend fun updateOnlyStatus(idGame: Int, gameStatus: Byte) {
         dao.updateOnlyStatus(idGame, gameStatus)
+    }
+
+    override suspend fun updateStatusWinningPoints(
+        idGame: Int,
+        gameStatus: Byte,
+        winningPoints: Short
+    ) {
+        dao.updateStatusWinningPoints(idGame,gameStatus, winningPoints)
     }
 }

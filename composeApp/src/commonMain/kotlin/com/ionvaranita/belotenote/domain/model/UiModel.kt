@@ -87,7 +87,7 @@ data class Game4PUi(
 data class Game2GroupsUi(
     val idGame: Int,
     val statusGame: Byte,
-    val winnerPoints: Short,
+    val winningPoints: Short,
     val name1: String,
     val name2: String,
     val scoreName1: Short,
@@ -97,7 +97,7 @@ data class Game2GroupsUi(
         return Game2GroupsEntity(
             idGame = this.idGame,
             statusGame = this.statusGame,
-            winnerPoints = this.winnerPoints,
+            winningPoints = this.winningPoints,
             name1 = this.name1,
             name2 = this.name2
         )
@@ -111,7 +111,7 @@ data class WinningPointsUi(val winningPoints: Short) {
 }
 
 data class Points2PUi(
-    val idGame: Int,
+    var idGame: Int = 0,
     var pointsMe: String,
     var pointsYouS: String,
     val pointsGame: String,
@@ -184,8 +184,7 @@ data class Points4PUi(
 
 
 data class Points2GroupsUi(
-    val idRow: Long = 0,
-    val idGame: Int,
+    var idGame: Int = 0,
     var pointsWe: String,
     var pointsYouP: String,
     val pointsGame: String,

@@ -11,9 +11,9 @@ import com.ionvaranita.belotenote.utils.getCurrentTime
  */
 @Entity
 data class Game2GroupsEntity(@PrimaryKey(
-    autoGenerate = true) val idGame: Int = 0, val dateGame: Long = getCurrentTime(), val statusGame: Byte = GameStatus.CONTINUE.id, val winnerPoints: Short, val name1: String, val name2: String,
-    val scoreName1: Short = 0, var scoreName2: Short = 0) {
+    autoGenerate = true) val idGame: Int = 0, val dateGame: Long = getCurrentTime(), val statusGame: Byte = GameStatus.CONTINUE.id, val winningPoints: Short, val name1: String, val name2: String,
+                             val scoreName1: Short = 0, var scoreName2: Short = 0) {
     fun toUiModel(): Game2GroupsUi {
-        return Game2GroupsUi(idGame = this.idGame, statusGame = this.statusGame, winnerPoints = this.winnerPoints, name1 = this.name1, name2 = this.name2, scoreName1 = this.scoreName1, scoreName2 = this.scoreName2)
+        return Game2GroupsUi(idGame = this.idGame, statusGame = this.statusGame, winningPoints = this.winningPoints, name1 = this.name1, name2 = this.name2, scoreName1 = this.scoreName1, scoreName2 = this.scoreName2)
     }
 }
