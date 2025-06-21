@@ -23,7 +23,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.runBlocking
 import varanita.informatics.shared.database.dao.ExtendedGameDao
-import varanita.informatics.shared.database.dao.groups2.Game2GroupsDao
+import com.ionvaranita.belotenote.datalayer.database.dao.groups2.Game2GroupsDao
 import varanita.informatics.shared.database.dao.players2.Game2PDao
 import varanita.informatics.shared.database.dao.players2.Points2PDao
 import com.ionvaranita.belotenote.datalayer.database.dao.players3.Game3PDao
@@ -35,7 +35,7 @@ import varanita.informatics.shared.database.dao.players4.Game4PDao
  */
 @Database(
     entities = [Game2PEntity::class, Points2PEntity::class, Game3PEntity::class, Points3PEntity::class, Game4PEntity::class, Points4PEntity::class, Game2GroupsEntity::class, Points2GroupsEntity::class, ExtendedGameEntity::class, BoltManagerEntity::class, WinningPointsEntity::class],
-    version = 8,
+    version = 9,
     exportSchema = false
 )
 @ConstructedBy(AppDatabaseConstructor::class)

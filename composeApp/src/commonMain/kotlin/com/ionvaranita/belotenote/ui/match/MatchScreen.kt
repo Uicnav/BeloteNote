@@ -111,10 +111,10 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-internal fun MatchScreen2(idGame: Int) {
+internal fun MatchScreen2(viewModel: Match2PPViewModel) {
 
-    val appDatabase = LocalAppDatabase.current
-    val viewModel = viewModel { Match2PPViewModel(appDatabase, idGame) }
+
+
     val matchUiState = viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
     var showInfoGameDialog by remember { mutableStateOf(false) }
@@ -306,7 +306,6 @@ internal fun MatchScreen2(idGame: Int) {
                                 scope.launch(Dispatchers.IO) {
                                     viewModel.insertPoints(
                                         Points2PUi(
-                                            idGame = idGame,
                                             pointsMe = pointsMe,
                                             pointsGame = pointsGame,
                                             pointsYouS = pointsYouS
@@ -362,10 +361,10 @@ internal fun MatchScreen2(idGame: Int) {
                             }
 
                         })
-                } else{
+                } else {
                     var shouDialog by remember { mutableStateOf(false) }
                     InsertFloatingActionButton(onClick = {
-                        if(viewModel.statusGame.value == GameStatus.EXTENDED || viewModel.statusGame.value == GameStatus.EXTENDED_MANDATORY){
+                        if (viewModel.statusGame.value == GameStatus.EXTENDED || viewModel.statusGame.value == GameStatus.EXTENDED_MANDATORY) {
                             viewModel.checkIsExtended()
                         } else {
                             shouDialog = true
@@ -376,7 +375,7 @@ internal fun MatchScreen2(idGame: Int) {
                             shouDialog = false
                         }, onClick = { winningPoints ->
                             viewModel.resetGame(winningPoints)
-                        }, appDatabase = appDatabase)
+                        })
                     }
 
                 }
@@ -645,22 +644,99 @@ internal fun MatchScreen4(idGame: Int) {
 }
 
 @Composable
-internal fun MatchScreen2Groups(idGame: Int) {
+internal fun MatchScreen2Groups(viewModel: Match2GroupsViewModel) {
     val appDatabase = LocalAppDatabase.current
-    val viewModel = viewModel { Match2GroupsViewModel(appDatabase, idGame) }
     val matchUiState = viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
+    var showInfoGameDialog by remember { mutableStateOf(false) }
+    var showUpdateStatusGameDialog by remember { mutableStateOf(false) }
+    var showWinnerDialog by remember { mutableStateOf(false) }
+    var showExtended by remember { mutableStateOf(false) }
+    var winner by remember { mutableStateOf("") }
+    var winnerData by remember { mutableStateOf<Winner?>(null) }
+    var maxPoints by remember { mutableStateOf("") }
+    LaunchedEffect(Unit) {
+        viewModel.oneTimeEvent.collectLatest { event ->
+            when (event) {
+
+                is SideEffect.ShowWinner -> {
+                    if (event.winnerName.isNotEmpty()) {
+                        winner = event.winnerName
+                    }
+                    showWinnerDialog = true
+                }
+
+                is SideEffect.ShowExtended -> {
+                    winnerData = event.winner
+                    maxPoints = event.maxPoints
+                    showExtended = true
+
+                }
+
+                is SideEffect.ShowExtendedMandatory -> {
+                    winnerData = null
+                    maxPoints = event.maxPoints
+                    showExtended = true
+
+                }
+            }
+
+        }
+    }
+    if (showWinnerDialog) {
+        WinnerDialog(onDismiss = {
+            showWinnerDialog = false
+        }, onConfirm = {
+            showWinnerDialog = false
+        }, winner)
+    }
+
+    if (showExtended) {
+        ExtendedDialog(onDismiss = {
+            showExtended = false
+        }, onWin = {
+            winnerData?.let {
+                viewModel.updateStatusScoreName(it)
+            }
+            showExtended = false
+        }, onExtend = { winningPoints ->
+            viewModel.extentGame(winningPoints)
+            showExtended = false
+        }, winnerText = winnerData?.name, maxPoints = maxPoints)
+    }
     MatchWrapper {
         when (val matchState = matchUiState.value) {
             is MatchGroupsUiState.Success -> {
+                if (showInfoGameDialog) {
+                    InfoGameDialog(
+                        onDismiss = {
+                            showInfoGameDialog = false
+                        }, infoGame = InfoGame(
+                            status = viewModel.statusGame.value,
+                            winningPoints = viewModel.winningPoints.toString()
+                        ), onConfirm = {
+                            showInfoGameDialog = false
+                            showUpdateStatusGameDialog = true
+                        }, showFinishMatch = viewModel.statusGame.value == GameStatus.CONTINUE
+                    )
+                }
+                if (showUpdateStatusGameDialog && viewModel.statusGame.value == GameStatus.CONTINUE) {
+                    UpdateStatusGameDialog(onDismiss = {
+                        showUpdateStatusGameDialog = false
+                    }, onConfirm = {
+                        viewModel.updateOnlyStatus(GameStatus.FINISHED)
+                        showUpdateStatusGameDialog = false
+                    })
+                }
                 val game = matchState.data.game
                 Row(
-                    modifier = Modifier.weight(1F), verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     StatusImage(
                         gameStatus = GameStatus.fromId(game.statusGame),
                         modifier = Modifier.clickable {
-                            //showInfoGameDialog = true
+                            showInfoGameDialog = true
                         }.weight(1F)
                     )
                     PointsTextAtom(text = game.scoreName1.toString())
@@ -669,7 +745,8 @@ internal fun MatchScreen2Groups(idGame: Int) {
 
                 }
                 Row(
-                    modifier = Modifier.weight(1F), verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     PointsTextAtom(text = stringResource(Res.string.game))
                     PointsTextAtom(text = game.name1)
@@ -694,6 +771,7 @@ internal fun MatchScreen2Groups(idGame: Int) {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     state = pointsListState
                 ) {
+
 
                     itemsIndexed(points) { index: Int, item: Points2GroupsUi ->
                         val isLast = index == points.lastIndex
@@ -721,91 +799,112 @@ internal fun MatchScreen2Groups(idGame: Int) {
                         }
                     }
                 }
-                Row(
-                    modifier = Modifier.fillMaxWidth().wrapContentHeight()
-                ) {
-                    TouchableText(text = pointsGame, isPressed = isPressedPoints, onClick = {
+                if (viewModel.statusGame.value == GameStatus.CONTINUE) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().wrapContentHeight()
+                    ) {
+                        TouchableText(text = pointsGame, isPressed = isPressedPoints, onClick = {
 
-                        isPressedPoints = true
-                        isPressedWe = false
-                        isPressedYouP = false
+                            isPressedPoints = true
+                            isPressedWe = false
+                            isPressedYouP = false
 
-                    })
+                        })
 
-                    TouchableText(text = pointsWe, isPressed = isPressedWe, onClick = {
+                        TouchableText(text = pointsWe, isPressed = isPressedWe, onClick = {
 
-                        isPressedPoints = false
-                        isPressedWe = true
-                        isPressedYouP = false
+                            isPressedPoints = false
+                            isPressedWe = true
+                            isPressedYouP = false
 
-                    })
-                    TouchableText(text = pointsYouP, isPressed = isPressedYouP, onClick = {
-                        isPressedPoints = false
-                        isPressedWe = false
-                        isPressedYouP = true
-                    })
-                }
-                Keyboard(
-                    isPresedGames = isPressedPoints,
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = { inputKey ->
-                        if (inputKey.equals(ADD)) {
-                            scope.launch(Dispatchers.IO) {
-                                viewModel.insertPoints(
-                                    Points2GroupsUi(
-                                        idGame = idGame,
-                                        pointsWe = pointsWe,
-                                        pointsGame = pointsGame,
-                                        pointsYouP = pointsYouP
+                        })
+                        TouchableText(text = pointsYouP, isPressed = isPressedYouP, onClick = {
+                            isPressedPoints = false
+                            isPressedWe = false
+                            isPressedYouP = true
+                        })
+                    }
+                    Keyboard(
+                        isPresedGames = isPressedPoints,
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { inputKey ->
+                            if (inputKey.equals(ADD)) {
+                                scope.launch(Dispatchers.IO) {
+                                    viewModel.insertPoints(
+                                        Points2GroupsUi(
+                                            pointsWe = pointsWe,
+                                            pointsGame = pointsGame,
+                                            pointsYouP = pointsYouP
+                                        )
                                     )
-                                )
+                                }
+                            } else {
+                                if (isPressedPoints) {
+
+                                    manageUserInputKey(
+                                        inputText = pointsGame, inputKey = inputKey
+                                    ) { text ->
+                                        pointsGame = text
+                                    }
+                                }
+                                if (isPressedWe) {
+                                    manageUserInputKey(
+                                        inputText = pointsWe, inputKey = inputKey
+                                    ) { text ->
+                                        pointsWe = text
+                                        if (inputKey.equals(MINUS_10) || inputKey.equals(BOLT)) {
+                                            if (pointsYouP.equals(MINUS_10) || pointsYouP.equals(
+                                                    BOLT
+                                                )
+                                            ) {
+                                                pointsYouP = ""
+
+                                            }
+                                        }
+                                        if (pointsGame.isNotEmpty()) {
+                                            pointsYouP =
+                                                (pointsGame.toShortCustom() - text.toShortCustom()).toCustomString()
+                                        }
+                                    }
+                                }
+                                if (isPressedYouP) {
+                                    manageUserInputKey(
+                                        inputText = pointsYouP, inputKey = inputKey
+                                    ) { text ->
+                                        pointsYouP = text
+                                        if (inputKey.equals(MINUS_10) || inputKey.equals(BOLT)) {
+                                            if (pointsWe.equals(MINUS_10) || pointsWe.equals(BOLT)) {
+                                                pointsWe = ""
+                                            }
+                                        }
+                                        if (pointsGame.isNotEmpty()) {
+                                            pointsWe =
+                                                (pointsGame.toShortCustom() - text.toShortCustom()).toCustomString()
+                                        }
+                                    }
+
+                                }
                             }
+
+                        })
+                } else {
+                    var shouDialog by remember { mutableStateOf(false) }
+                    InsertFloatingActionButton(onClick = {
+                        if (viewModel.statusGame.value == GameStatus.EXTENDED || viewModel.statusGame.value == GameStatus.EXTENDED_MANDATORY) {
+                            viewModel.checkIsExtended()
                         } else {
-                            if (isPressedPoints) {
-
-                                manageUserInputKey(
-                                    inputText = pointsGame, inputKey = inputKey
-                                ) { text ->
-                                    pointsGame = text
-                                }
-                            }
-                            if (isPressedWe) {
-                                manageUserInputKey(
-                                    inputText = pointsWe, inputKey = inputKey
-                                ) { text ->
-                                    pointsWe = text
-                                    if (inputKey.equals(MINUS_10) || inputKey.equals(BOLT)) {
-                                        if (pointsYouP.equals(MINUS_10) || pointsYouP.equals(BOLT)) {
-                                            pointsYouP = ""
-
-                                        }
-                                    }
-                                    if (pointsGame.isNotEmpty()) {
-                                        pointsYouP =
-                                            (pointsGame.toShortCustom() - text.toShortCustom()).toCustomString()
-                                    }
-                                }
-                            }
-                            if (isPressedYouP) {
-                                manageUserInputKey(
-                                    inputText = pointsYouP, inputKey = inputKey
-                                ) { text ->
-                                    pointsYouP = text
-                                    if (inputKey.equals(MINUS_10) || inputKey.equals(BOLT)) {
-                                        if (pointsWe.equals(MINUS_10) || pointsWe.equals(BOLT)) {
-                                            pointsWe = ""
-                                        }
-                                    }
-                                    if (pointsGame.isNotEmpty()) {
-                                        pointsWe =
-                                            (pointsGame.toShortCustom() - text.toShortCustom()).toCustomString()
-                                    }
-                                }
-
-                            }
+                            shouDialog = true
                         }
+                    }, modifier = Modifier.align(Alignment.End).padding(16.dp))
+                    if (shouDialog) {
+                        InsertGameDialogBase(onDismissRequest = {
+                            shouDialog = false
+                        }, onClick = { winningPoints ->
+                            viewModel.resetGame(winningPoints)
+                        })
+                    }
+                }
 
-                    })
 
             }
 
@@ -1248,5 +1347,5 @@ data class InfoGame(val status: GameStatus, val winningPoints: String)
 @Preview
 @Composable
 private fun MatchScreen2Preview() {
-    MatchScreen2(1)
+    //MatchScreen2(1)
 }

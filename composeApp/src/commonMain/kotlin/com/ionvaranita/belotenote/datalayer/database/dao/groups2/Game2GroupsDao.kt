@@ -1,4 +1,4 @@
-package varanita.informatics.shared.database.dao.groups2
+package com.ionvaranita.belotenote.datalayer.database.dao.groups2
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -21,8 +21,8 @@ interface Game2GroupsDao {
     @Insert
     suspend fun insert(game2GroupsEntity: Game2GroupsEntity): Long
 
-    @Query("update Game2GroupsEntity set statusGame = :statusGame, winnerPoints = :winnerPoints, dateGame = :dateGame where idGame = :idGame")
-    suspend fun update(idGame: Int, statusGame: Byte, winnerPoints: Short, dateGame: Long) : Int
+    @Query("update Game2GroupsEntity set statusGame = :statusGame, winningPoints = :winningPoints, dateGame = :dateGame where idGame = :idGame")
+    suspend fun update(idGame: Int, statusGame: Byte, winningPoints: Short, dateGame: Long) : Int
 
     @Query("update Game2GroupsEntity set statusGame = :statusGame, dateGame = :dateGame where idGame = :idGame")
     suspend fun updateStatus(idGame: Int, statusGame: Byte, dateGame: Long): Int
@@ -38,4 +38,6 @@ interface Game2GroupsDao {
 
     @Query("update Game2GroupsEntity set statusGame = :statusGame  where idGame = :idGame")
     suspend fun updateOnlyStatus(idGame: Int, statusGame: Byte): Int
+    @Query("update Game2GroupsEntity set statusGame = :statusGame, winningPoints= :winningPoints  where idGame = :idGame")
+    suspend fun updateStatusWinningPoints(idGame: Int, statusGame: Byte, winningPoints: Short): Int
 }

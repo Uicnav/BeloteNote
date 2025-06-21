@@ -21,4 +21,6 @@ interface Games2GroupsRepository {
         scoreName2: Short
     ): Int
     suspend fun updateOnlyStatus(idGame: Int, gameStatus: Byte)
+
+    suspend fun updateStatusWinningPoints(idGame: Int, gameStatus: Byte, winningPoints: Short)
 }

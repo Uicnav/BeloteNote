@@ -44,4 +44,12 @@ class Games2GroupsRepositoryImpl(private val datasource: Game2GroupsDataSource) 
         datasource.updateOnlyStatus(idGame, gameStatus)
     }
 
+    override suspend fun updateStatusWinningPoints(
+        idGame: Int,
+        gameStatus: Byte,
+        winningPoints: Short
+    ) {
+        datasource.updateStatusWinningPoints(idGame, gameStatus, winningPoints)
+    }
+
 }

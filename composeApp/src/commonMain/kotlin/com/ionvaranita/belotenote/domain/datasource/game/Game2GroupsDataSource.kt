@@ -23,4 +23,6 @@ interface Game2GroupsDataSource {
     ): Int
 
     suspend fun updateOnlyStatus(idGame: Int, gameStatus: Byte)
+
+    suspend fun updateStatusWinningPoints(idGame: Int, gameStatus: Byte, winningPoints: Short)
 }

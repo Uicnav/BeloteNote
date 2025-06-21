@@ -17,11 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class Game2PViewModel(private val appDatabase: AppDatabase) : ViewModel() {
-    val repositoryGame = Games2PRepositoryImpl(Game2PDataSourceImpl(appDatabase.game2PDao()))
-    private var getGamesUseCase: GetGames2PUseCase = GetGames2PUseCase(repositoryGame)
-    private var insertGameUseCase: InsertGame2PUseCase = InsertGame2PUseCase(repositoryGame)
-    private val deleteGameUseCase: DeleteGame2PUseCase = DeleteGame2PUseCase(repositoryGame)
+class Game2PViewModel(private val getGamesUseCase: GetGames2PUseCase, private val insertGameUseCase: InsertGame2PUseCase, private val deleteGameUseCase: DeleteGame2PUseCase) : ViewModel() {
 
     // Backing property to avoid state updates from other classes
     private val _uiState = MutableStateFlow(Games2PUiState.Success(emptyList()))
