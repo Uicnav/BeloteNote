@@ -2,13 +2,14 @@ package com.ionvaranita.belotenote.ui.viewmodel.match
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ionvaranita.belotenote.datalayer.database.AppDatabase
+import com.ionvaranita.belotenote.constants.GameStatus
 import com.ionvaranita.belotenote.datalayer.database.entity.players3.Points3PEntity
 import com.ionvaranita.belotenote.datalayer.datasource.game.Game3PDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.datasource.match.Points3PDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.repo.game.Games3PRepositoryImpl
 import com.ionvaranita.belotenote.datalayer.repo.match.Points3PRepositoryImpl
 import com.ionvaranita.belotenote.domain.model.Game3PUi
+import com.ionvaranita.belotenote.domain.model.Points2PUi
 import com.ionvaranita.belotenote.domain.model.Points3PUi
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGame3PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteLastRowPoints3PUseCase
@@ -25,18 +26,14 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
-class Match3PPViewModel(private val appDatabase: AppDatabase, private val idGame: Int) :
-    ViewModel() {
-    private val repositoryGame =
-        Games3PRepositoryImpl(Game3PDataSourceImpl(appDatabase.game3PDao()))
-    private val getGameUseCase = GetGame3PUseCase(repositoryGame)
-    private val repositoryPoints =
-        Points3PRepositoryImpl(Points3PDataSourceImpl(appDatabase.points3PDao()))
-
-    private val getPointsUseCase = GetPoints3PUseCase(repositoryPoints)
-    private val getLastUseCase = GetLastPoints3PUseCase(repositoryPoints)
-    private val insertPointsUseCase = InsertPoints3PUseCase(repositoryPoints)
-    private val deleteLastRowPoints2GroupsUseCase = DeleteLastRowPoints3PUseCase(repositoryPoints)
+class Match3PPViewModel(
+    private val idGame: Int,
+    private val getGameUseCase: GetGame3PUseCase,
+    private val getPointsUseCase: GetPoints3PUseCase,
+    private val getLastUseCase: GetLastPoints3PUseCase,
+    private val insertPointsUseCase: InsertPoints3PUseCase,
+    private val deleteLastRowUseCase: DeleteLastRowPoints3PUseCase
+) : ViewModel(), ViewModelBase {
 
     private val _uiState = MutableStateFlow<Match3PUiState>(Match3PUiState.Loading)
     val uiState: StateFlow<Match3PUiState> = _uiState
@@ -48,6 +45,9 @@ class Match3PPViewModel(private val appDatabase: AppDatabase, private val idGame
     var countBoltP1 = 0
     var countBoltP2 = 0
     var countBoltP3 = 0
+
+    private var lastPoints: Points3PUi? = null
+
 
     private fun getMatchData(dispatcher: CoroutineDispatcher = Dispatchers.IO) =
         viewModelScope.launch(dispatcher) {
@@ -76,6 +76,7 @@ class Match3PPViewModel(private val appDatabase: AppDatabase, private val idGame
                         ++countBoltP3
                     }
                 }
+                lastPoints = points.lastOrNull()
                 MatchData3P(game = game, points = points)
             }.catch { exception ->
                 _uiState.value = Match3PUiState.Error(exception)
@@ -95,6 +96,7 @@ class Match3PPViewModel(private val appDatabase: AppDatabase, private val idGame
         model: Points3PUi, dispatcher: CoroutineDispatcher = Dispatchers.IO
     ) {
         viewModelScope.launch(dispatcher) {
+            model.idGame = idGame
             if (model.pointsP1 == BOLT) {
                 if (!isMinus10P1 && countBoltP1 != 0 && countBoltP1 % 2 == 0) {
                     isMinus10P1 = true
@@ -131,14 +133,34 @@ class Match3PPViewModel(private val appDatabase: AppDatabase, private val idGame
         }
     }
 
-    fun deleteLastPoints(dispatcher: CoroutineDispatcher = Dispatchers.IO) {
+   override fun deleteLastPoints(dispatcher: CoroutineDispatcher) {
         viewModelScope.launch(dispatcher) {
             var lastPoints = getLastUseCase.execute(idGame)
             if (lastPoints != null) {
-                deleteLastRowPoints2GroupsUseCase.execute(lastPoints)
+                deleteLastRowUseCase.execute(lastPoints)
             }
         }
 
+    }
+
+    override fun checkIsExtended(dispatcher: CoroutineDispatcher) {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateStatusScoreName(winner: Winner, dispatcher: CoroutineDispatcher) {
+        TODO("Not yet implemented")
+    }
+
+    override fun resetGame(winningPoints: Short, dispatcher: CoroutineDispatcher) {
+        TODO("Not yet implemented")
+    }
+
+    override fun extentGame(winningPoints: Short, dispatcher: CoroutineDispatcher) {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateOnlyStatus(statusGame: GameStatus, dispatcher: CoroutineDispatcher) {
+        TODO("Not yet implemented")
     }
 }
 

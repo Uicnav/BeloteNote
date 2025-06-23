@@ -88,7 +88,6 @@ import com.ionvaranita.belotenote.domain.model.Points2GroupsUi
 import com.ionvaranita.belotenote.domain.model.Points2PUi
 import com.ionvaranita.belotenote.domain.model.Points3PUi
 import com.ionvaranita.belotenote.domain.model.toShortCustom
-import com.ionvaranita.belotenote.ui.LocalAppDatabase
 import com.ionvaranita.belotenote.ui.LocalNavHostController
 import com.ionvaranita.belotenote.ui.table.GameCard
 import com.ionvaranita.belotenote.ui.table.InsertFloatingActionButton
@@ -396,10 +395,8 @@ internal fun MatchScreen2(viewModel: Match2PPViewModel) {
 }
 
 @Composable
-internal fun MatchScreen3(idGame: Int) {
+internal fun MatchScreen3(viewModel: Match3PPViewModel) {
 
-    val appDatabase = LocalAppDatabase.current
-    val viewModel = viewModel { Match3PPViewModel(appDatabase, idGame) }
     val matchUiState = viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
     MatchWrapper {
@@ -524,7 +521,6 @@ internal fun MatchScreen3(idGame: Int) {
                             scope.launch(Dispatchers.IO) {
                                 viewModel.insertPoints(
                                     Points3PUi(
-                                        idGame = idGame,
                                         pointsP1 = pointsP1,
                                         pointsGame = pointsGame,
                                         pointsP2 = pointsP2,
@@ -639,13 +635,11 @@ internal fun MatchScreen3(idGame: Int) {
 @Composable
 internal fun MatchScreen4(idGame: Int) {
     val navController = LocalNavHostController.current
-    val appDatabase = LocalAppDatabase.current
 
 }
 
 @Composable
 internal fun MatchScreen2Groups(viewModel: Match2GroupsViewModel) {
-    val appDatabase = LocalAppDatabase.current
     val matchUiState = viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
     var showInfoGameDialog by remember { mutableStateOf(false) }

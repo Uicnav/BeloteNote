@@ -5,12 +5,10 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import com.ionvaranita.belotenote.datalayer.database.dao.WinningPointsDao
+import com.ionvaranita.belotenote.datalayer.database.dao.groups2.Game2GroupsDao
 import com.ionvaranita.belotenote.datalayer.database.dao.groups2.Points2GroupsDao
+import com.ionvaranita.belotenote.datalayer.database.dao.players3.Game3PDao
 import com.ionvaranita.belotenote.datalayer.database.dao.players4.Points4PDao
-import com.ionvaranita.belotenote.datalayer.database.entity.BoltManagerEntity
-import com.ionvaranita.belotenote.datalayer.database.entity.ExtendedGameEntity
-import com.ionvaranita.belotenote.datalayer.database.entity.WinningPointsEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Game2GroupsEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Points2GroupsEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.Game2PEntity
@@ -21,12 +19,8 @@ import com.ionvaranita.belotenote.datalayer.database.entity.players4.Game4PEntit
 import com.ionvaranita.belotenote.datalayer.database.entity.players4.Points4PEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.runBlocking
-import varanita.informatics.shared.database.dao.ExtendedGameDao
-import com.ionvaranita.belotenote.datalayer.database.dao.groups2.Game2GroupsDao
 import varanita.informatics.shared.database.dao.players2.Game2PDao
 import varanita.informatics.shared.database.dao.players2.Points2PDao
-import com.ionvaranita.belotenote.datalayer.database.dao.players3.Game3PDao
 import varanita.informatics.shared.database.dao.players3.Points3PDao
 import varanita.informatics.shared.database.dao.players4.Game4PDao
 
@@ -34,8 +28,8 @@ import varanita.informatics.shared.database.dao.players4.Game4PDao
  * Created by ionvaranita on 20/11/17.
  */
 @Database(
-    entities = [Game2PEntity::class, Points2PEntity::class, Game3PEntity::class, Points3PEntity::class, Game4PEntity::class, Points4PEntity::class, Game2GroupsEntity::class, Points2GroupsEntity::class, ExtendedGameEntity::class, BoltManagerEntity::class, WinningPointsEntity::class],
-    version = 9,
+    entities = [Game2PEntity::class, Points2PEntity::class, Game3PEntity::class, Points3PEntity::class, Game4PEntity::class, Points4PEntity::class, Game2GroupsEntity::class, Points2GroupsEntity::class],
+    version = 10,
     exportSchema = false
 )
 @ConstructedBy(AppDatabaseConstructor::class)
@@ -60,11 +54,6 @@ abstract class AppDatabase : RoomDatabase(), DB {
 
     abstract fun points4PDao(): Points4PDao
 
-    //GLOBAL
-    abstract fun winnerPointsDao(): WinningPointsDao
-
-    abstract fun extendedGameDao(): ExtendedGameDao
-
     override fun clearAllTables(): Unit {}
 }
 
@@ -81,11 +70,6 @@ expect object AppDatabaseConstructor : RoomDatabaseConstructor<AppDatabase> {
 fun getRoomDatabase(builder: RoomDatabase.Builder<AppDatabase>): AppDatabase {
     val database = builder.setDriver(BundledSQLiteDriver()).setQueryCoroutineContext(Dispatchers.IO)
         .fallbackToDestructiveMigration(true).build()
-    runBlocking {
-        val dao = database.winnerPointsDao()
-        dao.insert(WinningPointsEntity(winningPoints = 101))
-        dao.insert(WinningPointsEntity(winningPoints = 51))
-    }
     return database
 }
 
