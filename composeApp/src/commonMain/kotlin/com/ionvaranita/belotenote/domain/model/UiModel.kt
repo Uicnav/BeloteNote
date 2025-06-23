@@ -1,6 +1,5 @@
 package com.ionvaranita.belotenote.domain.model
 
-import com.ionvaranita.belotenote.datalayer.database.entity.WinningPointsEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Game2GroupsEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Points2GroupsEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.Game2PEntity
@@ -104,13 +103,8 @@ data class Game2GroupsUi(
     }
 }
 
-data class WinningPointsUi(val winningPoints: Short) {
-    fun toDataClass(): WinningPointsEntity {
-        return WinningPointsEntity(winningPoints = this.winningPoints)
-    }
-}
-
 data class Points2PUi(
+    val id: Int = 0,
     var idGame: Int = 0,
     var pointsMe: String,
     var pointsYouS: String,
@@ -120,6 +114,7 @@ data class Points2PUi(
 ) {
     fun add(lastPoints: Points2PEntity): Points2PEntity {
         return Points2PEntity(
+            id = this.id,
             idGame = this.idGame,
             pointsMe = (this.pointsMe.toShortCustom() + lastPoints.pointsMe).toShort(),
             pointsYouS = (this.pointsYouS.toShortCustom() + lastPoints.pointsYouS).toShort(),
@@ -128,10 +123,13 @@ data class Points2PUi(
             isBoltYouS = this.isBoltYouS,
         )
     }
+    fun toDataClass(): Points2PEntity {
+        return Points2PEntity(id = this.id, idGame = this.idGame, pointsMe = this.pointsMe.toShortCustom(), pointsYouS = this.pointsYouS.toShortCustom(), pointsGame = this.pointsGame.toShort(), isBoltMe = this.isBoltMe, isBoltYouS = this.isBoltYouS)
+    }
 }
 
 data class Points3PUi(
-    val idGame: Int,
+    var idGame: Int = 0,
     val pointsGame: String,
     var pointsP1: String,
     var pointsP2: String,

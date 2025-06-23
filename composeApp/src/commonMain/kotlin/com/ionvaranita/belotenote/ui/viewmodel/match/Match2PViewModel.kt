@@ -5,14 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ionvaranita.belotenote.constants.GameStatus
-import com.ionvaranita.belotenote.datalayer.database.entity.players2.Points2PEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.UpdateOnlyStatusGameParams
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.UpdateStatusAndScoreGameParams
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.UpdateStatusWinningPointsGameParams
-import com.ionvaranita.belotenote.datalayer.datasource.game.Game2PDataSourceImpl
-import com.ionvaranita.belotenote.datalayer.datasource.match.Points2PDataSourceImpl
-import com.ionvaranita.belotenote.datalayer.repo.game.Games2PRepositoryImpl
-import com.ionvaranita.belotenote.datalayer.repo.match.Points2PRepositoryImpl
 import com.ionvaranita.belotenote.domain.model.Game2PUi
 import com.ionvaranita.belotenote.domain.model.Points2PUi
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGame2PUseCase
@@ -22,7 +17,6 @@ import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreNa
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusWinningPointsGame2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteAllPoints2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteLastRowPoints2PUseCase
-import com.ionvaranita.belotenote.domain.usecase.match.get.GetLastPoints2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetPoints2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.insert.InsertPoints2PUseCase
 import com.ionvaranita.belotenote.ui.match.BOLT
@@ -44,7 +38,6 @@ class Match2PPViewModel(
     private val idGame: Int,
     private val getGameUseCase: GetGame2PUseCase,
     private val getPointsUseCase: GetPoints2PUseCase,
-    private val getLastPointsUseCase: GetLastPoints2PUseCase,
     private val insertPointsUseCase: InsertPoints2PUseCase,
     private val deleteLastRowUseCase: DeleteLastRowPoints2PUseCase,
     private val updateStatusScoreName1UseCase: UpdateStatusScoreName1Game2PUseCase,
@@ -54,7 +47,7 @@ class Match2PPViewModel(
     private val deleteAllPointsUseCase: DeleteAllPoints2PUseCase
 ) :
 
-    ViewModel() {
+    ViewModel(), ViewModelBase {
 
 
     private val _uiState = MutableStateFlow<Match2PUiState>(Match2PUiState.Loading)
@@ -75,7 +68,7 @@ class Match2PPViewModel(
     private var countBoltMe = 0
     private var countBoltYouS = 0
 
-    private var lastPoints: Points2PUi? = null
+    private lateinit var lastPoints: Points2PUi
 
 
     private fun getMatchData(dispatcher: CoroutineDispatcher = Dispatchers.IO) =
@@ -105,7 +98,12 @@ class Match2PPViewModel(
                         ++countBoltYouS
                     }
                 }
-                lastPoints = points.lastOrNull()
+                lastPoints = points.lastOrNull() ?: Points2PUi(
+                    idGame = idGame,
+                    pointsMe = 0.toString(),
+                    pointsYouS = 0.toString(),
+                    pointsGame = 0.toString()
+                )
                 MatchData2P(game = game, points = points)
             }.catch { exception ->
                 _uiState.value = Match2PUiState.Error(exception)
@@ -145,11 +143,7 @@ class Match2PPViewModel(
                     model.isBoltYouS = true
                 }
             }
-            var lastPoints = getLastPointsUseCase.execute(idGame)
-            if (lastPoints == null) {
-                lastPoints = Points2PEntity(idGame = idGame)
-            }
-            val updatedModel = model.add(lastPoints)
+            val updatedModel = model.add(lastPoints.toDataClass())
             val pointsMe = updatedModel.pointsMe
             val pointsYouS = updatedModel.pointsYouS
 
@@ -182,11 +176,11 @@ class Match2PPViewModel(
         }
     }
 
-    fun checkIsExtended(
-        dispatcher: CoroutineDispatcher = Dispatchers.IO
+    override fun checkIsExtended(
+        dispatcher: CoroutineDispatcher
     ) {
         viewModelScope.launch(dispatcher) {
-            lastPoints?.let { checkIsExtended(it) }
+            checkIsExtended(lastPoints)
         }
     }
 
@@ -197,24 +191,24 @@ class Match2PPViewModel(
             if (pointsMe > pointsYouS) {
                 _oneTimeEvent.emit(
                     SideEffect.ShowExtended(
-                        maxPoints = pointsMe.toString(), winner = Winner(ID_PERSON_2_1, name1)
+                        maxPoints = pointsMe, winner = Winner(ID_PERSON_2_1, name1)
                     )
                 )
             } else if (pointsMe < pointsYouS) {
                 _oneTimeEvent.emit(
                     SideEffect.ShowExtended(
-                        maxPoints = pointsYouS.toString(), winner = Winner(ID_PERSON_2_2, name2)
+                        maxPoints = pointsYouS, winner = Winner(ID_PERSON_2_2, name2)
                     )
                 )
             } else {
-                _oneTimeEvent.emit(SideEffect.ShowExtendedMandatory(maxPoints = pointsYouS.toString()))
+                _oneTimeEvent.emit(SideEffect.ShowExtendedMandatory(maxPoints = pointsYouS))
             }
             return true
         }
         return false
     }
 
-    fun updateStatusScoreName(winner: Winner, dispatcher: CoroutineDispatcher = Dispatchers.IO) {
+    override fun updateStatusScoreName(winner: Winner, dispatcher: CoroutineDispatcher) {
         viewModelScope.launch(dispatcher) {
             if (winner.id == ID_PERSON_2_1) {
                 updateStatusScoreName1UseCase.execute(
@@ -237,17 +231,14 @@ class Match2PPViewModel(
         }
     }
 
-    fun deleteLastPoints(dispatcher: CoroutineDispatcher = Dispatchers.IO) {
+    override fun deleteLastPoints(dispatcher: CoroutineDispatcher) {
         viewModelScope.launch(dispatcher) {
-            var lastPoints = getLastPointsUseCase.execute(idGame)
-            if (lastPoints != null) {
-                deleteLastRowUseCase.execute(lastPoints)
-            }
+                deleteLastRowUseCase.execute(lastPoints.toDataClass())
         }
 
     }
 
-    fun resetGame(winningPoints: Short, dispatcher: CoroutineDispatcher = Dispatchers.IO) {
+    override fun resetGame(winningPoints: Short, dispatcher: CoroutineDispatcher) {
         viewModelScope.launch(dispatcher) {
             updateStatusWinningPointsUseCase.execute(
                 UpdateStatusWinningPointsGameParams(
@@ -260,7 +251,7 @@ class Match2PPViewModel(
         }
     }
 
-    fun extentGame(winningPoints: Short, dispatcher: CoroutineDispatcher = Dispatchers.IO) {
+    override fun extentGame(winningPoints: Short, dispatcher: CoroutineDispatcher) {
         viewModelScope.launch(dispatcher) {
             updateStatusWinningPointsUseCase.execute(
                 UpdateStatusWinningPointsGameParams(
@@ -272,7 +263,7 @@ class Match2PPViewModel(
         }
     }
 
-    fun updateOnlyStatus(statusGame: GameStatus, dispatcher: CoroutineDispatcher = Dispatchers.IO) {
+    override fun updateOnlyStatus(statusGame: GameStatus, dispatcher: CoroutineDispatcher) {
         viewModelScope.launch(dispatcher) {
             updateOnlyStatusUseCase.execute(
                 UpdateOnlyStatusGameParams(

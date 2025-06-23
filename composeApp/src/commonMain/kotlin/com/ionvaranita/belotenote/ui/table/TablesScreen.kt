@@ -1,5 +1,6 @@
 package com.ionvaranita.belotenote.ui.table
 
+
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -62,7 +63,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.viewmodel.compose.viewModel
 import belotenote.composeapp.generated.resources.Res
 import belotenote.composeapp.generated.resources.alert_dialog_winner_points
 import belotenote.composeapp.generated.resources.dialog_fragment_insert_manually_winner_points
@@ -73,14 +73,11 @@ import com.ionvaranita.belotenote.Match4Dest
 import com.ionvaranita.belotenote.MatchGroupsDest
 import com.ionvaranita.belotenote.StatusImage
 import com.ionvaranita.belotenote.constants.GameStatus
-import com.ionvaranita.belotenote.datalayer.database.AppDatabase
 import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Game2GroupsEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.Game2PEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players3.Game3PEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players4.Game4PEntity
-import com.ionvaranita.belotenote.domain.model.WinningPointsUi
 import com.ionvaranita.belotenote.domain.model.toShortCustom
-import com.ionvaranita.belotenote.ui.LocalAppDatabase
 import com.ionvaranita.belotenote.ui.LocalNavHostController
 import com.ionvaranita.belotenote.ui.viewmodel.game.Game2GroupsViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.game.Game2PViewModel
@@ -108,7 +105,7 @@ internal fun TablesScreen2(
         shouDialog = true
     }) { paddingValues ->
         if (shouDialog) {
-            InsertGame2( onClick = {
+            InsertGame2(onClick = {
                 viewModel.insertGame(game = it)
 
             }, onDismissRequest = {
@@ -157,7 +154,6 @@ internal fun TablesScreen3(
     viewModel: Game3PViewModel
 ) {
     val navController = LocalNavHostController.current
-    val appDatabase = LocalAppDatabase.current
     val gamesUiState = viewModel.uiState.collectAsState()
     var shouDialog by remember { mutableStateOf(false) }
     val gameListState = rememberLazyListState()
@@ -166,7 +162,7 @@ internal fun TablesScreen3(
         shouDialog = true
     }) { paddingValues ->
         if (shouDialog) {
-            InsertGame3(appDatabase = appDatabase, onClick = {
+            InsertGame3(onClick = {
                 viewModel.insertGame(game = it)
             }, onDismissRequest = {
                 shouDialog = false
@@ -274,7 +270,6 @@ internal fun TablesScreen4(
 @Composable
 internal fun TablesScreenGroups(viewModel: Game2GroupsViewModel) {
     val navController = LocalNavHostController.current
-    val appDatabase = LocalAppDatabase.current
     val gamesUiState = viewModel.uiState.collectAsState()
     var shouDialog by remember { mutableStateOf(false) }
     val gameListState = rememberLazyListState()
@@ -284,8 +279,10 @@ internal fun TablesScreenGroups(viewModel: Game2GroupsViewModel) {
         shouDialog = true
     }) { paddingValues ->
         if (shouDialog) {
-            InsertGame2Groups(appDatabase = appDatabase, onClick = {
+            InsertGame2Groups(onClick = {
                 viewModel.insertGame(game = it)
+                val route = MatchGroupsDest(idGame = it.idGame)
+                navController.navigate(route)
             }, onDismissRequest = {
                 shouDialog = false
             })
@@ -441,8 +438,7 @@ fun InsertFloatingActionButton(onClick: () -> Unit, modifier: Modifier) {
 
 @Composable
 fun InsertGame2(
-    onDismissRequest: () -> Unit,
-    onClick: (Game2PEntity) -> Unit
+    onDismissRequest: () -> Unit, onClick: (Game2PEntity) -> Unit
 ) {
     var p1 by remember { mutableStateOf("") }
     var p2 by remember { mutableStateOf("") }
@@ -458,7 +454,7 @@ fun InsertGame2(
                 onDismissRequest()
             }
         }
-    } ) {
+    }) {
         Row {
             InsertNamesTextFieldAtom(
                 value = p1,
@@ -521,7 +517,7 @@ private fun InsertNamesTextFieldAtom(
 
 @Composable
 fun InsertGame3(
-    appDatabase: AppDatabase, onDismissRequest: () -> Unit, onClick: (Game3PEntity) -> Unit
+    onDismissRequest: () -> Unit, onClick: (Game3PEntity) -> Unit
 ) {
     var p1 by remember { mutableStateOf("") }
     var p2 by remember { mutableStateOf("") }
@@ -610,7 +606,7 @@ fun InsertGame4(
 
 @Composable
 fun InsertGame2Groups(
-    appDatabase: AppDatabase, onDismissRequest: () -> Unit, onClick: (Game2GroupsEntity) -> Unit
+    onDismissRequest: () -> Unit, onClick: (Game2GroupsEntity) -> Unit
 ) {
     var p1 by remember { mutableStateOf("") }
     var p2 by remember { mutableStateOf("") }
@@ -744,36 +740,6 @@ fun ErrorAlertDialog(showError: Boolean, onDismiss: () -> Unit) {
         }, text = {
             Text("A apărut o eroare neașteptată. Încearcă din nou.")
         })
-    }
-}
-
-@Composable
-fun WinningPointsSpinner(
-    values: List<WinningPointsUi>,
-    selectedValue: WinningPointsUi,
-    onValueSelected: (WinningPointsUi) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-    var selectedText by remember { mutableStateOf(selectedValue.winningPoints.toString()) }
-
-    Column(modifier = Modifier.fillMaxWidth().clickable { expanded = true }) {
-        OutlinedTextField(value = selectedText, onValueChange = {
-            println("Value change $it")
-        }, readOnly = true, label = {
-            Text(
-                stringResource(Res.string.alert_dialog_winner_points),
-                style = MaterialTheme.typography.labelLarge
-            )
-        })
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            values.forEach { value ->
-                DropdownMenuItem(text = { Text(value.winningPoints.toString()) }, onClick = {
-                    selectedText = value.winningPoints.toString()
-                    onValueSelected(value)
-                    expanded = false
-                })
-            }
-        }
     }
 }
 

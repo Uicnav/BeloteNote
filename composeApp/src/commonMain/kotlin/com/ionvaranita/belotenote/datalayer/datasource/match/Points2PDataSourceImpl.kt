@@ -19,14 +19,14 @@ class Points2PDataSourceImpl(private val dao: Points2PDao) : Points2PDataSource 
     }
 
     override suspend fun delete(idGame: Int): Int {
-        return dao.deleteAll(idGame)
+        return dao.deleteRow(idGame)
     }
 
     override suspend fun delete(row: Points2PEntity) {
-        dao.deleteAll(row)
+        dao.deleteRow(row)
     }
 
     override suspend fun deleteAllPoints(idGame: Int) {
-        dao.deleteAll(idGame)
+        dao.deleteRow(idGame)
     }
 }

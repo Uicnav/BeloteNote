@@ -22,7 +22,7 @@ interface Points2PDao {
     suspend fun getLastPoints(idGame: Int): Points2PEntity?
 
     @Query("delete from Points2PEntity where idGame = :idGame")
-    suspend fun deleteAll(idGame: Int): Int
+    suspend fun deleteRow(idGame: Int): Int
     @Delete
-    suspend fun deleteAll(row: Points2PEntity)
+    suspend fun deleteRow(row: Points2PEntity)
 }

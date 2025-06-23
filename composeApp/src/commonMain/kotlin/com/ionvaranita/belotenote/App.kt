@@ -43,18 +43,21 @@ import com.ionvaranita.belotenote.datalayer.datasource.game.Game3PDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.datasource.game.Game4PDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.datasource.match.Points2GroupsDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.datasource.match.Points2PDataSourceImpl
+import com.ionvaranita.belotenote.datalayer.datasource.match.Points3PDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.repo.game.Games2GroupsRepositoryImpl
 import com.ionvaranita.belotenote.datalayer.repo.game.Games2PRepositoryImpl
 import com.ionvaranita.belotenote.datalayer.repo.game.Games3PRepositoryImpl
 import com.ionvaranita.belotenote.datalayer.repo.game.Games4PRepositoryImpl
 import com.ionvaranita.belotenote.datalayer.repo.match.Points2GroupsRepositoryImpl
 import com.ionvaranita.belotenote.datalayer.repo.match.Points2PRepositoryImpl
+import com.ionvaranita.belotenote.datalayer.repo.match.Points3PRepositoryImpl
 import com.ionvaranita.belotenote.domain.usecase.game.delete.DeleteGame2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.delete.DeleteGame2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.delete.DeleteGame3PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.delete.DeleteGame4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGame2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGame2PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.get.GetGame3PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGames2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGames2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGames3PUseCase
@@ -75,14 +78,16 @@ import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteAllPoints2Gr
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteAllPoints2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteLastRowPoints2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteLastRowPoints2PUseCase
+import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteLastRowPoints3PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetLastPoints2GroupsUseCase
-import com.ionvaranita.belotenote.domain.usecase.match.get.GetLastPoints2PUseCase
+import com.ionvaranita.belotenote.domain.usecase.match.get.GetLastPoints3PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetPoints2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetPoints2PUseCase
+import com.ionvaranita.belotenote.domain.usecase.match.get.GetPoints3PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.insert.InsertPoints2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.insert.InsertPoints2PUseCase
+import com.ionvaranita.belotenote.domain.usecase.match.insert.InsertPoints3PUseCase
 import com.ionvaranita.belotenote.ui.HomeScreen
-import com.ionvaranita.belotenote.ui.LocalAppDatabase
 import com.ionvaranita.belotenote.ui.LocalNavHostController
 import com.ionvaranita.belotenote.ui.match.MatchScreen2
 import com.ionvaranita.belotenote.ui.match.MatchScreen2Groups
@@ -98,6 +103,7 @@ import com.ionvaranita.belotenote.ui.viewmodel.game.Game3PViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.game.Game4PViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.match.Match2GroupsViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.match.Match2PPViewModel
+import com.ionvaranita.belotenote.ui.viewmodel.match.Match3PPViewModel
 import com.ionvaranita.belotenote.utils.BeloteTheme
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.painterResource
@@ -110,7 +116,6 @@ fun App(appDatabase: AppDatabase) {
 
     BeloteTheme {
         CompositionLocalProvider(
-            LocalAppDatabase provides appDatabase,
             LocalNavHostController provides rememberNavController()
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
@@ -223,7 +228,6 @@ fun App(appDatabase: AppDatabase) {
                                 Points2PRepositoryImpl(Points2PDataSourceImpl(appDatabase.points2PDao()))
 
                             val getPointsUseCase = GetPoints2PUseCase(repositoryPoints)
-                            val getLastPointsUseCase = GetLastPoints2PUseCase(repositoryPoints)
                             val insertPointsUseCase = InsertPoints2PUseCase(repositoryPoints)
                             val deleteLastRowUseCase =
                                 DeleteLastRowPoints2PUseCase(repositoryPoints)
@@ -243,7 +247,6 @@ fun App(appDatabase: AppDatabase) {
                                     idGame,
                                     getGameUseCase,
                                     getPointsUseCase,
-                                    getLastPointsUseCase,
                                     insertPointsUseCase,
                                     deleteLastRowUseCase,
                                     updateStatusScoreName1UseCase,
@@ -256,9 +259,32 @@ fun App(appDatabase: AppDatabase) {
                             MatchScreen2(viewModel)
                         }
                         composable<Match3Dest> {
-                            val args = it.toRoute<Match3Dest>()
+                            val idGame = it.toRoute<Match3Dest>().idGame
 
-                            MatchScreen3(idGame = args.idGame)
+                            val repositoryGame =
+                                Games3PRepositoryImpl(Game3PDataSourceImpl(appDatabase.game3PDao()))
+                            val repositoryPoints =
+                                Points3PRepositoryImpl(Points3PDataSourceImpl(appDatabase.points3PDao()))
+                            val getGameUseCase = GetGame3PUseCase(repositoryGame)
+                            val getPointsUseCase = GetPoints3PUseCase(repositoryPoints)
+                            val getLastUseCase = GetLastPoints3PUseCase(repositoryPoints)
+                            val insertPointsUseCase = InsertPoints3PUseCase(repositoryPoints)
+                            val deleteLastRowUseCase =
+                                DeleteLastRowPoints3PUseCase(repositoryPoints)
+
+                            val match3PPViewModel = viewModel {
+                                Match3PPViewModel(
+                                    idGame,
+                                    getGameUseCase,
+                                    getPointsUseCase,
+                                    getLastUseCase,
+                                    insertPointsUseCase,
+                                    deleteLastRowUseCase
+                                )
+                            }
+
+
+                            MatchScreen3(viewModel = match3PPViewModel)
                         }
                         composable<Match4Dest> {
                             val args = it.toRoute<Match4Dest>()

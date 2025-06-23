@@ -9,10 +9,6 @@ import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Points2Group
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.UpdateOnlyStatusGameParams
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.UpdateStatusAndScoreGameParams
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.UpdateStatusWinningPointsGameParams
-import com.ionvaranita.belotenote.datalayer.datasource.game.Game2GroupsDataSourceImpl
-import com.ionvaranita.belotenote.datalayer.datasource.match.Points2GroupsDataSourceImpl
-import com.ionvaranita.belotenote.datalayer.repo.game.Games2GroupsRepositoryImpl
-import com.ionvaranita.belotenote.datalayer.repo.match.Points2GroupsRepositoryImpl
 import com.ionvaranita.belotenote.domain.model.Game2GroupsUi
 import com.ionvaranita.belotenote.domain.model.Points2GroupsUi
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGame2GroupsUseCase
@@ -26,8 +22,8 @@ import com.ionvaranita.belotenote.domain.usecase.match.get.GetLastPoints2GroupsU
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetPoints2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.insert.InsertPoints2GroupsUseCase
 import com.ionvaranita.belotenote.ui.match.BOLT
-import com.ionvaranita.belotenote.utils.IdsPlayer.ID_PERSON_2_1
-import com.ionvaranita.belotenote.utils.IdsPlayer.ID_PERSON_2_2
+import com.ionvaranita.belotenote.utils.IdsPlayer.ID_TEAM_1
+import com.ionvaranita.belotenote.utils.IdsPlayer.ID_TEAM_2
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -53,7 +49,7 @@ class Match2GroupsViewModel(
     private val updateOnlyStatusGameUseCase: UpdateOnlyStatusGame2GroupsUseCase,
     private val deleteAllPointsUseCase: DeleteAllPoints2GroupsUseCase
 
-) : ViewModel() {
+) : ViewModel(), ViewModelBase {
     private val _uiState = MutableStateFlow<MatchGroupsUiState>(MatchGroupsUiState.Loading)
     val uiState: StateFlow<MatchGroupsUiState> = _uiState
 
@@ -122,7 +118,7 @@ class Match2GroupsViewModel(
     ) {
         viewModelScope.launch(dispatcher) {
             model.idGame = idGame
-            if (model.pointsWe.equals(BOLT)) {
+            if (model.pointsWe == BOLT) {
                 if (!isMinus10We && countBoltWe != 0 && countBoltWe % 2 == 0) {
                     isMinus10We = true
                     model.pointsWe = "-10"
@@ -132,7 +128,7 @@ class Match2GroupsViewModel(
                     model.boltWe = true
                 }
             }
-            if (model.pointsYouP.equals(BOLT)) {
+            if (model.pointsYouP == BOLT) {
                 if (!isMinus10YouP && countBoltYouP != 0 && countBoltYouP % 2 == 0) {
                     isMinus10YouP = true
                     model.pointsYouP = "-10"
@@ -177,7 +173,7 @@ class Match2GroupsViewModel(
         }
     }
 
-    fun deleteLastPoints(dispatcher: CoroutineDispatcher = Dispatchers.IO) {
+    override fun deleteLastPoints(dispatcher: CoroutineDispatcher) {
         viewModelScope.launch(dispatcher) {
             var lastPoints = getLastPointsUseCase.execute(idGame)
             if (lastPoints != null) {
@@ -187,8 +183,8 @@ class Match2GroupsViewModel(
 
     }
 
-    fun checkIsExtended(
-        dispatcher: CoroutineDispatcher = Dispatchers.IO
+    override fun checkIsExtended(
+        dispatcher: CoroutineDispatcher
     ) {
         viewModelScope.launch(dispatcher) {
             lastPoints?.let { checkIsExtended(it) }
@@ -203,7 +199,7 @@ class Match2GroupsViewModel(
                 _oneTimeEvent.emit(
                     SideEffect.ShowExtended(
                         maxPoints = pointsWe, winner = Winner(
-                            ID_PERSON_2_1, name1
+                            ID_TEAM_1, name1
                         )
                     )
                 )
@@ -211,7 +207,7 @@ class Match2GroupsViewModel(
                 _oneTimeEvent.emit(
                     SideEffect.ShowExtended(
                         maxPoints = pointsYouP, winner = Winner(
-                            ID_PERSON_2_2, name2
+                            ID_TEAM_2, name2
                         )
                     )
                 )
@@ -223,9 +219,9 @@ class Match2GroupsViewModel(
         return false
     }
 
-    fun updateStatusScoreName(winner: Winner, dispatcher: CoroutineDispatcher = Dispatchers.IO) {
+    override fun updateStatusScoreName(winner: Winner, dispatcher: CoroutineDispatcher) {
         viewModelScope.launch(dispatcher) {
-            if (winner.id == ID_PERSON_2_1) {
+            if (winner.id == ID_TEAM_1) {
                 updateStatusScoreName1UseCase.execute(
                     params = UpdateStatusAndScoreGameParams(
                         idGame = idGame,
@@ -234,7 +230,7 @@ class Match2GroupsViewModel(
                     )
                 )
 
-            } else if (winner.id == ID_PERSON_2_2) {
+            } else if (winner.id == ID_TEAM_2) {
                 updateStatusScoreName2UseCase.execute(
                     params = UpdateStatusAndScoreGameParams(
                         idGame = idGame,
@@ -246,7 +242,7 @@ class Match2GroupsViewModel(
         }
     }
 
-    fun resetGame(winningPoints: Short, dispatcher: CoroutineDispatcher = Dispatchers.IO) {
+    override fun resetGame(winningPoints: Short, dispatcher: CoroutineDispatcher) {
         viewModelScope.launch(dispatcher) {
             updateStatusWinningPointsUseCase.execute(
                 UpdateStatusWinningPointsGameParams(
@@ -259,7 +255,7 @@ class Match2GroupsViewModel(
         }
     }
 
-    fun extentGame(winningPoints: Short, dispatcher: CoroutineDispatcher = Dispatchers.IO) {
+    override fun extentGame(winningPoints: Short, dispatcher: CoroutineDispatcher) {
         viewModelScope.launch(dispatcher) {
             updateStatusWinningPointsUseCase.execute(
                 UpdateStatusWinningPointsGameParams(
@@ -271,7 +267,7 @@ class Match2GroupsViewModel(
         }
     }
 
-    fun updateOnlyStatus(statusGame: GameStatus, dispatcher: CoroutineDispatcher = Dispatchers.IO) {
+    override fun updateOnlyStatus(statusGame: GameStatus, dispatcher: CoroutineDispatcher) {
         viewModelScope.launch(dispatcher) {
             updateOnlyStatusGameUseCase.execute(
                 UpdateOnlyStatusGameParams(
