@@ -8,7 +8,6 @@ interface Points2GroupsRepository {
 
     fun getPoints(idGame: Int): Flow<List<Points2GroupsEntity>>
 
-    suspend fun getLastPoints(idGame: Int): Points2GroupsEntity?
 
     suspend fun delete(idGame: Int): Int
 

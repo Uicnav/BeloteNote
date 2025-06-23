@@ -79,7 +79,6 @@ import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteAllPoints2PU
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteLastRowPoints2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteLastRowPoints2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteLastRowPoints3PUseCase
-import com.ionvaranita.belotenote.domain.usecase.match.get.GetLastPoints2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetLastPoints3PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetPoints2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetPoints2PUseCase
@@ -298,7 +297,6 @@ fun App(appDatabase: AppDatabase) {
                                 Points2GroupsRepositoryImpl(Points2GroupsDataSourceImpl(appDatabase.points2GroupsDao()))
                             val getGameUseCase = GetGame2GroupsUseCase(repositoryGame)
                             val getPointsUseCase = GetPoints2GroupsUseCase(repositoryPoints)
-                            val getLastPointsUseCase = GetLastPoints2GroupsUseCase(repositoryPoints)
                             val insertPointsUseCase = InsertPoints2GroupsUseCase(repositoryPoints)
                             val deleteLastRowPointsUseCase =
                                 DeleteLastRowPoints2GroupsUseCase(repositoryPoints)
@@ -319,7 +317,6 @@ fun App(appDatabase: AppDatabase) {
                                     idGame,
                                     getGameUseCase,
                                     getPointsUseCase,
-                                    getLastPointsUseCase,
                                     insertPointsUseCase,
                                     deleteLastRowPointsUseCase,
                                     updateStatusScoreName1UseCase,

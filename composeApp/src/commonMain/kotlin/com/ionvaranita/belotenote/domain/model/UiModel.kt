@@ -182,22 +182,28 @@ data class Points4PUi(
 
 
 data class Points2GroupsUi(
+    val id: Int = 0,
     var idGame: Int = 0,
     var pointsWe: String,
     var pointsYouP: String,
     val pointsGame: String,
-    var boltWe: Boolean = false,
-    var boltYouP: Boolean = false
+    var isBoltWe: Boolean = false,
+    var isBoltYouP: Boolean = false
 ) {
     fun add(lastPoints: Points2GroupsEntity): Points2GroupsEntity {
         return Points2GroupsEntity(
+            id = this.id,
             idGame = this.idGame,
             pointsWe = (this.pointsWe.toShortCustom() + lastPoints.pointsWe).toShort(),
             pointsYouP = (this.pointsYouP.toShortCustom() + lastPoints.pointsYouP).toShort(),
             pointsGame = this.pointsGame.toShort(),
-            boltWe = this.boltWe,
-            boltYouP = this.boltYouP
+            isBoltWe = this.isBoltWe,
+            isBoltYouP = this.isBoltYouP
         )
+    }
+
+    fun toDataClass(): Points2GroupsEntity {
+        return Points2GroupsEntity(id = this.id, idGame = this.idGame, pointsWe = this.pointsWe.toShortCustom(), pointsYouP = this.pointsYouP.toShortCustom(), pointsGame = this.pointsGame.toShort(), isBoltWe = this.isBoltWe, isBoltYouP = this.isBoltYouP)
     }
 }
 

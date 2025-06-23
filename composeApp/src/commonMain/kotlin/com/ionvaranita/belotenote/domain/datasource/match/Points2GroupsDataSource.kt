@@ -8,8 +8,6 @@ interface Points2GroupsDataSource {
 
     fun getPoints(idGame: Int): Flow<List<Points2GroupsEntity>>
 
-    suspend fun getLastPoints(idGame: Int): Points2GroupsEntity?
-
     suspend fun delete(idGame: Int): Int
 
     suspend fun delete(row: Points2GroupsEntity)

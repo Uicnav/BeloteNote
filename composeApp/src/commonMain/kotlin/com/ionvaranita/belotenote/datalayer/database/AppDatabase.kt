@@ -29,7 +29,7 @@ import varanita.informatics.shared.database.dao.players4.Game4PDao
  */
 @Database(
     entities = [Game2PEntity::class, Points2PEntity::class, Game3PEntity::class, Points3PEntity::class, Game4PEntity::class, Points4PEntity::class, Game2GroupsEntity::class, Points2GroupsEntity::class],
-    version = 10,
+    version = 11,
     exportSchema = false
 )
 @ConstructedBy(AppDatabaseConstructor::class)

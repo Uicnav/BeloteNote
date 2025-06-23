@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ionvaranita.belotenote.constants.GameStatus
-import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Points2GroupsEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.UpdateOnlyStatusGameParams
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.UpdateStatusAndScoreGameParams
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.UpdateStatusWinningPointsGameParams
@@ -18,7 +17,6 @@ import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreGa
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusWinningPointsGame2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteAllPoints2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteLastRowPoints2GroupsUseCase
-import com.ionvaranita.belotenote.domain.usecase.match.get.GetLastPoints2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetPoints2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.insert.InsertPoints2GroupsUseCase
 import com.ionvaranita.belotenote.ui.match.BOLT
@@ -40,7 +38,6 @@ class Match2GroupsViewModel(
     private val idGame: Int,
     private val getGameUseCase: GetGame2GroupsUseCase,
     private val getPointsUseCase: GetPoints2GroupsUseCase,
-    private val getLastPointsUseCase: GetLastPoints2GroupsUseCase,
     private val insertPointsUseCase: InsertPoints2GroupsUseCase,
     private val deleteLastRowPointsUseCase: DeleteLastRowPoints2GroupsUseCase,
     private val updateStatusScoreName1UseCase: UpdateStatusScoreGame2GroupsName1UseCase,
@@ -56,7 +53,7 @@ class Match2GroupsViewModel(
     private val _statusGame = mutableStateOf(GameStatus.CONTINUE)
     val statusGame: State<GameStatus> = _statusGame
 
-    private var lastPoints: Points2GroupsUi? = null
+    private lateinit var lastPoints: Points2GroupsUi
 
 
     init {
@@ -84,16 +81,21 @@ class Match2GroupsViewModel(
                 name1 = game.name1
                 name2 = game.name2
                 _statusGame.value = GameStatus.fromId(game.statusGame)!!
-                lastPoints = points.lastOrNull()
+                lastPoints = points.lastOrNull() ?: Points2GroupsUi(
+                    idGame = idGame,
+                    pointsWe = 0.toString(),
+                    pointsYouP = 0.toString(),
+                    pointsGame = 0.toString()
+                )
                 countBoltWe = 0
                 countBoltYouP = 0
                 points.forEach { point ->
-                    if (point.boltWe) {
+                    if (point.isBoltWe) {
                         val boltTtoUi = (countBoltWe % 2) + 1
                         point.pointsWe = BOLT + (boltTtoUi).toString()
                         ++countBoltWe
                     }
-                    if (point.boltYouP) {
+                    if (point.isBoltYouP) {
                         val boltTtoUi = (countBoltYouP % 2) + 1
                         point.pointsYouP = BOLT + (boltTtoUi).toString()
                         ++countBoltYouP
@@ -125,7 +127,7 @@ class Match2GroupsViewModel(
                     minus10Inserted = true
                 } else {
                     isMinus10We = false
-                    model.boltWe = true
+                    model.isBoltWe = true
                 }
             }
             if (model.pointsYouP == BOLT) {
@@ -134,14 +136,10 @@ class Match2GroupsViewModel(
                     model.pointsYouP = "-10"
                 } else {
                     isMinus10YouP = false
-                    model.boltYouP = true
+                    model.isBoltYouP = true
                 }
             }
-            var lastPoints = getLastPointsUseCase.execute(idGame)
-            if (lastPoints == null) {
-                lastPoints = Points2GroupsEntity(idGame = idGame)
-            }
-            val updatedModel = model.add(lastPoints)
+            val updatedModel = model.add(lastPoints.toDataClass())
             val pointsWe = updatedModel.pointsWe
             val pointsYouP = updatedModel.pointsYouP
             if (checkIsExtended(updatedModel.toUiModel())) {
@@ -175,10 +173,8 @@ class Match2GroupsViewModel(
 
     override fun deleteLastPoints(dispatcher: CoroutineDispatcher) {
         viewModelScope.launch(dispatcher) {
-            var lastPoints = getLastPointsUseCase.execute(idGame)
-            if (lastPoints != null) {
-                deleteLastRowPointsUseCase.execute(lastPoints)
-            }
+            deleteLastRowPointsUseCase.execute(lastPoints.toDataClass())
+
         }
 
     }
@@ -187,7 +183,7 @@ class Match2GroupsViewModel(
         dispatcher: CoroutineDispatcher
     ) {
         viewModelScope.launch(dispatcher) {
-            lastPoints?.let { checkIsExtended(it) }
+            checkIsExtended(lastPoints)
         }
     }
 

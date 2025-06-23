@@ -15,10 +15,6 @@ class Points2GroupsDataSourceImpl(private val dao: Points2GroupsDao) :
         return  dao.getPoints(idGame)
     }
 
-    override suspend fun getLastPoints(idGame: Int): Points2GroupsEntity? {
-        return dao.getLastPoints(idGame)
-    }
-
     override suspend fun delete(idGame: Int): Int {
         return dao.delete(idGame)
     }
