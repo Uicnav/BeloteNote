@@ -14,10 +14,6 @@ class Points3PRepositoryImpl(private val datasource: Points3PDataSource) : Point
         return datasource.getPoints(idGame)
     }
 
-    override suspend fun getLastPoints(idGame: Int): Points3PEntity? {
-        return datasource.getLastPoints(idGame)
-    }
-
     override suspend fun delete(idGame: Int): Int {
         return datasource.delete(idGame)
     }

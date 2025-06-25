@@ -1,8 +1,6 @@
 package com.ionvaranita.belotenote.datalayer.repo.game
 
-import com.ionvaranita.belotenote.constants.GameStatus
 import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Game2GroupsEntity
-import com.ionvaranita.belotenote.datalayer.database.entity.players2.Game2PEntity
 import com.ionvaranita.belotenote.domain.datasource.game.Game2GroupsDataSource
 import com.ionvaranita.belotenote.domain.repo.game.Games2GroupsRepository
 import kotlinx.coroutines.flow.Flow
@@ -40,16 +38,16 @@ class Games2GroupsRepositoryImpl(private val datasource: Game2GroupsDataSource) 
         return datasource.updateStatusFinishedAndScoreName2(idGame, statusGame, scoreName2)
     }
 
-    override suspend fun updateOnlyStatus(idGame: Int, gameStatus: Byte) {
-        datasource.updateOnlyStatus(idGame, gameStatus)
+    override suspend fun updateOnlyStatus(idGame: Int, statusGame: Byte) {
+        datasource.updateOnlyStatus(idGame, statusGame)
     }
 
     override suspend fun updateStatusWinningPoints(
         idGame: Int,
-        gameStatus: Byte,
+        statusGame: Byte,
         winningPoints: Short
     ) {
-        datasource.updateStatusWinningPoints(idGame, gameStatus, winningPoints)
+        datasource.updateStatusWinningPoints(idGame, statusGame, winningPoints)
     }
 
 }

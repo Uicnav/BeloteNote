@@ -9,7 +9,7 @@ class UpdateStatusWinningPointsGame2PUseCase(private val repository: Games2PRepo
     override suspend fun execute(params: UpdateStatusWinningPointsGameParams) {
          repository.updateStatusWinningPoints(
             idGame = params.idGame,
-            gameStatus = params.statusGame,
+            statusGame = params.statusGame,
              winningPoints = params.winningPoints
         )
     }
