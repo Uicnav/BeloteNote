@@ -14,10 +14,6 @@ class Points3PDataSourceImpl(private val dao: Points3PDao) : Points3PDataSource 
         return dao.getPoints(idGame)
     }
 
-    override suspend fun getLastPoints(idGame: Int): Points3PEntity? {
-        return dao.getLastPoints(idGame)
-    }
-
     override suspend fun delete(idGame: Int): Int {
         return dao.delete(idGame)
     }

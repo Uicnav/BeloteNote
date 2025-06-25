@@ -1,42 +1,45 @@
 package com.ionvaranita.belotenote.ui.viewmodel.match
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ionvaranita.belotenote.constants.GameStatus
-import com.ionvaranita.belotenote.datalayer.database.entity.players3.Points3PEntity
-import com.ionvaranita.belotenote.datalayer.datasource.game.Game3PDataSourceImpl
-import com.ionvaranita.belotenote.datalayer.datasource.match.Points3PDataSourceImpl
-import com.ionvaranita.belotenote.datalayer.repo.game.Games3PRepositoryImpl
-import com.ionvaranita.belotenote.datalayer.repo.match.Points3PRepositoryImpl
+import com.ionvaranita.belotenote.datalayer.database.entity.players2.UpdateOnlyStatusGameParams
+import com.ionvaranita.belotenote.datalayer.database.entity.players2.UpdateStatusAndScoreGameParams
+import com.ionvaranita.belotenote.datalayer.database.entity.players2.UpdateStatusWinningPointsGameParams
 import com.ionvaranita.belotenote.domain.model.Game3PUi
-import com.ionvaranita.belotenote.domain.model.Points2PUi
 import com.ionvaranita.belotenote.domain.model.Points3PUi
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGame3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateOnlyStatusGame3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName1Game3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName2Game3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName3Game3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusWinningPointsGame3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteAllPoints3PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteLastRowPoints3PUseCase
-import com.ionvaranita.belotenote.domain.usecase.match.get.GetLastPoints3PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetPoints3PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.insert.InsertPoints3PUseCase
 import com.ionvaranita.belotenote.ui.match.BOLT
+import com.ionvaranita.belotenote.utils.IdsPlayer.ID_PERSON_1
+import com.ionvaranita.belotenote.utils.IdsPlayer.ID_PERSON_2
+import com.ionvaranita.belotenote.utils.IdsPlayer.ID_PERSON_3
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import kotlin.properties.Delegates
 
 class Match3PPViewModel(
     private val idGame: Int,
     private val getGameUseCase: GetGame3PUseCase,
     private val getPointsUseCase: GetPoints3PUseCase,
-    private val getLastUseCase: GetLastPoints3PUseCase,
     private val insertPointsUseCase: InsertPoints3PUseCase,
-    private val deleteLastRowUseCase: DeleteLastRowPoints3PUseCase
-) : ViewModel(), ViewModelBase {
-
-    private val _uiState = MutableStateFlow<Match3PUiState>(Match3PUiState.Loading)
-    val uiState: StateFlow<Match3PUiState> = _uiState
+    private val deleteLastRowUseCase: DeleteLastRowPoints3PUseCase,
+    private val updateStatusScoreName1UseCase: UpdateStatusScoreName1Game3PUseCase,
+    private val updateStatusScoreName2UseCase: UpdateStatusScoreName2Game3PUseCase,
+    private val updateStatusScoreName3UseCase: UpdateStatusScoreName3Game3PUseCase,
+    private val updateStatusWinningPointsUseCase: UpdateStatusWinningPointsGame3PUseCase,
+    private val updateOnlyStatusUseCase: UpdateOnlyStatusGame3PUseCase,
+    private val deleteAllPointsUseCase: DeleteAllPoints3PUseCase
+) : ViewModelBase() {
 
     init {
         getMatchData()
@@ -46,10 +49,17 @@ class Match3PPViewModel(
     var countBoltP2 = 0
     var countBoltP3 = 0
 
-    private var lastPoints: Points3PUi? = null
+    private var scoreName1 by Delegates.notNull<Short>()
+    private var scoreName2 by Delegates.notNull<Short>()
+    private var scoreName3 by Delegates.notNull<Short>()
+    private var name1 by Delegates.notNull<String>()
+    private var name2 by Delegates.notNull<String>()
+    private var name3 by Delegates.notNull<String>()
+
+    private lateinit var lastPoints: Points3PUi
 
 
-    private fun getMatchData(dispatcher: CoroutineDispatcher = Dispatchers.IO) =
+    override fun getMatchData(dispatcher: CoroutineDispatcher) {
         viewModelScope.launch(dispatcher) {
 
             combine(
@@ -59,6 +69,14 @@ class Match3PPViewModel(
                 countBoltP1 = 0
                 countBoltP2 = 0
                 countBoltP3 = 0
+                winningPoints = game.winningPoints
+                scoreName1 = game.scoreName1
+                scoreName2 = game.scoreName2
+                scoreName3 = game.scoreName3
+                name1 = game.name1
+                name2 = game.name2
+                name3 = game.name3
+                _statusGame.value = GameStatus.fromId(game.statusGame)!!
                 points.forEach { point ->
                     if (point.isBoltP1) {
                         val boltTtoUi = (countBoltP1 % 2) + 1
@@ -76,14 +94,22 @@ class Match3PPViewModel(
                         ++countBoltP3
                     }
                 }
-                lastPoints = points.lastOrNull()
+                lastPoints = points.lastOrNull() ?: Points3PUi(
+                    idGame = idGame,
+                    pointsP1 = 0.toString(),
+                    pointsP2 = 0.toString(),
+                    pointsP3 = 0.toString(),
+                    pointsGame = 0.toString()
+                )
                 MatchData3P(game = game, points = points)
             }.catch { exception ->
-                _uiState.value = Match3PUiState.Error(exception)
+                _uiState.value = MatchUiState.Error(exception)
             }.collect { matchData ->
-                _uiState.value = Match3PUiState.Success(matchData)
+                _uiState.value = MatchUiState.Success(matchData)
             }
         }
+    }
+
 
     private var isMinus10P1 = false
     private var isMinus10P2 = false
@@ -92,9 +118,10 @@ class Match3PPViewModel(
     private var minus10Inserted = false
 
 
-    fun insertPoints(
-        model: Points3PUi, dispatcher: CoroutineDispatcher = Dispatchers.IO
+    override fun <T> insertPoints(
+        model: T, dispatcher: CoroutineDispatcher
     ) {
+        val model = model as Points3PUi
         viewModelScope.launch(dispatcher) {
             model.idGame = idGame
             if (model.pointsP1 == BOLT) {
@@ -125,49 +152,161 @@ class Match3PPViewModel(
                     model.isBoltP3 = true
                 }
             }
-            var lastPoints = getLastUseCase.execute(idGame)
-            if (lastPoints == null) {
-                lastPoints = Points3PEntity(idGame = idGame)
+            val updatedModel = model.add(lastPoints.toDataClass())
+
+            val isToExtend = checkIsExtended(updatedModel.toUiModel())
+            if (isToExtend) {
+                updateOnlyStatusUseCase.execute(
+                    params = UpdateOnlyStatusGameParams(
+                        idGame = idGame,
+                        statusGame = GameStatus.EXTENDED.id
+                    )
+                )
             }
-            insertPointsUseCase.execute(model.add(lastPoints))
+            insertPointsUseCase.execute(updatedModel)
         }
     }
 
-   override fun deleteLastPoints(dispatcher: CoroutineDispatcher) {
+    override fun checkIsExtended(
+        dispatcher: CoroutineDispatcher
+    ) {
         viewModelScope.launch(dispatcher) {
-            var lastPoints = getLastUseCase.execute(idGame)
-            if (lastPoints != null) {
-                deleteLastRowUseCase.execute(lastPoints)
-            }
+            checkIsExtended(lastPoints)
         }
-
-    }
-
-    override fun checkIsExtended(dispatcher: CoroutineDispatcher) {
-        TODO("Not yet implemented")
     }
 
     override fun updateStatusScoreName(winner: Winner, dispatcher: CoroutineDispatcher) {
-        TODO("Not yet implemented")
+        viewModelScope.launch(dispatcher) {
+            if (winner.id == ID_PERSON_1) {
+                updateStatusScoreName1UseCase.execute(
+                    params = UpdateStatusAndScoreGameParams(
+                        idGame = idGame,
+                        statusGame = GameStatus.FINISHED.id,
+                        score = scoreName1.plus(1).toShort()
+                    )
+                )
+
+            } else if (winner.id == ID_PERSON_2) {
+                updateStatusScoreName2UseCase.execute(
+                    params = UpdateStatusAndScoreGameParams(
+                        idGame = idGame,
+                        statusGame = GameStatus.FINISHED.id,
+                        score = scoreName2.plus(1).toShort()
+                    )
+                )
+            } else if (winner.id == ID_PERSON_3) {
+                updateStatusScoreName3UseCase.execute(
+                    params = UpdateStatusAndScoreGameParams(
+                        idGame = idGame,
+                        statusGame = GameStatus.FINISHED.id,
+                        score = scoreName3.plus(1).toShort()
+                    )
+                )
+            }
+        }
+    }
+
+    override fun deleteLastPoints(dispatcher: CoroutineDispatcher) {
+        viewModelScope.launch(dispatcher) {
+            deleteLastRowUseCase.execute(lastPoints.toDataClass())
+        }
+
     }
 
     override fun resetGame(winningPoints: Short, dispatcher: CoroutineDispatcher) {
-        TODO("Not yet implemented")
+        viewModelScope.launch(dispatcher) {
+            updateStatusWinningPointsUseCase.execute(
+                UpdateStatusWinningPointsGameParams(
+                    idGame = idGame,
+                    statusGame = GameStatus.CONTINUE.id,
+                    winningPoints = winningPoints
+                )
+            )
+            deleteAllPointsUseCase.execute(idGame)
+        }
     }
 
     override fun extentGame(winningPoints: Short, dispatcher: CoroutineDispatcher) {
-        TODO("Not yet implemented")
+        viewModelScope.launch(dispatcher) {
+            updateStatusWinningPointsUseCase.execute(
+                UpdateStatusWinningPointsGameParams(
+                    idGame = idGame,
+                    statusGame = GameStatus.CONTINUE.id,
+                    winningPoints = winningPoints
+                )
+            )
+        }
     }
 
     override fun updateOnlyStatus(statusGame: GameStatus, dispatcher: CoroutineDispatcher) {
-        TODO("Not yet implemented")
+        viewModelScope.launch(dispatcher) {
+            updateOnlyStatusUseCase.execute(
+                UpdateOnlyStatusGameParams(
+                    idGame = idGame, statusGame = statusGame.id
+                )
+            )
+        }
+    }
+
+    private suspend fun checkIsExtended(pointsUi: Points3PUi): Boolean {
+        val pointsP1 = pointsUi.pointsP1.toShort()
+        val pointsP2 = pointsUi.pointsP2.toShort()
+        val pointsP3 = pointsUi.pointsP3.toShort()
+        val mapPoints: Map<Int, Short> = mapOf(
+            ID_PERSON_1 to pointsP1, ID_PERSON_2 to pointsP2, ID_PERSON_3 to pointsP3
+        )
+        var isExtended = false
+        when (val result = getWinner(mapPoints, winningPoints)) {
+            WinnerResult.ToContinue -> {
+
+            }
+
+            is WinnerResult.ToExtend -> {
+                isExtended = true
+                _oneTimeEvent.emit(
+                    SideEffect.ShowExtended(
+                        maxPoints = result.maxPoints.toString(), winner = Winner(
+                            result.idWinner,
+                            if (result.idWinner == ID_PERSON_1) name1 else if (result.idWinner == ID_PERSON_2) name2 else name3
+                        )
+                    )
+                )
+            }
+
+            is WinnerResult.ToExtendMandatory -> {
+                isExtended = true
+                _oneTimeEvent.emit(SideEffect.ShowExtendedMandatory(maxPoints = result.maxPoints.toString()))
+
+            }
+
+            is WinnerResult.ToFinish -> {
+                if (result.idWinner == ID_PERSON_1) {
+                    updateStatusScoreName1UseCase.execute(
+                        UpdateStatusAndScoreGameParams(
+                            idGame = idGame, score = scoreName1.plus(1).toShort()
+                        )
+                    )
+                    _oneTimeEvent.emit(SideEffect.ShowWinner(winnerName = name1))
+                } else if (result.idWinner == ID_PERSON_2) {
+                    updateStatusScoreName2UseCase.execute(
+                        UpdateStatusAndScoreGameParams(
+                            idGame = idGame, score = scoreName2.plus(1).toShort()
+                        )
+                    )
+                    _oneTimeEvent.emit(SideEffect.ShowWinner(winnerName = name2))
+                } else if (result.idWinner == ID_PERSON_3) {
+                    updateStatusScoreName3UseCase.execute(
+                        UpdateStatusAndScoreGameParams(
+                            idGame = idGame, score = scoreName3.plus(1).toShort()
+                        )
+                    )
+                    _oneTimeEvent.emit(SideEffect.ShowWinner(winnerName = name3))
+                }
+            }
+        }
+        return isExtended
     }
 }
 
 data class MatchData3P(val game: Game3PUi, val points: List<Points3PUi>)
 
-sealed class Match3PUiState {
-    object Loading : Match3PUiState()
-    data class Success(val data: MatchData3P) : Match3PUiState()
-    data class Error(val exception: Throwable) : Match3PUiState()
-}

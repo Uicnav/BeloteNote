@@ -8,4 +8,18 @@ interface Game3PDataSource {
     suspend fun insertGame(game: Game3PEntity)
     suspend fun deleteGame(idGame: Int)
     suspend fun getGame(idGame: Int): Flow<Game3PEntity>
+    suspend fun updateStatusAndScoreName1(
+        idGame: Int, statusGame: Byte, scoreName1: Short
+    ): Int
+
+    suspend fun updateStatusAndScoreName2(
+        idGame: Int, statusGame: Byte, scoreName2: Short
+    ): Int
+
+    suspend fun updateStatusAndScoreName3(
+        idGame: Int, statusGame: Byte, scoreName3: Short
+    ): Int
+
+    suspend fun updateStatusWinningPoints(idGame: Int, statusGame: Byte, winningPoints: Short)
+    suspend fun updateOnlyStatus(idGame: Int, statusGame: Byte)
 }

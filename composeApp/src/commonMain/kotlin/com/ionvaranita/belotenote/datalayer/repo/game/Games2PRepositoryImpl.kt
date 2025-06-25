@@ -39,12 +39,12 @@ class Games2PRepositoryImpl(private val dataSource: Game2PDataSource): Games2PRe
 
     }
 
-    override suspend fun updateStatusWinningPoints(idGame: Int, gameStatus: Byte, winningPoints: Short) {
-        dataSource.updateStatusWinningPoints(idGame, gameStatus, winningPoints)
+    override suspend fun updateStatusWinningPoints(idGame: Int, statusGame: Byte, winningPoints: Short) {
+        dataSource.updateStatusWinningPoints(idGame, statusGame, winningPoints)
     }
 
-    override suspend fun updateOnlyStatus(idGame: Int, gameStatus: Byte) {
-        dataSource.updateOnlyStatus(idGame, gameStatus)
+    override suspend fun updateOnlyStatus(idGame: Int, statusGame: Byte) {
+        dataSource.updateOnlyStatus(idGame, statusGame)
     }
 
 }

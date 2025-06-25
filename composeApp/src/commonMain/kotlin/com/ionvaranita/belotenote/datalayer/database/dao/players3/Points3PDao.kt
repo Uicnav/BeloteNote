@@ -18,9 +18,6 @@ interface Points3PDao {
     @Query("select * from Points3PEntity where idGame = :idGame")
     fun getPoints(idGame: Int): Flow<List<Points3PEntity>>
 
-    @Query("select * from Points3PEntity where id = (select max(id) from Points3PEntity where idGame = :idGame)")
-    suspend fun getLastPoints(idGame: Int): Points3PEntity?
-
     @Query("delete from Points3PEntity where idGame = :idGame")
     suspend fun delete(idGame: Int): Int
 

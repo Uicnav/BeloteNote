@@ -8,8 +8,6 @@ interface Points3PRepository {
 
     fun getPoints(idGame: Int): Flow<List<Points3PEntity>>
 
-    suspend fun getLastPoints(idGame: Int): Points3PEntity?
-
     suspend fun delete(idGame: Int): Int
 
 

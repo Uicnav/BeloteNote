@@ -34,12 +34,9 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -64,7 +61,6 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import belotenote.composeapp.generated.resources.Res
-import belotenote.composeapp.generated.resources.alert_dialog_winner_points
 import belotenote.composeapp.generated.resources.dialog_fragment_insert_manually_winner_points
 import belotenote.composeapp.generated.resources.ic_delete_white
 import com.ionvaranita.belotenote.Match2Dest
@@ -535,7 +531,7 @@ fun InsertGame3(
         } else if (p3.isEmpty()) {
             shouldVibrateP3.shake()
         } else {
-            onClick(Game3PEntity(name1 = p1, name2 = p2, name3 = p3, winnerPoints = winningPoints))
+            onClick(Game3PEntity(name1 = p1, name2 = p2, name3 = p3, winningPoints = winningPoints))
             onDismissRequest()
         }
     }) {

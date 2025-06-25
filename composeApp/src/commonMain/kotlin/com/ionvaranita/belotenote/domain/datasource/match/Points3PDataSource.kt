@@ -8,8 +8,6 @@ interface Points3PDataSource {
 
     fun getPoints(idGame: Int): Flow<List<Points3PEntity>>
 
-    suspend fun getLastPoints(idGame: Int): Points3PEntity?
-
     suspend fun delete(idGame: Int): Int
 
     suspend fun delete(row: Points3PEntity)

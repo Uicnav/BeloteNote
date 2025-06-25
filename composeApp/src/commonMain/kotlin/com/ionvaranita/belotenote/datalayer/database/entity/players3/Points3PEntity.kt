@@ -20,6 +20,6 @@ data class Points3PEntity(
 
                          ) {
     fun toUiModel(): Points3PUi {
-        return Points3PUi(idGame = this.idGame, pointsGame = this.pointsGame.toString(), pointsP1 = this.pointsP1.toString(), pointsP2 = this.pointsP2.toString(), pointsP3 = this.pointsP3.toString(), isBoltP1 = this.isBoltP1, isBoltP2 = this.isBoltP2, isBoltP3 = this.isBoltP3)
+        return Points3PUi(id = this.id, idGame = this.idGame, pointsGame = this.pointsGame.toString(), pointsP1 = this.pointsP1.toString(), pointsP2 = this.pointsP2.toString(), pointsP3 = this.pointsP3.toString(), isBoltP1 = this.isBoltP1, isBoltP2 = this.isBoltP2, isBoltP3 = this.isBoltP3)
     }
 }

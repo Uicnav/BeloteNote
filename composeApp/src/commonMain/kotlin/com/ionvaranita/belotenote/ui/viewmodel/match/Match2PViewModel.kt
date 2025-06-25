@@ -1,8 +1,5 @@
 package com.ionvaranita.belotenote.ui.viewmodel.match
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ionvaranita.belotenote.constants.GameStatus
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.UpdateOnlyStatusGameParams
@@ -20,15 +17,9 @@ import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteLastRowPoint
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetPoints2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.insert.InsertPoints2PUseCase
 import com.ionvaranita.belotenote.ui.match.BOLT
-import com.ionvaranita.belotenote.utils.IdsPlayer.ID_PERSON_2_1
-import com.ionvaranita.belotenote.utils.IdsPlayer.ID_PERSON_2_2
+import com.ionvaranita.belotenote.utils.IdsPlayer.ID_PERSON_1
+import com.ionvaranita.belotenote.utils.IdsPlayer.ID_PERSON_2
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -45,20 +36,11 @@ class Match2PPViewModel(
     private val updateStatusWinningPointsUseCase: UpdateStatusWinningPointsGame2PUseCase,
     private val updateOnlyStatusUseCase: UpdateOnlyStatusGame2PUseCase,
     private val deleteAllPointsUseCase: DeleteAllPoints2PUseCase
-) :
-
-    ViewModel(), ViewModelBase {
-
-
-    private val _uiState = MutableStateFlow<Match2PUiState>(Match2PUiState.Loading)
-    val uiState: StateFlow<Match2PUiState> = _uiState
-    private var winningPoints by Delegates.notNull<Short>()
+) : ViewModelBase() {
     private var scoreName1 by Delegates.notNull<Short>()
     private var scoreName2 by Delegates.notNull<Short>()
     private var name1 by Delegates.notNull<String>()
     private var name2 by Delegates.notNull<String>()
-    private val _statusGame = mutableStateOf(GameStatus.CONTINUE)
-    val statusGame: State<GameStatus> = _statusGame
 
 
     init {
@@ -71,7 +53,7 @@ class Match2PPViewModel(
     private lateinit var lastPoints: Points2PUi
 
 
-    private fun getMatchData(dispatcher: CoroutineDispatcher = Dispatchers.IO) =
+    override fun getMatchData(dispatcher: CoroutineDispatcher) {
         viewModelScope.launch(dispatcher) {
 
             combine(
@@ -106,12 +88,14 @@ class Match2PPViewModel(
                 )
                 MatchData2P(game = game, points = points)
             }.catch { exception ->
-                _uiState.value = Match2PUiState.Error(exception)
+                _uiState.value = MatchUiState.Error(exception)
             }.collect { matchData ->
-                _uiState.value = Match2PUiState.Success(matchData)
+                _uiState.value = MatchUiState.Success(matchData)
 
             }
         }
+    }
+
 
     private var isMinus10Me = false
     private var isMinus10YouS = false
@@ -119,9 +103,10 @@ class Match2PPViewModel(
     private var minus10Inserted = false
 
 
-    fun insertPoints(
-        model: Points2PUi, dispatcher: CoroutineDispatcher = Dispatchers.IO
+    override fun <T>insertPoints(
+        model: T, dispatcher: CoroutineDispatcher
     ) {
+        val model = model as Points2PUi
         viewModelScope.launch(dispatcher) {
             model.idGame = idGame
             if (model.pointsMe.equals(BOLT)) {
@@ -144,33 +129,10 @@ class Match2PPViewModel(
                 }
             }
             val updatedModel = model.add(lastPoints.toDataClass())
-            val pointsMe = updatedModel.pointsMe
-            val pointsYouS = updatedModel.pointsYouS
 
-            if (checkIsExtended(updatedModel.toUiModel())) {
-                updateOnlyStatusUseCase.execute(
-                    params = UpdateOnlyStatusGameParams(
-                        idGame, GameStatus.EXTENDED.id
-                    )
-                )
-            } else if (pointsMe >= winningPoints) {
-                if (pointsMe > pointsYouS) {
-                    updateStatusScoreName1UseCase.execute(
-                        UpdateStatusAndScoreGameParams(
-                            idGame = idGame, score = scoreName1.plus(1).toShort()
-                        )
-                    )
-                    _oneTimeEvent.emit(SideEffect.ShowWinner(winnerName = name1))
-                }
-            } else if (pointsYouS >= winningPoints) {
-                if (pointsYouS > pointsMe) {
-                    updateStatusScoreName2UseCase.execute(
-                        UpdateStatusAndScoreGameParams(
-                            idGame = idGame, score = scoreName2.plus(1).toShort()
-                        )
-                    )
-                    _oneTimeEvent.emit(SideEffect.ShowWinner(winnerName = name2))
-                }
+            val isToExtend = checkIsExtended(updatedModel.toUiModel())
+            if (isToExtend) {
+                updateOnlyStatusUseCase.execute(params = UpdateOnlyStatusGameParams(idGame = idGame, statusGame = GameStatus.EXTENDED.id))
             }
             insertPointsUseCase.execute(updatedModel)
         }
@@ -184,33 +146,9 @@ class Match2PPViewModel(
         }
     }
 
-    private suspend fun checkIsExtended(points2P: Points2PUi): Boolean {
-        val pointsMe = points2P.pointsMe
-        val pointsYouS = points2P.pointsYouS
-        if (pointsMe.toShort() >= winningPoints && pointsYouS.toShort() >= winningPoints) {
-            if (pointsMe > pointsYouS) {
-                _oneTimeEvent.emit(
-                    SideEffect.ShowExtended(
-                        maxPoints = pointsMe, winner = Winner(ID_PERSON_2_1, name1)
-                    )
-                )
-            } else if (pointsMe < pointsYouS) {
-                _oneTimeEvent.emit(
-                    SideEffect.ShowExtended(
-                        maxPoints = pointsYouS, winner = Winner(ID_PERSON_2_2, name2)
-                    )
-                )
-            } else {
-                _oneTimeEvent.emit(SideEffect.ShowExtendedMandatory(maxPoints = pointsYouS))
-            }
-            return true
-        }
-        return false
-    }
-
     override fun updateStatusScoreName(winner: Winner, dispatcher: CoroutineDispatcher) {
         viewModelScope.launch(dispatcher) {
-            if (winner.id == ID_PERSON_2_1) {
+            if (winner.id == ID_PERSON_1) {
                 updateStatusScoreName1UseCase.execute(
                     params = UpdateStatusAndScoreGameParams(
                         idGame = idGame,
@@ -219,7 +157,7 @@ class Match2PPViewModel(
                     )
                 )
 
-            } else if (winner.id == ID_PERSON_2_2) {
+            } else if (winner.id == ID_PERSON_2) {
                 updateStatusScoreName2UseCase.execute(
                     params = UpdateStatusAndScoreGameParams(
                         idGame = idGame,
@@ -233,7 +171,7 @@ class Match2PPViewModel(
 
     override fun deleteLastPoints(dispatcher: CoroutineDispatcher) {
         viewModelScope.launch(dispatcher) {
-                deleteLastRowUseCase.execute(lastPoints.toDataClass())
+            deleteLastRowUseCase.execute(lastPoints.toDataClass())
         }
 
     }
@@ -273,17 +211,56 @@ class Match2PPViewModel(
         }
     }
 
-    private val _oneTimeEvent = MutableSharedFlow<SideEffect>(
-        replay = 0, extraBufferCapacity = 1
-    )
-    val oneTimeEvent = _oneTimeEvent.asSharedFlow()
+    private suspend fun checkIsExtended(pointsUi: Points2PUi): Boolean {
+        val pointsMe = pointsUi.pointsMe.toShort()
+        val pointsYouS = pointsUi.pointsYouS.toShort()
+        val mapPoints: Map<Int, Short> = mapOf(
+            ID_PERSON_1 to pointsMe, ID_PERSON_2 to pointsYouS
+        )
+        var isExtended = false
+        when (val result = getWinner(mapPoints, winningPoints)) {
+            WinnerResult.ToContinue -> {
+
+            }
+
+            is WinnerResult.ToExtend -> {
+                isExtended = true
+                _oneTimeEvent.emit(
+                    SideEffect.ShowExtended(
+                        maxPoints = result.maxPoints.toString(), winner = Winner(
+                            result.idWinner, if (result.idWinner == ID_PERSON_1) name1 else name2
+                        )
+                    )
+                )
+            }
+
+            is WinnerResult.ToExtendMandatory -> {
+                isExtended = true
+                _oneTimeEvent.emit(SideEffect.ShowExtendedMandatory(maxPoints = result.maxPoints.toString()))
+
+            }
+
+            is WinnerResult.ToFinish -> {
+                if (result.idWinner == ID_PERSON_1) {
+                    updateStatusScoreName1UseCase.execute(
+                        UpdateStatusAndScoreGameParams(
+                            idGame = idGame, score = scoreName1.plus(1).toShort()
+                        )
+                    )
+                    _oneTimeEvent.emit(SideEffect.ShowWinner(winnerName = name1))
+                } else if (result.idWinner == ID_PERSON_2) {
+                    updateStatusScoreName2UseCase.execute(
+                        UpdateStatusAndScoreGameParams(
+                            idGame = idGame, score = scoreName2.plus(1).toShort()
+                        )
+                    )
+                    _oneTimeEvent.emit(SideEffect.ShowWinner(winnerName = name2))
+                }
+            }
+        }
+        return isExtended
+    }
 }
 
 data class MatchData2P(val game: Game2PUi, val points: List<Points2PUi>)
-
-sealed class Match2PUiState {
-    object Loading : Match2PUiState()
-    data class Success(val data: MatchData2P) : Match2PUiState()
-    data class Error(val exception: Throwable) : Match2PUiState()
-}
 

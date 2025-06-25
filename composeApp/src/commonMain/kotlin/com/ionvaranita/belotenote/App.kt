@@ -68,18 +68,23 @@ import com.ionvaranita.belotenote.domain.usecase.game.insert.InsertGame3PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.insert.InsertGame4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateOnlyStatusGame2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateOnlyStatusGame2PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateOnlyStatusGame3PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreGame2GroupsName1UseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreGame2GroupsName2UseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName1Game2PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName1Game3PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName2Game2PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName2Game3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName3Game3PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusWinningPointsGame2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusWinningPointsGame2PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusWinningPointsGame3PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteAllPoints2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteAllPoints2PUseCase
+import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteAllPoints3PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteLastRowPoints2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteLastRowPoints2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteLastRowPoints3PUseCase
-import com.ionvaranita.belotenote.domain.usecase.match.get.GetLastPoints3PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetPoints2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetPoints2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetPoints3PUseCase
@@ -266,19 +271,37 @@ fun App(appDatabase: AppDatabase) {
                                 Points3PRepositoryImpl(Points3PDataSourceImpl(appDatabase.points3PDao()))
                             val getGameUseCase = GetGame3PUseCase(repositoryGame)
                             val getPointsUseCase = GetPoints3PUseCase(repositoryPoints)
-                            val getLastUseCase = GetLastPoints3PUseCase(repositoryPoints)
                             val insertPointsUseCase = InsertPoints3PUseCase(repositoryPoints)
                             val deleteLastRowUseCase =
                                 DeleteLastRowPoints3PUseCase(repositoryPoints)
+
+                            val updateStatusScoreName1UseCase =
+                                UpdateStatusScoreName1Game3PUseCase(repositoryGame)
+                            val updateStatusScoreName2UseCase =
+                                UpdateStatusScoreName2Game3PUseCase(repositoryGame)
+
+                            val updateStatusScoreName3UseCase =
+                                UpdateStatusScoreName3Game3PUseCase(repositoryGame)
+
+                            val updateStatusWinningPointsUseCase =
+                                UpdateStatusWinningPointsGame3PUseCase(repositoryGame)
+                            val updateOnlyStatusUseCase =
+                                UpdateOnlyStatusGame3PUseCase(repositoryGame)
+                            val deleteAllPointsUseCase = DeleteAllPoints3PUseCase(repositoryPoints)
 
                             val match3PPViewModel = viewModel {
                                 Match3PPViewModel(
                                     idGame,
                                     getGameUseCase,
                                     getPointsUseCase,
-                                    getLastUseCase,
                                     insertPointsUseCase,
-                                    deleteLastRowUseCase
+                                    deleteLastRowUseCase,
+                                    updateStatusScoreName1UseCase,
+                                    updateStatusScoreName2UseCase,
+                                    updateStatusScoreName3UseCase,
+                                    updateStatusWinningPointsUseCase,
+                                    updateOnlyStatusUseCase,
+                                    deleteAllPointsUseCase
                                 )
                             }
 

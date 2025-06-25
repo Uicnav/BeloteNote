@@ -37,7 +37,7 @@ data class Game2PUi(
 data class Game3PUi(
     val idGame: Int,
     val statusGame: Byte,
-    val winnerPoints: Short,
+    val winningPoints: Short,
     val name1: String,
     val name2: String,
     val name3: String,
@@ -49,7 +49,7 @@ data class Game3PUi(
         return Game3PEntity(
             idGame = this.idGame,
             statusGame = this.statusGame,
-            winnerPoints = this.winnerPoints,
+            winningPoints = this.winningPoints,
             name1 = this.name1,
             name2 = this.name2,
             name3 = this.name3
@@ -129,6 +129,7 @@ data class Points2PUi(
 }
 
 data class Points3PUi(
+    val id: Int = 0,
     var idGame: Int = 0,
     val pointsGame: String,
     var pointsP1: String,
@@ -140,6 +141,7 @@ data class Points3PUi(
 ) {
     fun add(lastPoints: Points3PEntity): Points3PEntity {
         return Points3PEntity(
+            id = this.id,
             idGame = this.idGame,
             pointsP1 = (this.pointsP1.toShortCustom() + lastPoints.pointsP1).toShort(),
             pointsP2 = (this.pointsP2.toShortCustom() + lastPoints.pointsP2).toShort(),
@@ -149,6 +151,9 @@ data class Points3PUi(
             isBoltP2 = this.isBoltP2,
             isBoltP3 = this.isBoltP3
         )
+    }
+    fun toDataClass(): Points3PEntity {
+        return Points3PEntity(id = this.id, idGame = this.idGame, pointsP1 = this.pointsP1.toShortCustom(), pointsP2 = this.pointsP2.toShortCustom(), pointsP3 = this.pointsP3.toShortCustom(), pointsGame = this.pointsGame.toShort(), isBoltP1 = this.isBoltP1, isBoltP2 = this.isBoltP2, isBoltP3 = isBoltP3)
     }
 }
 
