@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface Games2PRepository {
     suspend fun getGame(idGame: Int): Flow<Game2PEntity>
     suspend fun getGames(): Flow<List<Game2PEntity>>
-    suspend fun insetGame(game2PEntity: Game2PEntity)
+    suspend fun insetGame(game2PEntity: Game2PEntity): Int
     suspend fun deleteGame(idGame: Int)
     suspend fun updateStatusFinishedAndScoreName1(
         idGame: Int,

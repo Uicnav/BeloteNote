@@ -31,8 +31,8 @@ class Game4PViewModel(private val getGamesUseCase: GetGames4PUseCase, private va
         }
     }
 
-    fun insertGame(game: Game4PEntity, dispatcher: CoroutineDispatcher = Dispatchers.IO) = viewModelScope.launch(dispatcher) {
-        insertGameUseCase.execute(game)
+    suspend fun insertGame(game: Game4PEntity, dispatcher: CoroutineDispatcher = Dispatchers.IO): Int{
+        return insertGameUseCase.execute(game)
     }
 
     fun deleteGame(idGame: Int, dispatcher: CoroutineDispatcher = Dispatchers.IO) = viewModelScope.launch(dispatcher) {

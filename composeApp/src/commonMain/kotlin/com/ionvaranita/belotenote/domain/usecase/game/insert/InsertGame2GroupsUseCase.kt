@@ -4,6 +4,6 @@ import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Game2GroupsE
 import com.ionvaranita.belotenote.domain.repo.game.Games2GroupsRepository
 import com.ionvaranita.belotenote.domain.usecase.UseCase
 
-class InsertGame2GroupsUseCase(private val repository: Games2GroupsRepository) : UseCase<Game2GroupsEntity, Unit> {
-    override suspend fun execute(game: Game2GroupsEntity): Unit = repository.insetGame(game = game)
+class InsertGame2GroupsUseCase(private val repository: Games2GroupsRepository) : UseCase<Game2GroupsEntity, Int> {
+    override suspend fun execute(game: Game2GroupsEntity): Int = repository.insetGame(game = game)
 }

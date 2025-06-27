@@ -102,7 +102,11 @@ internal fun TablesScreen2(
     }) { paddingValues ->
         if (shouDialog) {
             InsertGame2(onClick = {
-                viewModel.insertGame(game = it)
+                scope.launch {
+                    val idGame = viewModel.insertGame(game = it)
+                    val route = Match2Dest(idGame = idGame)
+                    navController.navigate(route)
+                }
 
             }, onDismissRequest = {
                 shouDialog = false
@@ -159,7 +163,11 @@ internal fun TablesScreen3(
     }) { paddingValues ->
         if (shouDialog) {
             InsertGame3(onClick = {
-                viewModel.insertGame(game = it)
+                scope.launch {
+                    val idGame = viewModel.insertGame(game = it)
+                    val route = Match3Dest(idGame = idGame)
+                    navController.navigate(route)
+                }
             }, onDismissRequest = {
                 shouDialog = false
             })
@@ -217,7 +225,11 @@ internal fun TablesScreen4(
     }) { paddingValues ->
         if (shouDialog) {
             InsertGame4(onClick = {
-                game4PViewModel.insertGame(game = it)
+                scope.launch {
+                    val idGame = game4PViewModel.insertGame(game = it)
+                    val route = Match4Dest(idGame = idGame)
+                    navController.navigate(route)
+                }
             }, onDismissRequest = {
                 shouDialog = false
             })
@@ -275,10 +287,13 @@ internal fun TablesScreenGroups(viewModel: Game2GroupsViewModel) {
         shouDialog = true
     }) { paddingValues ->
         if (shouDialog) {
-            InsertGame2Groups(onClick = {
-                viewModel.insertGame(game = it)
-                val route = MatchGroupsDest(idGame = it.idGame)
-                navController.navigate(route)
+            InsertGame2Groups(onClick = { game->
+                scope.launch {
+                    val idGame = viewModel.insertGame(game = game)
+                    val route = MatchGroupsDest(idGame = idGame)
+                    navController.navigate(route)
+                }
+
             }, onDismissRequest = {
                 shouDialog = false
             })

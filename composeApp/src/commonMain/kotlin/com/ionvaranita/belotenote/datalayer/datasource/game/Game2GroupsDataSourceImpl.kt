@@ -14,8 +14,8 @@ class Game2GroupsDataSourceImpl(private val dao: Game2GroupsDao) : Game2GroupsDa
         return dao.getGames()
     }
 
-    override suspend fun insertGame(game: Game2GroupsEntity) {
-        dao.insert(game)
+    override suspend fun insertGame(game: Game2GroupsEntity): Int {
+        return dao.insert(game).toInt()
     }
 
     override suspend fun deleteGame(idGame: Int) {

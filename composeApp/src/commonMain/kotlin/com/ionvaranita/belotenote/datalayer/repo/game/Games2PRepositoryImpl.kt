@@ -14,7 +14,7 @@ class Games2PRepositoryImpl(private val dataSource: Game2PDataSource): Games2PRe
         return dataSource.getGames()
     }
 
-    override suspend fun insetGame(game2PEntity: Game2PEntity) {
+    override suspend fun insetGame(game2PEntity: Game2PEntity): Int {
         return dataSource.insertGame(game2PEntity)
     }
 

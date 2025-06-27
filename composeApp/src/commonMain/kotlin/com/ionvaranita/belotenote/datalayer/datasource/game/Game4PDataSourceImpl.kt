@@ -5,17 +5,17 @@ import com.ionvaranita.belotenote.domain.datasource.game.Game4PDataSource
 import kotlinx.coroutines.flow.Flow
 import varanita.informatics.shared.database.dao.players4.Game4PDao
 
-class Game4PDataSourceImpl(private val game4PDao: Game4PDao) : Game4PDataSource {
+class Game4PDataSourceImpl(private val dao: Game4PDao) : Game4PDataSource {
     override suspend fun getGames(): Flow<List<Game4PEntity>> {
-        return game4PDao.getGames()
+        return dao.getGames()
     }
 
-    override suspend fun insertGame(game: Game4PEntity) {
-        game4PDao.insert(game)
+    override suspend fun insertGame(game: Game4PEntity): Int {
+        return dao.insert(game).toInt()
     }
 
     override suspend fun deleteGame(idGame: Int) {
-        game4PDao.delete(idGame)
+        dao.delete(idGame)
     }
 
 }

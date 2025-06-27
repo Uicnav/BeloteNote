@@ -10,8 +10,8 @@ class Game3PDataSourceImpl(private val dao: Game3PDao) : Game3PDataSource {
         return dao.getGames()
     }
 
-    override suspend fun insertGame(game: Game3PEntity) {
-        dao.insert(game)
+    override suspend fun insertGame(game: Game3PEntity): Int {
+        return dao.insert(game).toInt()
     }
 
     override suspend fun deleteGame(idGame: Int) {

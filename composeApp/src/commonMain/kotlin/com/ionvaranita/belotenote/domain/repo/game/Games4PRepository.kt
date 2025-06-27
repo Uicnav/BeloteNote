@@ -5,6 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface Games4PRepository {
     suspend fun getGames(): Flow<List<Game4PEntity>>
-    suspend fun insetGame(game: Game4PEntity)
+    suspend fun insertGame(game: Game4PEntity) : Int
     suspend fun deleteGame(idGame: Int)
 }

@@ -10,8 +10,8 @@ class Games4PRepositoryImpl(private val games4PDataSource: Game4PDataSource) : G
         return games4PDataSource.getGames()
     }
 
-    override suspend fun insetGame(game: Game4PEntity) {
-        games4PDataSource.insertGame(game)
+    override suspend fun insertGame(game: Game4PEntity): Int {
+       return games4PDataSource.insertGame(game)
     }
 
     override suspend fun deleteGame(idGame: Int) {

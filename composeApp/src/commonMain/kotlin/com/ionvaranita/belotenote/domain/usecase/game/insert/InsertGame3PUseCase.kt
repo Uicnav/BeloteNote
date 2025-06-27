@@ -4,7 +4,7 @@ import com.ionvaranita.belotenote.datalayer.database.entity.players3.Game3PEntit
 import com.ionvaranita.belotenote.domain.repo.game.Games3PRepository
 import com.ionvaranita.belotenote.domain.usecase.UseCase
 
-class InsertGame3PUseCase(private val repository: Games3PRepository) : UseCase<Game3PEntity, Unit> {
-    override suspend fun execute(game: Game3PEntity): Unit =  repository.insetGame(game = game)
+class InsertGame3PUseCase(private val repository: Games3PRepository) : UseCase<Game3PEntity, Int> {
+    override suspend fun execute(game: Game3PEntity): Int =  repository.insetGame(game = game)
 
 }

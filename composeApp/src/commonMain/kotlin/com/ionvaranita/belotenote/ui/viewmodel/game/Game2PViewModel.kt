@@ -31,8 +31,8 @@ class Game2PViewModel(private val getGamesUseCase: GetGames2PUseCase, private va
     }
 
     //TODO for testing coroutine
-    fun insertGame(game: Game2PEntity, dispatcher: CoroutineDispatcher = Dispatchers.IO) = viewModelScope.launch(dispatcher) {
-        insertGameUseCase.execute(game)
+    suspend fun insertGame(game: Game2PEntity): Int {
+        return insertGameUseCase.execute(game)
     }
 
     fun deleteGame(idGame: Int, dispatcher: CoroutineDispatcher = Dispatchers.IO) = viewModelScope.launch(dispatcher) {
