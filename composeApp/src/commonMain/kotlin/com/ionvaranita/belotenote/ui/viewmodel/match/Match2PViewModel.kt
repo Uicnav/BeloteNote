@@ -47,8 +47,8 @@ class Match2PPViewModel(
         getMatchData()
     }
 
-    private var countBoltMe = 0
-    private var countBoltYouS = 0
+    private var countBoltP1 = 0
+    private var countBoltP2 = 0
 
     private lateinit var lastPoints: Points2PUi
 
@@ -60,32 +60,32 @@ class Match2PPViewModel(
                 getGameUseCase.execute(idGame),
                 getPointsUseCase.execute(idGame),
             ) { game, points ->
+                lastPoints = points.lastOrNull()?.copy() ?: Points2PUi(
+                    idGame = idGame,
+                    pointsP1 = 0.toString(),
+                    pointsP2 = 0.toString(),
+                    pointsGame = 0.toString()
+                )
                 winningPoints = game.winningPoints
                 scoreName1 = game.scoreName1
                 scoreName2 = game.scoreName2
                 name1 = game.name1
                 name2 = game.name2
                 _statusGame.value = GameStatus.fromId(game.statusGame)!!
-                countBoltMe = 0
-                countBoltYouS = 0
+                countBoltP1 = 0
+                countBoltP2 = 0
                 points.forEach { point ->
-                    if (point.isBoltMe) {
-                        val boltTtoUi = (countBoltMe % 2) + 1
-                        point.pointsMe = BOLT + (boltTtoUi).toString()
-                        ++countBoltMe
+                    if (point.isBoltP1) {
+                        val boltTtoUi = (countBoltP1 % 2) + 1
+                        point.pointsP1 = BOLT + (boltTtoUi).toString()
+                        ++countBoltP1
                     }
-                    if (point.isBoltYouS) {
-                        val boltTtoUi = (countBoltYouS % 2) + 1
-                        point.pointsYouS = BOLT + (boltTtoUi).toString()
-                        ++countBoltYouS
+                    if (point.isBoltP2) {
+                        val boltTtoUi = (countBoltP2 % 2) + 1
+                        point.pointsP2 = BOLT + (boltTtoUi).toString()
+                        ++countBoltP2
                     }
                 }
-                lastPoints = points.lastOrNull() ?: Points2PUi(
-                    idGame = idGame,
-                    pointsMe = 0.toString(),
-                    pointsYouS = 0.toString(),
-                    pointsGame = 0.toString()
-                )
                 MatchData2P(game = game, points = points)
             }.catch { exception ->
                 _uiState.value = MatchUiState.Error(exception)
@@ -97,34 +97,37 @@ class Match2PPViewModel(
     }
 
 
-    private var isMinus10Me = false
-    private var isMinus10YouS = false
+    private var isMinus10P1 = false
+    private var isMinus10P2 = false
 
     override fun <T>insertPoints(
         model: T, dispatcher: CoroutineDispatcher
     ) {
-        val model = model as Points2PUi
+        val modelPoints = model as Points2PUi
         viewModelScope.launch(dispatcher) {
-            model.idGame = idGame
-            if (model.pointsMe.equals(BOLT)) {
-                if (!isMinus10Me && countBoltMe != 0 && countBoltMe % 2 == 0) {
-                    isMinus10Me = true
-                    model.pointsMe = "-10"
+            modelPoints.idGame = idGame
+            if (modelPoints.pointsP1 == BOLT) {
+                modelPoints.pointsP1 = lastPoints.pointsP1
+
+                if (!isMinus10P1 && countBoltP1 != 0 && countBoltP1 % 2 == 0) {
+                    isMinus10P1 = true
+                    modelPoints.pointsP1 = "-10"
                 } else {
-                    isMinus10Me = false
-                    model.isBoltMe = true
+                    isMinus10P1 = false
+                    modelPoints.isBoltP1 = true
                 }
             }
-            if (model.pointsYouS.equals(BOLT)) {
-                if (!isMinus10YouS && countBoltYouS != 0 && countBoltYouS % 2 == 0) {
-                    isMinus10YouS = true
-                    model.pointsYouS = "-10"
+            if (modelPoints.pointsP2 == BOLT) {
+                modelPoints.pointsP2 = lastPoints.pointsP2
+                if (!isMinus10P2 && countBoltP2 != 0 && countBoltP2 % 2 == 0) {
+                    isMinus10P2 = true
+                    modelPoints.pointsP2 = "-10"
                 } else {
-                    isMinus10YouS = false
-                    model.isBoltYouS = true
+                    isMinus10P2 = false
+                    modelPoints.isBoltP2 = true
                 }
             }
-            val updatedModel = model.add(lastPoints.toDataClass())
+            val updatedModel = modelPoints.add(lastPoints.toDataClass())
 
             val isToExtend = checkIsExtended(updatedModel.toUiModel())
             if (isToExtend) {
@@ -208,10 +211,10 @@ class Match2PPViewModel(
     }
 
     private suspend fun checkIsExtended(pointsUi: Points2PUi): Boolean {
-        val pointsMe = pointsUi.pointsMe.toShort()
-        val pointsYouS = pointsUi.pointsYouS.toShort()
+        val pointsP1 = pointsUi.pointsP1.toShort()
+        val pointsP2 = pointsUi.pointsP2.toShort()
         val mapPoints: Map<Int, Short> = mapOf(
-            ID_PERSON_1 to pointsMe, ID_PERSON_2 to pointsYouS
+            ID_PERSON_1 to pointsP1, ID_PERSON_2 to pointsP2
         )
         var isExtended = false
         when (val result = getWinner(mapPoints, winningPoints)) {

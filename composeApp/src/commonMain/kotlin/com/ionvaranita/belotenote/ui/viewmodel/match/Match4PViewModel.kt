@@ -48,10 +48,15 @@ class Match4PPViewModel(
         getMatchData()
     }
 
-    var countBoltP1 = 0
-    var countBoltP2 = 0
-    var countBoltP3 = 0
-    var countBoltP4 = 0
+    private var countBoltP1 = 0
+    private var countBoltP2 = 0
+    private var countBoltP3 = 0
+    private var countBoltP4 = 0
+
+    private var isMinus10P1 = false
+    private var isMinus10P2 = false
+    private var isMinus10P3 = false
+    private var isMinus10P4 = false
 
     private var scoreName1 by Delegates.notNull<Short>()
     private var scoreName2 by Delegates.notNull<Short>()
@@ -125,12 +130,6 @@ class Match4PPViewModel(
             }
         }
     }
-
-
-    private var isMinus10P1 = false
-    private var isMinus10P2 = false
-    private var isMinus10P3 = false
-    private var isMinus10P4 = false
 
     override fun <T> insertPoints(
         model: T, dispatcher: CoroutineDispatcher

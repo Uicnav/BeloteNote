@@ -47,12 +47,15 @@ class Match2GroupsViewModel(
         getMatchData()
     }
 
-    private var countBoltWe = 0
-    private var countBoltYouP = 0
+
     private var scoreName1 by Delegates.notNull<Short>()
     private var scoreName2 by Delegates.notNull<Short>()
     private var name1 by Delegates.notNull<String>()
     private var name2 by Delegates.notNull<String>()
+    private var isMinus10P1 = false
+    private var isMinus10P2 = false
+    private var countBoltP1 = 0
+    private var countBoltP2 = 0
 
     override fun getMatchData(dispatcher: CoroutineDispatcher) {
         viewModelScope.launch(dispatcher) {
@@ -61,30 +64,31 @@ class Match2GroupsViewModel(
                 getGameUseCase.execute(idGame),
                 getPointsUseCase.execute(idGame),
             ) { game, points ->
+                lastPoints = points.lastOrNull()?.copy() ?: Points2GroupsUi(
+                    idGame = idGame,
+                    pointsP1 = 0.toString(),
+                    pointsP2 = 0.toString(),
+                    pointsGame = 0.toString()
+                )
                 winningPoints = game.winningPoints
                 scoreName1 = game.scoreName1
                 scoreName2 = game.scoreName2
                 name1 = game.name1
                 name2 = game.name2
                 _statusGame.value = GameStatus.fromId(game.statusGame)!!
-                lastPoints = points.lastOrNull() ?: Points2GroupsUi(
-                    idGame = idGame,
-                    pointsWe = 0.toString(),
-                    pointsYouP = 0.toString(),
-                    pointsGame = 0.toString()
-                )
-                countBoltWe = 0
-                countBoltYouP = 0
+
+                countBoltP1 = 0
+                countBoltP2 = 0
                 points.forEach { point ->
-                    if (point.isBoltWe) {
-                        val boltTtoUi = (countBoltWe % 2) + 1
-                        point.pointsWe = BOLT + (boltTtoUi).toString()
-                        ++countBoltWe
+                    if (point.isBoltP1) {
+                        val boltTtoUi = (countBoltP1 % 2) + 1
+                        point.pointsP1 = BOLT + (boltTtoUi).toString()
+                        ++countBoltP1
                     }
-                    if (point.isBoltYouP) {
-                        val boltTtoUi = (countBoltYouP % 2) + 1
-                        point.pointsYouP = BOLT + (boltTtoUi).toString()
-                        ++countBoltYouP
+                    if (point.isBoltP2) {
+                        val boltTtoUi = (countBoltP2 % 2) + 1
+                        point.pointsP2 = BOLT + (boltTtoUi).toString()
+                        ++countBoltP2
                     }
                 }
                 MatchData2Groups(game = game, points = points)
@@ -97,35 +101,34 @@ class Match2GroupsViewModel(
     }
 
 
-    var isMinus10We = false
-    var isMinus10YouP = false
-
 
     override fun <T> insertPoints(
         model: T, dispatcher: CoroutineDispatcher
     ) {
-        val model = model as Points2GroupsUi
+        val modelPoints = model as Points2GroupsUi
         viewModelScope.launch(dispatcher) {
-            model.idGame = idGame
-            if (model.pointsWe == BOLT) {
-                if (!isMinus10We && countBoltWe != 0 && countBoltWe % 2 == 0) {
-                    isMinus10We = true
-                    model.pointsWe = "-10"
+            modelPoints.idGame = idGame
+            if (modelPoints.pointsP1 == BOLT) {
+                modelPoints.pointsP1 = lastPoints.pointsP1
+                if (!isMinus10P1 && countBoltP1 != 0 && countBoltP1 % 2 == 0) {
+                    isMinus10P1 = true
+                    modelPoints.pointsP1 = "-10"
                 } else {
-                    isMinus10We = false
-                    model.isBoltWe = true
+                    isMinus10P1 = false
+                    modelPoints.isBoltP1 = true
                 }
             }
-            if (model.pointsYouP == BOLT) {
-                if (!isMinus10YouP && countBoltYouP != 0 && countBoltYouP % 2 == 0) {
-                    isMinus10YouP = true
-                    model.pointsYouP = "-10"
+            if (modelPoints.pointsP2 == BOLT) {
+                modelPoints.pointsP2 = lastPoints.pointsP2
+                if (!isMinus10P2 && countBoltP2 != 0 && countBoltP2 % 2 == 0) {
+                    isMinus10P2 = true
+                    modelPoints.pointsP2 = "-10"
                 } else {
-                    isMinus10YouP = false
-                    model.isBoltYouP = true
+                    isMinus10P2 = false
+                    modelPoints.isBoltP2 = true
                 }
             }
-            val updatedModel = model.add(lastPoints.toDataClass())
+            val updatedModel = modelPoints.add(lastPoints.toDataClass())
 
             val isToExtend = checkIsExtended(updatedModel.toUiModel())
             if (isToExtend) {
@@ -152,8 +155,8 @@ class Match2GroupsViewModel(
     }
 
     private suspend fun checkIsExtended(pointsUi: Points2GroupsUi): Boolean {
-        val pointsWe = pointsUi.pointsWe.toShort()
-        val pointsYouP = pointsUi.pointsYouP.toShort()
+        val pointsWe = pointsUi.pointsP1.toShort()
+        val pointsYouP = pointsUi.pointsP2.toShort()
         val mapPoints: Map<Int, Short> = mapOf(
             ID_PERSON_1 to pointsWe, ID_PERSON_2 to pointsYouP
         )

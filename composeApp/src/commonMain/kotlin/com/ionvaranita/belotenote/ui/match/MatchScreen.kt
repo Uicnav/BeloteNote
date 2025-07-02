@@ -253,13 +253,13 @@ internal fun MatchScreen2(viewModel: ViewModelBase) {
                                     }
                                 }) {
                                     PointsTextAtom(text = item.pointsGame)
-                                    PointsTextAtom(text = item.pointsMe)
-                                    PointsTextAtom(text = item.pointsYouS)
+                                    PointsTextAtom(text = item.pointsP1)
+                                    PointsTextAtom(text = item.pointsP2)
                                 }
                             } else {
                                 PointsTextAtom(text = item.pointsGame)
-                                PointsTextAtom(text = item.pointsMe)
-                                PointsTextAtom(text = item.pointsYouS)
+                                PointsTextAtom(text = item.pointsP1)
+                                PointsTextAtom(text = item.pointsP2)
                             }
                         }
                         if (index % 2 == 1) {
@@ -302,9 +302,9 @@ internal fun MatchScreen2(viewModel: ViewModelBase) {
                             if (inputKey == ADD) {
                                 viewModel.insertPoints(
                                     Points2PUi(
-                                        pointsMe = pointsMe,
+                                        pointsP1 = pointsMe,
                                         pointsGame = pointsGame,
-                                        pointsYouS = pointsYouS
+                                        pointsP2 = pointsYouS
                                     )
                                 )
                             } else {
@@ -1254,13 +1254,13 @@ internal fun MatchScreen2Groups(viewModel: ViewModelBase) {
                                     }
                                 }) {
                                     PointsTextAtom(text = item.pointsGame)
-                                    PointsTextAtom(text = item.pointsWe)
-                                    PointsTextAtom(text = item.pointsYouP)
+                                    PointsTextAtom(text = item.pointsP1)
+                                    PointsTextAtom(text = item.pointsP2)
                                 }
                             } else {
                                 PointsTextAtom(text = item.pointsGame)
-                                PointsTextAtom(text = item.pointsWe)
-                                PointsTextAtom(text = item.pointsYouP)
+                                PointsTextAtom(text = item.pointsP1)
+                                PointsTextAtom(text = item.pointsP2)
                             }
                         }
                         if (index % 2 == 1) {
@@ -1302,9 +1302,9 @@ internal fun MatchScreen2Groups(viewModel: ViewModelBase) {
                             if (inputKey == ADD) {
                                 viewModel.insertPoints(
                                     Points2GroupsUi(
-                                        pointsWe = pointsWe,
+                                        pointsP1 = pointsWe,
                                         pointsGame = pointsGame,
-                                        pointsYouP = pointsYouP
+                                        pointsP2 = pointsYouP
                                     )
                                 )
 
