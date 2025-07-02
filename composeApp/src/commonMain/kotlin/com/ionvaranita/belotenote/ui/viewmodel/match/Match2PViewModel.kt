@@ -100,9 +100,6 @@ class Match2PPViewModel(
     private var isMinus10Me = false
     private var isMinus10YouS = false
 
-    private var minus10Inserted = false
-
-
     override fun <T>insertPoints(
         model: T, dispatcher: CoroutineDispatcher
     ) {
@@ -113,7 +110,6 @@ class Match2PPViewModel(
                 if (!isMinus10Me && countBoltMe != 0 && countBoltMe % 2 == 0) {
                     isMinus10Me = true
                     model.pointsMe = "-10"
-                    minus10Inserted = true
                 } else {
                     isMinus10Me = false
                     model.isBoltMe = true

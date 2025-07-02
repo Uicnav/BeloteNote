@@ -100,8 +100,6 @@ class Match2GroupsViewModel(
     var isMinus10We = false
     var isMinus10YouP = false
 
-    private var minus10Inserted = false
-
 
     override fun <T> insertPoints(
         model: T, dispatcher: CoroutineDispatcher
@@ -113,7 +111,6 @@ class Match2GroupsViewModel(
                 if (!isMinus10We && countBoltWe != 0 && countBoltWe % 2 == 0) {
                     isMinus10We = true
                     model.pointsWe = "-10"
-                    minus10Inserted = true
                 } else {
                     isMinus10We = false
                     model.isBoltWe = true

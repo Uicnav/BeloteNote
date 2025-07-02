@@ -44,6 +44,7 @@ import com.ionvaranita.belotenote.datalayer.datasource.game.Game4PDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.datasource.match.Points2GroupsDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.datasource.match.Points2PDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.datasource.match.Points3PDataSourceImpl
+import com.ionvaranita.belotenote.datalayer.datasource.match.Points4PDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.repo.game.Games2GroupsRepositoryImpl
 import com.ionvaranita.belotenote.datalayer.repo.game.Games2PRepositoryImpl
 import com.ionvaranita.belotenote.datalayer.repo.game.Games3PRepositoryImpl
@@ -51,6 +52,7 @@ import com.ionvaranita.belotenote.datalayer.repo.game.Games4PRepositoryImpl
 import com.ionvaranita.belotenote.datalayer.repo.match.Points2GroupsRepositoryImpl
 import com.ionvaranita.belotenote.datalayer.repo.match.Points2PRepositoryImpl
 import com.ionvaranita.belotenote.datalayer.repo.match.Points3PRepositoryImpl
+import com.ionvaranita.belotenote.datalayer.repo.match.Points4PRepositoryImpl
 import com.ionvaranita.belotenote.domain.usecase.game.delete.DeleteGame2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.delete.DeleteGame2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.delete.DeleteGame3PUseCase
@@ -58,6 +60,7 @@ import com.ionvaranita.belotenote.domain.usecase.game.delete.DeleteGame4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGame2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGame2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGame3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.get.GetGame4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGames2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGames2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGames3PUseCase
@@ -69,28 +72,38 @@ import com.ionvaranita.belotenote.domain.usecase.game.insert.InsertGame4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateOnlyStatusGame2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateOnlyStatusGame2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateOnlyStatusGame3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateOnlyStatusGame4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreGame2GroupsName1UseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreGame2GroupsName2UseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName1Game2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName1Game3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName1Game4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName2Game2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName2Game3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName2Game4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName3Game3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName3Game4PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName4Game4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusWinningPointsGame2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusWinningPointsGame2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusWinningPointsGame3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusWinningPointsGame4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteAllPoints2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteAllPoints2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteAllPoints3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteAllPoints4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteLastRowPoints2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteLastRowPoints2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteLastRowPoints3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteLastRowPoints4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetPoints2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetPoints2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetPoints3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.match.get.GetPoints4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.insert.InsertPoints2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.insert.InsertPoints2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.insert.InsertPoints3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.match.insert.InsertPoints4PUseCase
 import com.ionvaranita.belotenote.ui.HomeScreen
 import com.ionvaranita.belotenote.ui.LocalNavHostController
 import com.ionvaranita.belotenote.ui.match.MatchScreen2
@@ -108,6 +121,7 @@ import com.ionvaranita.belotenote.ui.viewmodel.game.Game4PViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.match.Match2GroupsViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.match.Match2PPViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.match.Match3PPViewModel
+import com.ionvaranita.belotenote.ui.viewmodel.match.Match4PPViewModel
 import com.ionvaranita.belotenote.utils.BeloteTheme
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.painterResource
@@ -309,8 +323,52 @@ fun App(appDatabase: AppDatabase) {
                             MatchScreen3(viewModel = match3PPViewModel)
                         }
                         composable<Match4Dest> {
-                            val args = it.toRoute<Match4Dest>()
-                            MatchScreen4(idGame = args.idGame)
+                            val idGame = it.toRoute<Match3Dest>().idGame
+
+                            val repositoryGame =
+                                Games4PRepositoryImpl(Game4PDataSourceImpl(appDatabase.game4PDao()))
+                            val repositoryPoints =
+                                Points4PRepositoryImpl(Points4PDataSourceImpl(appDatabase.points4PDao()))
+                            val getGameUseCase = GetGame4PUseCase(repositoryGame)
+                            val getPointsUseCase = GetPoints4PUseCase(repositoryPoints)
+                            val insertPointsUseCase = InsertPoints4PUseCase(repositoryPoints)
+                            val deleteLastRowUseCase =
+                                DeleteLastRowPoints4PUseCase(repositoryPoints)
+
+                            val updateStatusScoreName1UseCase =
+                                UpdateStatusScoreName1Game4PUseCase(repositoryGame)
+                            val updateStatusScoreName2UseCase =
+                                UpdateStatusScoreName2Game4PUseCase(repositoryGame)
+
+                            val updateStatusScoreName3UseCase =
+                                UpdateStatusScoreName3Game4PUseCase(repositoryGame)
+
+                            val updateStatusScoreName4UseCase =
+                                UpdateStatusScoreName4Game4PUseCase(repositoryGame)
+
+                            val updateStatusWinningPointsUseCase =
+                                UpdateStatusWinningPointsGame4PUseCase(repositoryGame)
+                            val updateOnlyStatusUseCase =
+                                UpdateOnlyStatusGame4PUseCase(repositoryGame)
+                            val deleteAllPointsUseCase = DeleteAllPoints4PUseCase(repositoryPoints)
+
+                            val match4PPViewModel = viewModel {
+                                Match4PPViewModel(
+                                    idGame,
+                                    getGameUseCase,
+                                    getPointsUseCase,
+                                    insertPointsUseCase,
+                                    deleteLastRowUseCase,
+                                    updateStatusScoreName1UseCase,
+                                    updateStatusScoreName2UseCase,
+                                    updateStatusScoreName3UseCase,
+                                    updateStatusScoreName4UseCase,
+                                    updateStatusWinningPointsUseCase,
+                                    updateOnlyStatusUseCase,
+                                    deleteAllPointsUseCase
+                                )
+                            }
+                            MatchScreen4(viewModel = match4PPViewModel)
                         }
                         composable<MatchGroupsDest> {
                             val idGame = it.toRoute<MatchGroupsDest>().idGame

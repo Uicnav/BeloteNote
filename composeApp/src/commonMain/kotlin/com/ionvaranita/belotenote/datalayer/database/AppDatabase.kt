@@ -22,14 +22,14 @@ import kotlinx.coroutines.IO
 import varanita.informatics.shared.database.dao.players2.Game2PDao
 import varanita.informatics.shared.database.dao.players2.Points2PDao
 import varanita.informatics.shared.database.dao.players3.Points3PDao
-import varanita.informatics.shared.database.dao.players4.Game4PDao
+import com.ionvaranita.belotenote.datalayer.database.dao.players4.Game4PDao
 
 /**
  * Created by ionvaranita on 20/11/17.
  */
 @Database(
     entities = [Game2PEntity::class, Points2PEntity::class, Game3PEntity::class, Points3PEntity::class, Game4PEntity::class, Points4PEntity::class, Game2GroupsEntity::class, Points2GroupsEntity::class],
-    version = 12,
+    version = 14,
     exportSchema = false
 )
 @ConstructedBy(AppDatabaseConstructor::class)

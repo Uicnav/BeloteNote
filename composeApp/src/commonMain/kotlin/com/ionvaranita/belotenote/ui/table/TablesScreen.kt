@@ -592,7 +592,7 @@ fun InsertGame4(
                     name2 = p2,
                     name3 = p3,
                     name4 = p4,
-                    winnerPoints = winningPoints.toShort()
+                    winningPoints = winningPoints.toShort()
                 )
             )
             onDismissRequest()
