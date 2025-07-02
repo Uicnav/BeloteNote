@@ -7,7 +7,6 @@ import com.ionvaranita.belotenote.datalayer.database.entity.players2.UpdateStatu
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.UpdateStatusWinningPointsGameParams
 import com.ionvaranita.belotenote.domain.model.Game4PUi
 import com.ionvaranita.belotenote.domain.model.Points4PUi
-import com.ionvaranita.belotenote.domain.model.toShortCustom
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGame4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateOnlyStatusGame4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName1Game4PUseCase
@@ -73,6 +72,14 @@ class Match4PPViewModel(
                 getGameUseCase.execute(idGame),
                 getPointsUseCase.execute(idGame),
             ) { game, points ->
+                lastPoints = points.lastOrNull()?.copy() ?: Points4PUi(
+                    idGame = idGame,
+                    pointsP1 = 0.toString(),
+                    pointsP2 = 0.toString(),
+                    pointsP3 = 0.toString(),
+                    pointsP4 = 0.toString(),
+                    pointsGame = 0.toString()
+                )
                 countBoltP1 = 0
                 countBoltP2 = 0
                 countBoltP3 = 0
@@ -110,14 +117,6 @@ class Match4PPViewModel(
                         ++countBoltP4
                     }
                 }
-                lastPoints = points.lastOrNull() ?: Points4PUi(
-                    idGame = idGame,
-                    pointsP1 = 0.toString(),
-                    pointsP2 = 0.toString(),
-                    pointsP3 = 0.toString(),
-                    pointsP4 = 0.toString(),
-                    pointsGame = 0.toString()
-                )
                 MatchData4P(game = game, points = points)
             }.catch { exception ->
                 _uiState.value = MatchUiState.Error(exception)
@@ -136,47 +135,51 @@ class Match4PPViewModel(
     override fun <T> insertPoints(
         model: T, dispatcher: CoroutineDispatcher
     ) {
-        val model = model as Points4PUi
+        val modelPoints = model as Points4PUi
         viewModelScope.launch(dispatcher) {
-            model.idGame = idGame
-            if (model.pointsP1 == BOLT) {
+            modelPoints.idGame = idGame
+            if (modelPoints.pointsP1 == BOLT) {
+                model.pointsP1 = lastPoints.pointsP1
                 if (!isMinus10P1 && countBoltP1 != 0 && countBoltP1 % 2 == 0) {
                     isMinus10P1 = true
-                    model.pointsP1 = "-10"
+                    modelPoints.pointsP1 = "-10"
                 } else {
                     isMinus10P1 = false
-                    model.isBoltP1 = true
+                    modelPoints.isBoltP1 = true
                 }
             }
-            if (model.pointsP2 == BOLT) {
+            if (modelPoints.pointsP2 == BOLT) {
+                model.pointsP2 = lastPoints.pointsP2
                 if (!isMinus10P2 && countBoltP2 != 0 && countBoltP2 % 2 == 0) {
                     isMinus10P2 = true
-                    model.pointsP2 = "-10"
+                    modelPoints.pointsP2 = "-10"
                 } else {
                     isMinus10P2 = false
-                    model.isBoltP2 = true
+                    modelPoints.isBoltP2 = true
                 }
             }
-            if (model.pointsP3 == BOLT) {
+            if (modelPoints.pointsP3 == BOLT) {
+                model.pointsP3 = lastPoints.pointsP3
                 if (!isMinus10P3 && countBoltP3 != 0 && countBoltP3 % 2 == 0) {
                     isMinus10P3 = true
-                    model.pointsP3 = "-10"
+                    modelPoints.pointsP3 = "-10"
                 } else {
                     isMinus10P3 = false
-                    model.isBoltP3 = true
+                    modelPoints.isBoltP3 = true
                 }
             }
 
-            if (model.pointsP4 == BOLT) {
+            if (modelPoints.pointsP4 == BOLT) {
+                model.pointsP4 = lastPoints.pointsP4
                 if (!isMinus10P4 && countBoltP4 != 0 && countBoltP4 % 2 == 0) {
                     isMinus10P4 = true
-                    model.pointsP4 = "-10"
+                    modelPoints.pointsP4 = "-10"
                 } else {
                     isMinus10P4 = false
-                    model.isBoltP4 = true
+                    modelPoints.isBoltP4 = true
                 }
             }
-            val updatedModel = model.add(lastPoints.toDataClass())
+            val updatedModel = modelPoints.add(lastPoints.toDataClass())
 
             val isToExtend = checkIsExtended(updatedModel.toUiModel())
             if (isToExtend) {
