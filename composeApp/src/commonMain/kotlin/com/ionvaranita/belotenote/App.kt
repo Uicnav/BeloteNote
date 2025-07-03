@@ -151,10 +151,9 @@ fun App(appDatabase: AppDatabase) {
                     mutableStateOf(navController.currentDestination?.route)
                 }
                 LaunchedEffect(navController) {
-                    navController.addOnDestinationChangedListener { _, _, backStackEntry ->
+                    navController.addOnDestinationChangedListener { _, _, _ ->
                         canNavigateBack = navController.previousBackStackEntry != null
                         currentRoute = navController.currentDestination?.route
-                        println("Current route : =========== $currentRoute")
                     }
                 }
                 Scaffold(

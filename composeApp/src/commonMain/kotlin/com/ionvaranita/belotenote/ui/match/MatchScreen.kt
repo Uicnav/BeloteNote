@@ -1455,7 +1455,7 @@ private fun MatchWrapper(
 
 @Composable
 private fun RowScope.PointsTextAtom(text: String, modifier: Modifier = Modifier) {
-    Text(text = text, modifier = modifier.padding(8.dp).weight(1F), textAlign = TextAlign.Center)
+    Text(text = text, modifier = modifier.padding(8.dp).weight(1F), textAlign = TextAlign.Center,style = MaterialTheme.typography.displayLarge)
 }
 
 

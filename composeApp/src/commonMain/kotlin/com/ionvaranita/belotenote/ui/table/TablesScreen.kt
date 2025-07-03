@@ -8,8 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,7 +43,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,6 +52,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.IntOffset
@@ -62,7 +61,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import belotenote.composeapp.generated.resources.Res
 import belotenote.composeapp.generated.resources.dialog_fragment_insert_manually_winner_points
+import belotenote.composeapp.generated.resources.dialog_fragment_insert_match
 import belotenote.composeapp.generated.resources.ic_delete_white
+import belotenote.composeapp.generated.resources.me
+import belotenote.composeapp.generated.resources.p
+import belotenote.composeapp.generated.resources.we
+import belotenote.composeapp.generated.resources.you_p
+import belotenote.composeapp.generated.resources.you_s
 import com.ionvaranita.belotenote.Match2Dest
 import com.ionvaranita.belotenote.Match3Dest
 import com.ionvaranita.belotenote.Match4Dest
@@ -88,6 +93,11 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
+enum class WinningPointsEnum(val stringValue: String, val intValue: Int) {
+    ONE_HUNDRED_ONE(stringValue = "101", intValue = 101), FIFTY_ONE(
+        stringValue = "51", intValue = 51
+    )
+}
 @Composable
 internal fun TablesScreen2(
     viewModel: Game2PViewModel
@@ -287,7 +297,7 @@ internal fun TablesScreenGroups(viewModel: Game2GroupsViewModel) {
         shouDialog = true
     }) { paddingValues ->
         if (shouDialog) {
-            InsertGame2Groups(onClick = { game->
+            InsertGame2Groups(onClick = { game ->
                 scope.launch {
                     val idGame = viewModel.insertGame(game = game)
                     val route = MatchGroupsDest(idGame = idGame)
@@ -451,8 +461,10 @@ fun InsertFloatingActionButton(onClick: () -> Unit, modifier: Modifier) {
 fun InsertGame2(
     onDismissRequest: () -> Unit, onClick: (Game2PEntity) -> Unit
 ) {
-    var p1 by remember { mutableStateOf("") }
-    var p2 by remember { mutableStateOf("") }
+    val p1Hint = stringResource(Res.string.me)
+    val p2Hint = stringResource(Res.string.you_s)
+    var p1 by remember { mutableStateOf(p1Hint) }
+    var p2 by remember { mutableStateOf(p2Hint) }
     val shaker1 = remember { TextFieldShaker() }
     val shaker2 = remember { TextFieldShaker() }
 
@@ -461,7 +473,13 @@ fun InsertGame2(
             p1.isEmpty() -> shaker1.shake()
             p2.isEmpty() -> shaker2.shake()
             else -> {
-                onClick(Game2PEntity(winningPoints = winningPoints, name1 = p1, name2 = p2))
+                onClick(
+                    Game2PEntity(
+                        winningPoints = winningPoints,
+                        name1 = p1.capitalizeName(),
+                        name2 = p2.capitalizeName()
+                    )
+                )
                 onDismissRequest()
             }
         }
@@ -484,11 +502,13 @@ fun InsertGame2(
 }
 
 class TextFieldShaker {
-    private val _shouldShake = mutableStateOf(false)
-    val shouldShake: State<Boolean> get() = _shouldShake
-
+    val shouldShake = mutableStateOf(false)
     fun shake() {
-        _shouldShake.value = !_shouldShake.value
+        shouldShake.value = true
+    }
+
+    fun reset() {
+        shouldShake.value = false
     }
 }
 
@@ -500,39 +520,52 @@ private fun InsertNamesTextFieldAtom(
     modifier: Modifier = Modifier
 ) {
     val vibrationOffset = remember { Animatable(0f) }
-    val interactionSource = remember { MutableInteractionSource() }
-    val isFocused = interactionSource.collectIsFocusedAsState()
-    LaunchedEffect(shaker.shouldShake.value, isFocused.value) {
-        if (value.isEmpty() && isFocused.value) {
-            repeat(6) {
-                vibrationOffset.snapTo(if (it % 2 == 0) 6f else -6f)
-                delay(30) // very quick, like vibration
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(shaker.shouldShake.value) {
+        if (shaker.shouldShake.value) {
+            if (value.isEmpty()) {
+                focusRequester.requestFocus()
+                repeat(6) {
+                    vibrationOffset.snapTo(if (it % 2 == 0) 6f else -6f)
+                    delay(30)
+                }
+                vibrationOffset.snapTo(0f)
             }
-            vibrationOffset.snapTo(0f) // go back to center
+            shaker.reset()
         }
     }
-
-
 
     TextField(
         value = value,
         onValueChange = {
-            if (it.length <= 6) onValueChange(it)
+            if (it.length <= 3) {
+                val filtered = it.filter { char -> char.isLetterOrDigit() }
+                onValueChange(filtered)
+            }
         },
-        modifier = modifier.offset(x = vibrationOffset.value.dp),
+        modifier = modifier.focusRequester(focusRequester).offset(x = vibrationOffset.value.dp)
+            .padding(4.dp),
         textStyle = MaterialTheme.typography.displaySmall,
-        maxLines = 1,
-        interactionSource = interactionSource
+        maxLines = 1
     )
+}
+
+
+fun String.capitalizeName(): String {
+    return this.lowercase().replaceFirstChar { it.uppercase() }
 }
 
 @Composable
 fun InsertGame3(
     onDismissRequest: () -> Unit, onClick: (Game3PEntity) -> Unit
 ) {
-    var p1 by remember { mutableStateOf("") }
-    var p2 by remember { mutableStateOf("") }
-    var p3 by remember { mutableStateOf("") }
+    val p1Hint = stringResource(Res.string.p) + 1
+    val p2Hint = stringResource(Res.string.p) + 2
+    val p3Hint = stringResource(Res.string.p) + 3
+    var p1 by remember { mutableStateOf(p1Hint) }
+    var p2 by remember { mutableStateOf(p2Hint) }
+    var p3 by remember { mutableStateOf(p3Hint) }
     val shouldVibrateP1 by remember { mutableStateOf(TextFieldShaker()) }
     val shouldVibrateP2 by remember { mutableStateOf(TextFieldShaker()) }
     val shouldVibrateP3 by remember { mutableStateOf(TextFieldShaker()) }
@@ -546,7 +579,14 @@ fun InsertGame3(
         } else if (p3.isEmpty()) {
             shouldVibrateP3.shake()
         } else {
-            onClick(Game3PEntity(name1 = p1, name2 = p2, name3 = p3, winningPoints = winningPoints))
+            onClick(
+                Game3PEntity(
+                    name1 = p1.capitalizeName(),
+                    name2 = p2.capitalizeName(),
+                    name3 = p3.capitalizeName(),
+                    winningPoints = winningPoints
+                )
+            )
             onDismissRequest()
         }
     }) {
@@ -568,10 +608,14 @@ fun InsertGame3(
 fun InsertGame4(
     onDismissRequest: () -> Unit, onClick: (Game4PEntity) -> Unit
 ) {
-    var p1 by remember { mutableStateOf("") }
-    var p2 by remember { mutableStateOf("") }
-    var p3 by remember { mutableStateOf("") }
-    var p4 by remember { mutableStateOf("") }
+    val p1Hint = stringResource(Res.string.p) + 1
+    val p2Hint = stringResource(Res.string.p) + 2
+    val p3Hint = stringResource(Res.string.p) + 3
+    val p4Hint = stringResource(Res.string.p) + 4
+    var p1 by remember { mutableStateOf(p1Hint) }
+    var p2 by remember { mutableStateOf(p2Hint) }
+    var p3 by remember { mutableStateOf(p3Hint) }
+    var p4 by remember { mutableStateOf(p4Hint) }
     val shouldVibrateP1 by remember { mutableStateOf(TextFieldShaker()) }
     val shouldVibrateP2 by remember { mutableStateOf(TextFieldShaker()) }
     val shouldVibrateP3 by remember { mutableStateOf(TextFieldShaker()) }
@@ -588,10 +632,10 @@ fun InsertGame4(
         } else {
             onClick(
                 Game4PEntity(
-                    name1 = p1,
-                    name2 = p2,
-                    name3 = p3,
-                    name4 = p4,
+                    name1 = p1.capitalizeName(),
+                    name2 = p2.capitalizeName(),
+                    name3 = p3.capitalizeName(),
+                    name4 = p4.capitalizeName(),
                     winningPoints = winningPoints.toShort()
                 )
             )
@@ -619,8 +663,10 @@ fun InsertGame4(
 fun InsertGame2Groups(
     onDismissRequest: () -> Unit, onClick: (Game2GroupsEntity) -> Unit
 ) {
-    var p1 by remember { mutableStateOf("") }
-    var p2 by remember { mutableStateOf("") }
+    val p1Hint = stringResource(Res.string.we)
+    val p2Hint = stringResource(Res.string.you_p)
+    var p1 by remember { mutableStateOf(p1Hint) }
+    var p2 by remember { mutableStateOf(p2Hint) }
     val shouldVibrateP1 by remember { mutableStateOf(TextFieldShaker()) }
     val shouldVibrateP2 by remember { mutableStateOf(TextFieldShaker()) }
     InsertGameDialogBase(onDismissRequest = onDismissRequest, onClick = { winningPoints ->
@@ -629,7 +675,13 @@ fun InsertGame2Groups(
         } else if (p2.isEmpty()) {
             shouldVibrateP2.shake()
         } else {
-            onClick(Game2GroupsEntity(name1 = p1, name2 = p2, winningPoints = winningPoints))
+            onClick(
+                Game2GroupsEntity(
+                    name1 = p1.capitalizeName(),
+                    name2 = p2.capitalizeName(),
+                    winningPoints = winningPoints
+                )
+            )
             onDismissRequest()
 
         }
@@ -651,7 +703,7 @@ internal fun InsertGameDialogBase(
     onClick: (Short) -> Unit,
     content: (@Composable () -> Unit)? = null
 ) {
-    var winningPoints by remember { mutableStateOf("51") }
+    var winningPoints by remember { mutableStateOf(WinningPointsEnum.ONE_HUNDRED_ONE.stringValue) }
     var showError by remember { mutableStateOf(false) }
     Dialog(onDismissRequest = { onDismissRequest() }) { // Draw a rectangle shape with rounded corners inside the dialog
 
@@ -681,7 +733,7 @@ internal fun InsertGameDialogBase(
                 }
                 if (!isChecked) {
                     WinningPointsRadioButtons(
-                        selectedValue = winningPoints.toShortCustom().toInt(),
+                        selectedValue = winningPoints.toInt(),
                         onValueChange = { winningPoints = it.toString() })
                 }
 
@@ -701,7 +753,7 @@ internal fun InsertGameDialogBase(
                         showError = true
                     }
                 }) {
-                    Text("Insert Game")
+                    Text(stringResource(Res.string.dialog_fragment_insert_match))
                 }
                 ErrorAlertDialog(showError = showError) {
                     showError = false
@@ -721,18 +773,20 @@ fun WinningPointsRadioButtons(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.clickable { onValueChange(51) }) {
+            modifier = Modifier.clickable { onValueChange(WinningPointsEnum.ONE_HUNDRED_ONE.intValue) }) {
             RadioButton(
-                selected = selectedValue == 51, onClick = { onValueChange(51) })
-            Text(text = "51")
+                selected = selectedValue == WinningPointsEnum.ONE_HUNDRED_ONE.intValue,
+                onClick = { onValueChange(WinningPointsEnum.ONE_HUNDRED_ONE.intValue) })
+            Text(text = WinningPointsEnum.ONE_HUNDRED_ONE.stringValue)
         }
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.clickable { onValueChange(101) }) {
+            modifier = Modifier.clickable { onValueChange(WinningPointsEnum.FIFTY_ONE.intValue) }) {
             RadioButton(
-                selected = selectedValue == 101, onClick = { onValueChange(101) })
-            Text(text = "101")
+                selected = selectedValue == WinningPointsEnum.FIFTY_ONE.intValue,
+                onClick = { onValueChange(WinningPointsEnum.FIFTY_ONE.intValue) })
+            Text(text = WinningPointsEnum.FIFTY_ONE.stringValue)
         }
     }
 }

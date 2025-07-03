@@ -14,82 +14,63 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-val EmeraldGreen = Color(0xFF2ECC71)      // Verde smarald (background)
-val IvoryWhite = Color(0xFFFFFDF4)         // Alb ivory (surface & text)
-val AmberYellow = Color(0xFFFFC107)        // Galben ambră (primary accent)
-val Charcoal = Color(0xFF333333)           // Gri închis (text principal)
-val SkyBlue = Color(0xFF4FC3F7)            // Albastru cer (secondary accent)
-val MintGreen = Color(0xFF98FF98)          // Verde mentă (detalii, highlights)
-
-val DeepGreen = Color(0xFF145A32)          // Verde închis (background dark)
-val Graphite = Color(0xFF1C1C1C)           // Gri cărbune (surface)
-val GoldYellow = Color(0xFFFFD700)         // Galben auriu (primary accent)
-val LightGray = Color(0xFFEEEEEE)          // Gri deschis (text)
-val CyanBlue = Color(0xFF00BCD4)           // Cyan deschis (secondary accent)
-val TealGreen = Color(0xFF20C997)          // Verde teal (detalii moderne)
+val DarkGreen = Color(0xFF1B4332)      // Fundal principal
+val LightIvory = Color(0xFFFFFAF0)     // Text principal pe fundal închis
+val Mustard = Color(0xFFFFC107)        // Butoane & accente
+val CardSurface = Color(0xFF2D6A4F)    // Dialoguri/Carduri
+val ButtonBlue = Color(0xFF00B4D8)     // Accente secundare
+val CleanWhite = Color(0xFFFFFFFF)     // Text pe butoane
+val CleanBlack = Color(0xFF1C1C1C)     // Text pe fundal deschis
+val LightGray = Color(0xFFF2F2F2)      // Fundal general pentru dark mode
 
 private val BeloteLightColors = lightColorScheme(
-    primary = AmberYellow,
-    onPrimary = Charcoal,
-    secondary = SkyBlue,
-    onSecondary = Charcoal,
-    background = EmeraldGreen,
-    onBackground = Charcoal,
-    surface = IvoryWhite,
-    onSurface = Charcoal
-                                                )
+    primary = Mustard,
+    onPrimary = CleanBlack,
+    secondary = ButtonBlue,
+    onSecondary = CleanBlack,
+    background = Color(0xFFE8F5E9),      // Pale green
+    onBackground = CleanBlack,
+    surface = CleanWhite,
+    onSurface = CleanBlack
+)
 
 private val BeloteDarkColors = darkColorScheme(
-    background = DeepGreen,
-    onBackground = Color.White,      // TOT TEXTUL PE BACKGROUND ÎNCHIS = ALB
-
-    surface = Color(0xFF3A3A3A),     // CARDURI/DIALOGURI
-    onSurface = Color.White,         // TOT TEXTUL PE CARDURI = ALB
-
-    primary = GoldYellow,
-    onPrimary = Color.Black,
-
-    secondary = CyanBlue,
-    onSecondary = Color.White
-                                              )
-
-
+    primary = Mustard,
+    onPrimary = CleanBlack,
+    secondary = ButtonBlue,
+    onSecondary = CleanWhite,
+    background = DarkGreen,
+    onBackground = LightIvory,
+    surface = CardSurface,
+    onSurface = LightIvory
+)
 
 val BeloteTypography = Typography(
     displayLarge = TextStyle(
-        fontSize = 30.sp,
+        fontSize = 28.sp,
         fontWeight = FontWeight.Bold,
-        letterSpacing = 1.2.sp,
-        color = AmberYellow
-                            ),
+        letterSpacing = 1.sp
+    ),
     titleLarge = TextStyle(
-        fontSize = 24.sp,
-        fontWeight = FontWeight.SemiBold,
-        letterSpacing = 0.5.sp,
-        color = Charcoal
-                          ),
+        fontSize = 22.sp,
+        fontWeight = FontWeight.Medium
+    ),
     bodyLarge = TextStyle(
         fontSize = 18.sp,
-        fontWeight = FontWeight.Normal,
-        letterSpacing = 0.25.sp,
-        color = Charcoal
-                         ),
+        fontWeight = FontWeight.Normal
+    ),
     bodyMedium = TextStyle(
-        fontSize = 16.sp,
-        fontWeight = FontWeight.Normal,
-        color = Charcoal
-                          ),
+        fontSize = 16.sp
+    ),
     labelLarge = TextStyle(
         fontSize = 14.sp,
-        fontWeight = FontWeight.Medium,
-        color = SkyBlue
-                          ),
+        fontWeight = FontWeight.SemiBold
+    ),
     labelSmall = TextStyle(
         fontSize = 12.sp,
-        fontWeight = FontWeight.Light,
-        color = TealGreen
-                          )
-                                 )
+        fontWeight = FontWeight.Normal
+    )
+)
 
 @Composable
 fun BeloteTheme(
