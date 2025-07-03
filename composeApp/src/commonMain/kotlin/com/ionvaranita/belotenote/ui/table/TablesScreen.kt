@@ -25,9 +25,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -39,7 +39,6 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -56,16 +55,23 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import belotenote.composeapp.generated.resources.Res
+import belotenote.composeapp.generated.resources.confirm_delete
 import belotenote.composeapp.generated.resources.dialog_fragment_insert_manually_winner_points
 import belotenote.composeapp.generated.resources.dialog_fragment_insert_match
 import belotenote.composeapp.generated.resources.ic_delete_white
 import belotenote.composeapp.generated.resources.me
+import belotenote.composeapp.generated.resources.no
 import belotenote.composeapp.generated.resources.p
+import belotenote.composeapp.generated.resources.sure_delete_row
+import belotenote.composeapp.generated.resources.sure_delete_table
 import belotenote.composeapp.generated.resources.we
+import belotenote.composeapp.generated.resources.yes
 import belotenote.composeapp.generated.resources.you_p
 import belotenote.composeapp.generated.resources.you_s
 import com.ionvaranita.belotenote.Match2Dest
@@ -78,7 +84,6 @@ import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Game2GroupsE
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.Game2PEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players3.Game3PEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players4.Game4PEntity
-import com.ionvaranita.belotenote.domain.model.toShortCustom
 import com.ionvaranita.belotenote.ui.LocalNavHostController
 import com.ionvaranita.belotenote.ui.viewmodel.game.Game2GroupsViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.game.Game2PViewModel
@@ -88,6 +93,7 @@ import com.ionvaranita.belotenote.ui.viewmodel.game.Games2GroupsUiState
 import com.ionvaranita.belotenote.ui.viewmodel.game.Games2PUiState
 import com.ionvaranita.belotenote.ui.viewmodel.game.Games3PUiState
 import com.ionvaranita.belotenote.ui.viewmodel.game.Games4PUiState
+import com.ionvaranita.belotenote.utils.capitalizeName
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
@@ -98,6 +104,7 @@ enum class WinningPointsEnum(val stringValue: String, val intValue: Int) {
         stringValue = "51", intValue = 51
     )
 }
+
 @Composable
 internal fun TablesScreen2(
     viewModel: Game2PViewModel
@@ -139,7 +146,7 @@ internal fun TablesScreen2(
                         }, onTap = {
                             val route = Match2Dest(idGame = game.idGame)
                             navController.navigate(route)
-                        }) {
+                        }, isTable = true) {
                             Column(modifier = Modifier.weight(1F)) {
                                 TableTextAtom(game.name1)
                                 TableTextAtom(game.name2)
@@ -199,7 +206,7 @@ internal fun TablesScreen3(
                         }, onTap = {
                             val route = Match3Dest(idGame = game.idGame)
                             navController.navigate(route)
-                        }) {
+                        }, isTable = true) {
                             Column(modifier = Modifier.weight(1F)) {
                                 TableTextAtom(game.name1)
                                 TableTextAtom(game.name2)
@@ -261,7 +268,7 @@ internal fun TablesScreen4(
                         }, onTap = {
                             val route = Match4Dest(idGame = game.idGame)
                             navController.navigate(route)
-                        }) {
+                        }, isTable = true) {
                             Column(modifier = Modifier.weight(1F)) {
                                 TableTextAtom(game.name1)
                                 TableTextAtom(game.name2)
@@ -325,7 +332,7 @@ internal fun TablesScreenGroups(viewModel: Game2GroupsViewModel) {
                         }, onTap = {
                             val route = MatchGroupsDest(idGame = game.idGame)
                             navController.navigate(route)
-                        }) {
+                        }, isTable = true) {
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(text = game.name1)
                                 Text(text = game.name2)
@@ -346,18 +353,22 @@ internal fun TablesScreenGroups(viewModel: Game2GroupsViewModel) {
 }
 
 @Composable
-fun ConfirmDeleteDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
+fun ConfirmDeleteDialog(onConfirm: () -> Unit, onDismiss: () -> Unit, isTable: Boolean) {
     AlertDialog(onDismissRequest = onDismiss, title = {
-        Text(text = "Confirm Delete")
+        Text(stringResource(Res.string.confirm_delete))
     }, text = {
-        Text(text = "Are you sure you want to delete this game?")
+        Text(
+            text = if (isTable) stringResource(Res.string.sure_delete_table) else stringResource(
+                Res.string.sure_delete_row
+            )
+        )
     }, confirmButton = {
         Button(onClick = onConfirm) {
-            Text("Yes")
+            Text(stringResource(Res.string.yes))
         }
     }, dismissButton = {
         Button(onClick = onDismiss) {
-            Text("No")
+            Text(stringResource(Res.string.no))
         }
     })
 }
@@ -366,7 +377,7 @@ fun ConfirmDeleteDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
 fun GameCard(
     modifier: Modifier = Modifier,
     onDelete: () -> Unit,
-    onTap: () -> Unit = {},
+    onTap: () -> Unit = {}, isTable: Boolean = false,
     content: @Composable RowScope.() -> Unit
 ) {
     var showDialog by remember { mutableStateOf(false) }
@@ -424,13 +435,18 @@ fun GameCard(
         }, onDismiss = {
             showDialog = false
             scope.launch { offsetX.snapTo(0f) }
-        })
+        }, isTable = isTable)
     }
 }
 
 @Composable
 private fun TableTextAtom(text: String, modifier: Modifier = Modifier) {
-    Text(text = text, style = MaterialTheme.typography.displayLarge, maxLines = 1)
+    Text(
+        text = text,
+        style = MaterialTheme.typography.displayLarge,
+        maxLines = 1,
+        modifier = modifier
+    )
 }
 
 @Composable
@@ -501,61 +517,6 @@ fun InsertGame2(
     }
 }
 
-class TextFieldShaker {
-    val shouldShake = mutableStateOf(false)
-    fun shake() {
-        shouldShake.value = true
-    }
-
-    fun reset() {
-        shouldShake.value = false
-    }
-}
-
-@Composable
-private fun InsertNamesTextFieldAtom(
-    value: String,
-    onValueChange: (String) -> Unit,
-    shaker: TextFieldShaker,
-    modifier: Modifier = Modifier
-) {
-    val vibrationOffset = remember { Animatable(0f) }
-    val focusRequester = remember { FocusRequester() }
-
-    LaunchedEffect(shaker.shouldShake.value) {
-        if (shaker.shouldShake.value) {
-            if (value.isEmpty()) {
-                focusRequester.requestFocus()
-                repeat(6) {
-                    vibrationOffset.snapTo(if (it % 2 == 0) 6f else -6f)
-                    delay(30)
-                }
-                vibrationOffset.snapTo(0f)
-            }
-            shaker.reset()
-        }
-    }
-
-    TextField(
-        value = value,
-        onValueChange = {
-            if (it.length <= 3) {
-                val filtered = it.filter { char -> char.isLetterOrDigit() }
-                onValueChange(filtered)
-            }
-        },
-        modifier = modifier.focusRequester(focusRequester).offset(x = vibrationOffset.value.dp)
-            .padding(4.dp),
-        textStyle = MaterialTheme.typography.displaySmall,
-        maxLines = 1
-    )
-}
-
-
-fun String.capitalizeName(): String {
-    return this.lowercase().replaceFirstChar { it.uppercase() }
-}
-
 @Composable
 fun InsertGame3(
     onDismissRequest: () -> Unit, onClick: (Game3PEntity) -> Unit
@@ -566,18 +527,18 @@ fun InsertGame3(
     var p1 by remember { mutableStateOf(p1Hint) }
     var p2 by remember { mutableStateOf(p2Hint) }
     var p3 by remember { mutableStateOf(p3Hint) }
-    val shouldVibrateP1 by remember { mutableStateOf(TextFieldShaker()) }
-    val shouldVibrateP2 by remember { mutableStateOf(TextFieldShaker()) }
-    val shouldVibrateP3 by remember { mutableStateOf(TextFieldShaker()) }
+    val shakerP1 by remember { mutableStateOf(TextFieldShaker()) }
+    val shakerP2 by remember { mutableStateOf(TextFieldShaker()) }
+    val shakerP3 by remember { mutableStateOf(TextFieldShaker()) }
 
 
     InsertGameDialogBase(onDismissRequest = onDismissRequest, onClick = { winningPoints ->
         if (p1.isEmpty()) {
-            shouldVibrateP1.shake()
+            shakerP1.shake()
         } else if (p2.isEmpty()) {
-            shouldVibrateP2.shake()
+            shakerP2.shake()
         } else if (p3.isEmpty()) {
-            shouldVibrateP3.shake()
+            shakerP3.shake()
         } else {
             onClick(
                 Game3PEntity(
@@ -593,13 +554,13 @@ fun InsertGame3(
         Row {
             InsertNamesTextFieldAtom(value = p1, onValueChange = {
                 p1 = it
-            }, modifier = Modifier.weight(1F), shaker = shouldVibrateP1)
+            }, modifier = Modifier.weight(1F), shaker = shakerP1)
             InsertNamesTextFieldAtom(value = p2, onValueChange = {
                 p2 = it
-            }, modifier = Modifier.weight(1F), shaker = shouldVibrateP2)
+            }, modifier = Modifier.weight(1F), shaker = shakerP2)
             InsertNamesTextFieldAtom(value = p3, onValueChange = {
                 p3 = it
-            }, modifier = Modifier.weight(1F), shaker = shouldVibrateP3)
+            }, modifier = Modifier.weight(1F), shaker = shakerP3)
         }
     }
 }
@@ -616,27 +577,26 @@ fun InsertGame4(
     var p2 by remember { mutableStateOf(p2Hint) }
     var p3 by remember { mutableStateOf(p3Hint) }
     var p4 by remember { mutableStateOf(p4Hint) }
-    val shouldVibrateP1 by remember { mutableStateOf(TextFieldShaker()) }
-    val shouldVibrateP2 by remember { mutableStateOf(TextFieldShaker()) }
-    val shouldVibrateP3 by remember { mutableStateOf(TextFieldShaker()) }
-    val shouldVibrateP4 by remember { mutableStateOf(TextFieldShaker()) }
+    val shakerP1 by remember { mutableStateOf(TextFieldShaker()) }
+    val shakerP2 by remember { mutableStateOf(TextFieldShaker()) }
+    val shakerP3 by remember { mutableStateOf(TextFieldShaker()) }
+    val shakerP4 by remember { mutableStateOf(TextFieldShaker()) }
     InsertGameDialogBase(onDismissRequest = onDismissRequest, onClick = { winningPoints ->
         if (p1.isEmpty()) {
-            shouldVibrateP1.shake()
+            shakerP1.shake()
         } else if (p2.isEmpty()) {
-            shouldVibrateP2.shake()
+            shakerP2.shake()
         } else if (p3.isEmpty()) {
-            shouldVibrateP3.shake()
+            shakerP3.shake()
         } else if (p4.isEmpty()) {
-            shouldVibrateP4.shake()
+            shakerP4.shake()
         } else {
             onClick(
                 Game4PEntity(
                     name1 = p1.capitalizeName(),
                     name2 = p2.capitalizeName(),
                     name3 = p3.capitalizeName(),
-                    name4 = p4.capitalizeName(),
-                    winningPoints = winningPoints.toShort()
+                    name4 = p4.capitalizeName(), winningPoints = winningPoints
                 )
             )
             onDismissRequest()
@@ -645,16 +605,16 @@ fun InsertGame4(
         Row {
             InsertNamesTextFieldAtom(value = p1, onValueChange = {
                 p1 = it
-            }, modifier = Modifier.weight(1F), shaker = shouldVibrateP1)
+            }, modifier = Modifier.weight(1F), shaker = shakerP1)
             InsertNamesTextFieldAtom(value = p2, onValueChange = {
                 p2 = it
-            }, modifier = Modifier.weight(1F), shaker = shouldVibrateP2)
+            }, modifier = Modifier.weight(1F), shaker = shakerP2)
             InsertNamesTextFieldAtom(value = p3, onValueChange = {
                 p3 = it
-            }, modifier = Modifier.weight(1F), shaker = shouldVibrateP3)
+            }, modifier = Modifier.weight(1F), shaker = shakerP3)
             InsertNamesTextFieldAtom(value = p4, onValueChange = {
                 p4 = it
-            }, modifier = Modifier.weight(1F), shaker = shouldVibrateP4)
+            }, modifier = Modifier.weight(1F), shaker = shakerP4)
         }
     }
 }
@@ -667,13 +627,13 @@ fun InsertGame2Groups(
     val p2Hint = stringResource(Res.string.you_p)
     var p1 by remember { mutableStateOf(p1Hint) }
     var p2 by remember { mutableStateOf(p2Hint) }
-    val shouldVibrateP1 by remember { mutableStateOf(TextFieldShaker()) }
-    val shouldVibrateP2 by remember { mutableStateOf(TextFieldShaker()) }
+    val shakerP1 by remember { mutableStateOf(TextFieldShaker()) }
+    val shakerP2 by remember { mutableStateOf(TextFieldShaker()) }
     InsertGameDialogBase(onDismissRequest = onDismissRequest, onClick = { winningPoints ->
         if (p1.isEmpty()) {
-            shouldVibrateP1.shake()
+            shakerP1.shake()
         } else if (p2.isEmpty()) {
-            shouldVibrateP2.shake()
+            shakerP2.shake()
         } else {
             onClick(
                 Game2GroupsEntity(
@@ -689,10 +649,10 @@ fun InsertGame2Groups(
         Row {
             InsertNamesTextFieldAtom(value = p1, onValueChange = {
                 p1 = it
-            }, modifier = Modifier.weight(1F), shaker = shouldVibrateP1)
+            }, modifier = Modifier.weight(1F), shaker = shakerP1)
             InsertNamesTextFieldAtom(value = p2, onValueChange = {
                 p2 = it
-            }, modifier = Modifier.weight(1F), shaker = shouldVibrateP2)
+            }, modifier = Modifier.weight(1F), shaker = shakerP2)
         }
     }
 }
@@ -704,7 +664,7 @@ internal fun InsertGameDialogBase(
     content: (@Composable () -> Unit)? = null
 ) {
     var winningPoints by remember { mutableStateOf(WinningPointsEnum.ONE_HUNDRED_ONE.stringValue) }
-    var showError by remember { mutableStateOf(false) }
+    val shakerWinningPoints by remember { mutableStateOf(TextFieldShaker()) }
     Dialog(onDismissRequest = { onDismissRequest() }) { // Draw a rectangle shape with rounded corners inside the dialog
 
         Card(
@@ -738,25 +698,22 @@ internal fun InsertGameDialogBase(
                 }
 
                 if (isChecked) {
-                    TextField(value = winningPoints, onValueChange = { newText ->
+                    InsertNamesTextFieldAtom(value = winningPoints, onValueChange = { newText ->
                         if (newText.isEmpty()) {
                             winningPoints = ""
                         } else if (newText.all { it.isDigit() } && !(newText.startsWith("0"))) {
                             winningPoints = newText
                         }
-                    })
+                    }, shaker = shakerWinningPoints, isOnlyDigit = true)
                 }
                 Button(onClick = {
                     if (winningPoints.isNotEmpty()) {
                         onClick(winningPoints.toShort())
                     } else {
-                        showError = true
+                        shakerWinningPoints.shake()
                     }
                 }) {
                     Text(stringResource(Res.string.dialog_fragment_insert_match))
-                }
-                ErrorAlertDialog(showError = showError) {
-                    showError = false
                 }
             }
         }
@@ -791,20 +748,60 @@ fun WinningPointsRadioButtons(
     }
 }
 
-@Composable
-fun ErrorAlertDialog(showError: Boolean, onDismiss: () -> Unit) {
-    if (showError) {
-        AlertDialog(onDismissRequest = { onDismiss() }, confirmButton = {
-            TextButton(onClick = { onDismiss() }) {
-                Text("OK")
-            }
-        }, icon = {
-            Icon(imageVector = Icons.Filled.Notifications, contentDescription = null)
-        }, title = {
-            Text("Eroare")
-        }, text = {
-            Text("A apărut o eroare neașteptată. Încearcă din nou.")
-        })
+class TextFieldShaker {
+    val shouldShake = mutableStateOf(false)
+    fun shake() {
+        shouldShake.value = true
+    }
+
+    fun reset() {
+        shouldShake.value = false
     }
 }
+
+@Composable
+private fun InsertNamesTextFieldAtom(
+    value: String,
+    onValueChange: (String) -> Unit,
+    shaker: TextFieldShaker,
+    isOnlyDigit: Boolean = false,
+    modifier: Modifier = Modifier
+) {
+    val vibrationOffset = remember { Animatable(0f) }
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(shaker.shouldShake.value) {
+        if (shaker.shouldShake.value) {
+            if (value.isEmpty()) {
+                focusRequester.requestFocus()
+                repeat(6) {
+                    vibrationOffset.snapTo(if (it % 2 == 0) 6f else -6f)
+                    delay(30)
+                }
+                vibrationOffset.snapTo(0f)
+            }
+            shaker.reset()
+        }
+    }
+
+    TextField(
+        value = value,
+        onValueChange = {
+            if (it.length <= 3) {
+                val filtered =
+                    it.filter { char -> if (isOnlyDigit) char.isDigit() else char.isLetterOrDigit() }
+                onValueChange(filtered)
+            }
+        },
+        modifier = modifier.focusRequester(focusRequester).offset(x = vibrationOffset.value.dp)
+            .padding(4.dp),
+        textStyle = MaterialTheme.typography.displaySmall.copy(textAlign = TextAlign.Center),
+        singleLine = true,
+        maxLines = 1,
+        keyboardOptions = if (isOnlyDigit) KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number) else KeyboardOptions.Default.copy(
+            keyboardType = KeyboardType.Text
+        )
+    )
+}
+
 

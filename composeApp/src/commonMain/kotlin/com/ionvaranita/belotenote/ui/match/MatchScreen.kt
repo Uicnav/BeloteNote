@@ -208,8 +208,8 @@ internal fun MatchScreen2(viewModel: ViewModelBase) {
                             showInfoGameDialog = true
                         }.weight(1F)
                     )
-                    PointsTextAtom(text = game.scoreName1.toString())
-                    PointsTextAtom(text = game.scoreName2.toString())
+                    PointsTextAtom(text = game.scoreName1.toString(), isBody = false)
+                    PointsTextAtom(text = game.scoreName2.toString(), isBody = false)
 
 
                 }
@@ -217,7 +217,7 @@ internal fun MatchScreen2(viewModel: ViewModelBase) {
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    PointsTextAtom(text = stringResource(Res.string.game))
+                    PointsTextAtom(text = stringResource(Res.string.game), isBody = false)
                     PointsTextAtom(text = game.name1)
                     PointsTextAtom(text = game.name2)
 
@@ -251,15 +251,15 @@ internal fun MatchScreen2(viewModel: ViewModelBase) {
                                     scope.launch {
                                         viewModel.deleteLastPoints()
                                     }
-                                }) {
-                                    PointsTextAtom(text = item.pointsGame)
-                                    PointsTextAtom(text = item.pointsP1)
-                                    PointsTextAtom(text = item.pointsP2)
+                                }, isTable = false) {
+                                    PointsTextAtom(text = item.pointsGame, isBody = true)
+                                    PointsTextAtom(text = item.pointsP1,isBody = true)
+                                    PointsTextAtom(text = item.pointsP2, isBody = true)
                                 }
                             } else {
-                                PointsTextAtom(text = item.pointsGame)
-                                PointsTextAtom(text = item.pointsP1)
-                                PointsTextAtom(text = item.pointsP2)
+                                PointsTextAtom(text = item.pointsGame,isBody = true)
+                                PointsTextAtom(text = item.pointsP1,isBody = true)
+                                PointsTextAtom(text = item.pointsP2,isBody = true)
                             }
                         }
                         if (index % 2 == 1) {
@@ -537,16 +537,16 @@ internal fun MatchScreen3(viewModel: ViewModelBase) {
                                         viewModel.deleteLastPoints()
                                     }
                                 }) {
-                                    PointsTextAtom(text = item.pointsGame)
-                                    PointsTextAtom(text = item.pointsP1)
-                                    PointsTextAtom(text = item.pointsP2)
-                                    PointsTextAtom(text = item.pointsP3)
+                                    PointsTextAtom(text = item.pointsGame, isBody = true)
+                                    PointsTextAtom(text = item.pointsP1,isBody = true)
+                                    PointsTextAtom(text = item.pointsP2,isBody = true)
+                                    PointsTextAtom(text = item.pointsP3,isBody = true)
                                 }
                             } else {
-                                PointsTextAtom(text = item.pointsGame)
-                                PointsTextAtom(text = item.pointsP1)
-                                PointsTextAtom(text = item.pointsP2)
-                                PointsTextAtom(text = item.pointsP3)
+                                PointsTextAtom(text = item.pointsGame, isBody = true)
+                                PointsTextAtom(text = item.pointsP1,isBody = true)
+                                PointsTextAtom(text = item.pointsP2,isBody = true)
+                                PointsTextAtom(text = item.pointsP3,isBody = true)
                             }
                         }
                         if (index % 3 == 2) {
@@ -865,18 +865,18 @@ internal fun MatchScreen4(viewModel: ViewModelBase) {
                                         viewModel.deleteLastPoints()
                                     }
                                 }) {
-                                    PointsTextAtom(text = item.pointsGame)
-                                    PointsTextAtom(text = item.pointsP1)
-                                    PointsTextAtom(text = item.pointsP2)
-                                    PointsTextAtom(text = item.pointsP3)
-                                    PointsTextAtom(text = item.pointsP4)
+                                    PointsTextAtom(text = item.pointsGame, isBody = true)
+                                    PointsTextAtom(text = item.pointsP1, isBody = true)
+                                    PointsTextAtom(text = item.pointsP2, isBody = true)
+                                    PointsTextAtom(text = item.pointsP3, isBody = true)
+                                    PointsTextAtom(text = item.pointsP4, isBody = true)
                                 }
                             } else {
-                                PointsTextAtom(text = item.pointsGame)
-                                PointsTextAtom(text = item.pointsP1)
-                                PointsTextAtom(text = item.pointsP2)
-                                PointsTextAtom(text = item.pointsP3)
-                                PointsTextAtom(text = item.pointsP4)
+                                PointsTextAtom(text = item.pointsGame, isBody = true)
+                                PointsTextAtom(text = item.pointsP1, isBody = true)
+                                PointsTextAtom(text = item.pointsP2, isBody = true)
+                                PointsTextAtom(text = item.pointsP3, isBody = true)
+                                PointsTextAtom(text = item.pointsP4, isBody = true)
                             }
                         }
                         if (index % 4 == 3) {
@@ -1253,14 +1253,14 @@ internal fun MatchScreen2Groups(viewModel: ViewModelBase) {
                                         viewModel.deleteLastPoints()
                                     }
                                 }) {
-                                    PointsTextAtom(text = item.pointsGame)
-                                    PointsTextAtom(text = item.pointsP1)
-                                    PointsTextAtom(text = item.pointsP2)
+                                    PointsTextAtom(text = item.pointsGame, isBody = true)
+                                    PointsTextAtom(text = item.pointsP1, isBody = true)
+                                    PointsTextAtom(text = item.pointsP2, isBody = true)
                                 }
                             } else {
-                                PointsTextAtom(text = item.pointsGame)
-                                PointsTextAtom(text = item.pointsP1)
-                                PointsTextAtom(text = item.pointsP2)
+                                PointsTextAtom(text = item.pointsGame, isBody = true)
+                                PointsTextAtom(text = item.pointsP1, isBody = true)
+                                PointsTextAtom(text = item.pointsP2, isBody = true)
                             }
                         }
                         if (index % 2 == 1) {
@@ -1454,8 +1454,14 @@ private fun MatchWrapper(
 }
 
 @Composable
-private fun RowScope.PointsTextAtom(text: String, modifier: Modifier = Modifier) {
-    Text(text = text, modifier = modifier.padding(8.dp).weight(1F), textAlign = TextAlign.Center,style = MaterialTheme.typography.displayLarge)
+private fun RowScope.PointsTextAtom(text: String, isBody: Boolean = false, modifier: Modifier = Modifier) {
+    Text(
+        text = text,
+        modifier = modifier.padding(8.dp).weight(1F).align(Alignment.CenterVertically),
+        textAlign = TextAlign.Center,
+        style = if (isBody) MaterialTheme.typography.bodyMedium
+        else MaterialTheme.typography.titleMedium,
+    )
 }
 
 
