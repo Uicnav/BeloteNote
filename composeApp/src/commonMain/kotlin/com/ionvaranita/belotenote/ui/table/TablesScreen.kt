@@ -384,6 +384,12 @@ fun GameCard(
     val offsetX = remember { Animatable(0f) }
     val scope = rememberCoroutineScope()
     val swipeThreshold = -150f
+    LaunchedEffect(Unit) {
+        delay(1000L)
+        offsetX.animateTo(-140f, tween(300))
+        delay(500L)
+        offsetX.animateTo(0f, tween(300))
+    }
 
     Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
         Box(
