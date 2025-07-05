@@ -262,9 +262,9 @@ internal fun MatchScreen2(viewModel: ViewModelBase) {
                                 PointsTextAtom(text = item.pointsP2,isBody = true)
                             }
                         }
-                        if (index % 2 == 1) {
+                        if ((index + 1) % 2 == 0) {
                             HorizontalDivider(
-                                thickness = 1.dp, modifier = Modifier.padding(vertical = 4.dp)
+                                    thickness = 4.dp
                             )
                         }
                     }
@@ -549,9 +549,9 @@ internal fun MatchScreen3(viewModel: ViewModelBase) {
                                 PointsTextAtom(text = item.pointsP3,isBody = true)
                             }
                         }
-                        if (index % 3 == 2) {
+                        if ((index + 1) % 3 == 0) {
                             HorizontalDivider(
-                                thickness = 1.dp, modifier = Modifier.padding(vertical = 4.dp)
+                                thickness = 4.dp
                             )
                         }
                     }
@@ -617,11 +617,11 @@ internal fun MatchScreen3(viewModel: ViewModelBase) {
                                         inputText = pointsP1, inputKey = inputKey
                                     ) { text ->
                                         pointsP1 = text
-                                        if (inputKey.equals(MINUS_10) || inputKey.equals(BOLT)) {
-                                            if (pointsP2.equals(MINUS_10) || pointsP2.equals(BOLT)) {
+                                        if (inputKey == MINUS_10 || inputKey == BOLT) {
+                                            if (pointsP2 == MINUS_10 || pointsP2 == BOLT) {
                                                 pointsP2 = ""
                                             }
-                                            if (pointsP3.equals(MINUS_10) || pointsP3.equals(BOLT)) {
+                                            if (pointsP3 == MINUS_10 || pointsP3 == BOLT) {
                                                 pointsP3 = ""
                                             }
                                         }
@@ -668,11 +668,11 @@ internal fun MatchScreen3(viewModel: ViewModelBase) {
                                         inputText = pointsP3, inputKey = inputKey
                                     ) { text ->
                                         pointsP3 = text
-                                        if (inputKey.equals(MINUS_10) || inputKey.equals(BOLT)) {
-                                            if (pointsP1.equals(MINUS_10) || pointsP1.equals(BOLT)) {
+                                        if (inputKey == MINUS_10 || inputKey == BOLT) {
+                                            if (pointsP1 == MINUS_10 || pointsP1 == BOLT) {
                                                 pointsP1 = ""
                                             }
-                                            if (pointsP2.equals(MINUS_10) || pointsP2.equals(BOLT)) {
+                                            if (pointsP2 == MINUS_10 || pointsP2.equals(BOLT)) {
                                                 pointsP2 = ""
                                             }
                                         }
@@ -879,9 +879,9 @@ internal fun MatchScreen4(viewModel: ViewModelBase) {
                                 PointsTextAtom(text = item.pointsP4, isBody = true)
                             }
                         }
-                        if (index % 4 == 3) {
+                        if ((index + 1) % 4 == 0) {
                             HorizontalDivider(
-                                thickness = 1.dp, modifier = Modifier.padding(vertical = 4.dp)
+                                thickness = 4.dp
                             )
                         }
                     }
@@ -1263,9 +1263,9 @@ internal fun MatchScreen2Groups(viewModel: ViewModelBase) {
                                 PointsTextAtom(text = item.pointsP2, isBody = true)
                             }
                         }
-                        if (index % 2 == 1) {
+                        if ((index + 1) % 2 == 0) {
                             HorizontalDivider(
-                                thickness = 1.dp, modifier = Modifier.padding(vertical = 4.dp)
+                                thickness = 4.dp
                             )
                         }
                     }

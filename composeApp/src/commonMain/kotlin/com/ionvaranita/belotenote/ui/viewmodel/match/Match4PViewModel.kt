@@ -178,9 +178,9 @@ class Match4PPViewModel(
                     modelPoints.isBoltP4 = true
                 }
             }
-            val updatedModel = modelPoints.add(lastPoints.toDataClass())
+            val updatedModel = modelPoints.add(lastPoints)
 
-            val isToExtend = checkIsExtended(updatedModel.toUiModel())
+            val isToExtend = checkIsExtended(updatedModel)
             if (isToExtend) {
                 updateOnlyStatusUseCase.execute(
                     params = UpdateOnlyStatusGameParams(
