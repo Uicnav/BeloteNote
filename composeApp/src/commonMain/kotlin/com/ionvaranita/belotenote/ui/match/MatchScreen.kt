@@ -1422,24 +1422,34 @@ private fun manageUserInputKey(
 }
 
 @Composable
-fun ColumnScope.AddIcon(modifier: Modifier = Modifier, tint: Color = Color.Black) {
+fun ColumnScope.AddIcon(modifier: Modifier = Modifier) {
+    val color = if (isSystemInDarkTheme()) Color.White else Color.Black
     Icon(
         imageVector = Icons.Filled.Add,
         contentDescription = "Add Icon",
-        modifier = modifier.padding(8.dp).size(24.dp).align(Alignment.CenterHorizontally),
-        tint = tint
+        modifier = modifier
+            .padding(8.dp)
+            .size(24.dp)
+            .align(Alignment.CenterHorizontally),
+        tint = color
     )
 }
 
+
 @Composable
-fun ColumnScope.BackspaceIcon(modifier: Modifier = Modifier, tint: Color = Color.Black) {
+fun ColumnScope.BackspaceIcon(modifier: Modifier = Modifier) {
+    val color = if (isSystemInDarkTheme()) Color.White else Color.Black
     Icon(
         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
         contentDescription = "Backspace Icon",
-        modifier = modifier.padding(8.dp).size(24.dp).align(Alignment.CenterHorizontally),
-        tint = tint
+        modifier = modifier
+            .padding(8.dp)
+            .size(24.dp)
+            .align(Alignment.CenterHorizontally),
+        tint = color
     )
 }
+
 
 @Composable
 private fun MatchWrapper(
