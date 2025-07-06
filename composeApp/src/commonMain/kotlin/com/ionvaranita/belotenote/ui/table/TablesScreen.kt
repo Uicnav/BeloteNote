@@ -801,7 +801,7 @@ private fun InsertNamesTextFieldAtom(
         },
         modifier = modifier.focusRequester(focusRequester).offset(x = vibrationOffset.value.dp)
             .padding(4.dp),
-        textStyle = MaterialTheme.typography.displaySmall.copy(textAlign = TextAlign.Center),
+        textStyle = MaterialTheme.typography.bodySmall.copy(textAlign = TextAlign.Center),
         singleLine = true,
         maxLines = 1,
         keyboardOptions = if (isOnlyDigit) KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number) else KeyboardOptions.Default.copy(

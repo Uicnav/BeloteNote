@@ -10,6 +10,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -56,6 +57,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -531,7 +533,7 @@ internal fun MatchScreen3(viewModel: ViewModelBase) {
                     itemsIndexed(points) { index: Int, item: Points3PUi ->
                         val isLast = index == points.lastIndex
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (isLast) {
+                            if (isLast && viewModel.statusGame.value == GameStatus.CONTINUE) {
                                 GameCard(onDelete = {
                                     scope.launch {
                                         viewModel.deleteLastPoints()
@@ -859,7 +861,7 @@ internal fun MatchScreen4(viewModel: ViewModelBase) {
                     itemsIndexed(points) { index: Int, item: Points4PUi ->
                         val isLast = index == points.lastIndex
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (isLast) {
+                            if (isLast && viewModel.statusGame.value == GameStatus.CONTINUE) {
                                 GameCard(onDelete = {
                                     scope.launch {
                                         viewModel.deleteLastPoints()
@@ -1247,7 +1249,7 @@ internal fun MatchScreen2Groups(viewModel: ViewModelBase) {
                     itemsIndexed(points) { index: Int, item: Points2GroupsUi ->
                         val isLast = index == points.lastIndex
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (isLast) {
+                            if (isLast && viewModel.statusGame.value == GameStatus.CONTINUE) {
                                 GameCard(onDelete = {
                                     scope.launch {
                                         viewModel.deleteLastPoints()
@@ -1505,18 +1507,22 @@ fun RowScope.TouchableText(
 
 @Composable
 fun WritingPenIcon(modifier: Modifier = Modifier) {
-    val transition = rememberInfiniteTransition(label = "pen_move")
+    val isDark = isSystemInDarkTheme()
+    val transition = rememberInfiniteTransition(label = "")
     val offsetX by transition.animateFloat(
-        initialValue = 0f, targetValue = 10f, animationSpec = infiniteRepeatable(
+        initialValue = 0f,
+        targetValue = 10f,
+        animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = 400, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse
-        ), label = "pen_offset"
+        ),
+        label = ""
     )
-
     Image(
         painter = painterResource(Res.drawable.ic_writting_indicator),
-        contentDescription = "Writing Pen",
-        modifier = modifier.offset(x = offsetX.dp)
+        contentDescription = null,
+        modifier = modifier.offset(x = offsetX.dp),
+        colorFilter = ColorFilter.tint(if (isDark) Color.White else Color.Black)
     )
 }
 

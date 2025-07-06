@@ -19,8 +19,8 @@ interface Points4PDao {
     fun getPoints(idGame: Int): Flow<List<Points4PEntity>>
 
     @Query("delete from Points4PEntity where idGame = :idGame")
-    suspend fun delete(idGame: Int): Int
+    suspend fun deleteByIdGame(idGame: Int): Int
 
     @Delete
-    fun delete(entity: Points4PEntity)
+    suspend fun deleteRow(entity: Points4PEntity)
 }
