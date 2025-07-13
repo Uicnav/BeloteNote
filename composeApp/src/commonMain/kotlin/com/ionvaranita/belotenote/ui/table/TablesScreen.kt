@@ -334,8 +334,8 @@ internal fun TablesScreenGroups(viewModel: Game2GroupsViewModel) {
                             navController.navigate(route)
                         }, isTable = true) {
                             Column(modifier = Modifier.weight(1f)) {
-                                Text(text = game.name1)
-                                Text(text = game.name2)
+                                TableTextAtom(text = game.name1)
+                                TableTextAtom(text = game.name2)
                             }
                             Spacer(modifier = Modifier.width(16.dp))
                             StatusImage(
