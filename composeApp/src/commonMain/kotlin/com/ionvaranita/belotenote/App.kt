@@ -1,6 +1,7 @@
 package com.ionvaranita.belotenote
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -30,8 +31,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import belotenote.composeapp.generated.resources.Res
 import belotenote.composeapp.generated.resources.app_name
-import belotenote.composeapp.generated.resources.belote_backround
 import belotenote.composeapp.generated.resources.four_players
+import belotenote.composeapp.generated.resources.image_background_dark
+import belotenote.composeapp.generated.resources.image_background_light
 import belotenote.composeapp.generated.resources.three_players
 import belotenote.composeapp.generated.resources.two_players
 import belotenote.composeapp.generated.resources.two_vs_two
@@ -138,7 +140,9 @@ fun App(appDatabase: AppDatabase) {
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
                 Image(
-                    painter = painterResource(Res.drawable.belote_backround),
+                    painter = if (isSystemInDarkTheme()) painterResource(Res.drawable.image_background_dark) else painterResource(
+                        Res.drawable.image_background_light
+                    ),
                     contentDescription = "",
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.FillBounds
