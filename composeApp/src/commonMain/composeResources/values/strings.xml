@@ -3,8 +3,6 @@
     <string name="app_name" translatable="false">Belote Note</string>
 
     <!--ALERT DIALOG -->
-    <string name="alert_dialog_games_name">Table\'s name</string>
-    <string name="alert_dialog_winner_points">Winning points</string>
     <string name="alert_dialog_finished">Finished!</string>
     <string name="alert_dialog_playing">Playing</string>
     <string name="alert_dialog_to_extend">To extend</string>
@@ -27,8 +25,6 @@
     <string name="dialog_fragment_mandatory_extend_match_info2">It is mandatory to extend the match.</string>
     <string name="dialog_fragment_win">Win %1$s</string>
     <string name="dialog_fragment_greater_than">greater than %1$s</string>
-    <string name="dialog_fragment_player_names">Player names</string>
-    <string name="dialog_fragment_team_names">Team names</string>
 
     <!--POINTS TABLE -->
     <string name="game">Game</string>
@@ -37,42 +33,12 @@
     <string name="you_p">You</string>
     <string name="me">Me</string>
 
-    <string name="share_title">Share via</string>
-    <string name="share_subject">Best scorkeeper for Belote</string>
-    <string name="share_body">Forget about pencil and paper. Play Belote with your friends anytime, everywhere! Check out my app at:</string>
-    <string name="main_menu_title">Main Menu</string>
-    <string name="about">About</string>
-    <!--Table fragment -->
-    <string name="list_of_tables">Table list</string>
-    <string name="snackbar_table_deleted">The table has been removed from the list.</string>
-    <string name="table">Table %s</string>
-
-    <string name="today">Today</string>
-    <string name="yesterday">Yesterday</string>
-    <string name="p">P</string>
-    <string name="version">Version</string>
-    <string name="about_best_scorer">The best scorer for Belot.</string>
-    <string name="about_forget_paper_pencil">Forget about paper and pencil, this app is designed for you.</string>
-    <string name="rate_app">RATE THIS APP</string>
-
     <string name="winner_is">The winner is:</string>
 
     <string name="ok" translatable="false">Ok</string>
 
-    <string name="support">Support page</string>
-    <string name="support_text_info">Need help or have an idea on how to improve the app?\nSay it to the developer!</string>
-    <string name="messagge">Message:</string>
-    <string name="send_email">Send mail...</string>
-
-    <string name="facebook_app_id" translatable="false">2611273909149654</string>
-    <string name="share_score">Share Score</string>
 
     <string name="how_it_works">How app works</string>
-
-    <string name="bolt" translatable="false">B%s</string>
-    <string name="bolt_key" translatable="false">B</string>
-    <string name="minus_10_key" translatable="false">-10</string>
-    <string name="db_name" translatable="false">-10</string>
 
     <string name="two_players">Two players</string>
     <string name="three_players">Three players</string>

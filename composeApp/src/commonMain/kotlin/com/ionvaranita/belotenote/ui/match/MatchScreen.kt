@@ -32,7 +32,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -44,7 +43,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -59,9 +57,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -76,6 +72,8 @@ import belotenote.composeapp.generated.resources.dialog_fragment_extend_match
 import belotenote.composeapp.generated.resources.dialog_fragment_extend_match_info
 import belotenote.composeapp.generated.resources.dialog_fragment_extend_match_q
 import belotenote.composeapp.generated.resources.dialog_fragment_greater_than
+import belotenote.composeapp.generated.resources.dialog_fragment_mandatory_extend_match_info1
+import belotenote.composeapp.generated.resources.dialog_fragment_mandatory_extend_match_info2
 import belotenote.composeapp.generated.resources.dialog_fragment_win
 import belotenote.composeapp.generated.resources.game
 import belotenote.composeapp.generated.resources.ic_writting_indicator
@@ -93,6 +91,8 @@ import com.ionvaranita.belotenote.domain.model.toShortCustom
 import com.ionvaranita.belotenote.ui.table.GameCard
 import com.ionvaranita.belotenote.ui.table.InsertFloatingActionButton
 import com.ionvaranita.belotenote.ui.table.InsertGameDialogBase
+import com.ionvaranita.belotenote.ui.table.ShakerTextFieldAtom
+import com.ionvaranita.belotenote.ui.table.TextFieldShaker
 import com.ionvaranita.belotenote.ui.viewmodel.match.MatchData2Groups
 import com.ionvaranita.belotenote.ui.viewmodel.match.MatchData2P
 import com.ionvaranita.belotenote.ui.viewmodel.match.MatchData3P
@@ -1707,7 +1707,7 @@ private fun ExtendedDialog(
     winnerText: String?,
     maxPoints: String
 ) {
-
+    val shakerWinningPoints by remember { mutableStateOf(TextFieldShaker()) }
     Dialog(onDismissRequest = onDismiss) {
         var newWinningPoints by remember { mutableStateOf("") }
 
@@ -1720,37 +1720,39 @@ private fun ExtendedDialog(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()
             ) {
-
-
-                TextField(
+                ShakerTextFieldAtom(
                     value = newWinningPoints,
                     onValueChange = { newText ->
                         if (!newText.startsWith("0") && newText.all { it.isDigit() }) {
                             newWinningPoints = newText
                         }
-                    },
-                    placeholder = {
-                        Text(
-                            text = stringResource(
-                                Res.string.dialog_fragment_greater_than, maxPoints
-                            ), fontStyle = FontStyle.Italic
-                        )
-                    },
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Number
-                    ),
+                    }, placeholder = stringResource(
+                        Res.string.dialog_fragment_greater_than, maxPoints
+                    ), shaker = shakerWinningPoints, isOnlyDigit = true
                 )
-                Text(
-                    text = stringResource(Res.string.dialog_fragment_extend_match_info),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = stringResource(Res.string.dialog_fragment_extend_match_q),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.ExtraBold
-                )
-
+                if (winnerText != null) {
+                    Text(
+                        text = stringResource(Res.string.dialog_fragment_extend_match_info),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = stringResource(Res.string.dialog_fragment_extend_match_q),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+                } else {
+                    Text(
+                        text = stringResource(Res.string.dialog_fragment_mandatory_extend_match_info1),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = stringResource(Res.string.dialog_fragment_mandatory_extend_match_info2),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+                }
 
                 Row {
                     Button(onClick = {
@@ -1758,7 +1760,8 @@ private fun ExtendedDialog(
                         if (winningPoints > maxPoints.toShort()) {
                             onExtend(winningPoints)
                         } else {
-
+                            shakerWinningPoints.shake()
+                            newWinningPoints = ""
                         }
                     }) {
                         Text(text = stringResource(Res.string.dialog_fragment_extend_match))
@@ -1779,10 +1782,6 @@ private fun ExtendedDialog(
         }
     }
 
-}
-
-enum class ExtendChoice {
-    EXTEND, WIN
 }
 
 @Composable

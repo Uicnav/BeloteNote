@@ -55,6 +55,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
@@ -507,13 +508,13 @@ fun InsertGame2(
         }
     }) {
         Row {
-            InsertNamesTextFieldAtom(
+            ShakerTextFieldAtom(
                 value = p1,
                 onValueChange = { p1 = it },
                 shaker = shaker1,
                 modifier = Modifier.weight(1f)
             )
-            InsertNamesTextFieldAtom(
+            ShakerTextFieldAtom(
                 value = p2,
                 onValueChange = { p2 = it },
                 shaker = shaker2,
@@ -558,13 +559,13 @@ fun InsertGame3(
         }
     }) {
         Row {
-            InsertNamesTextFieldAtom(value = p1, onValueChange = {
+            ShakerTextFieldAtom(value = p1, onValueChange = {
                 p1 = it
             }, modifier = Modifier.weight(1F), shaker = shakerP1)
-            InsertNamesTextFieldAtom(value = p2, onValueChange = {
+            ShakerTextFieldAtom(value = p2, onValueChange = {
                 p2 = it
             }, modifier = Modifier.weight(1F), shaker = shakerP2)
-            InsertNamesTextFieldAtom(value = p3, onValueChange = {
+            ShakerTextFieldAtom(value = p3, onValueChange = {
                 p3 = it
             }, modifier = Modifier.weight(1F), shaker = shakerP3)
         }
@@ -609,16 +610,16 @@ fun InsertGame4(
         }
     }) {
         Row {
-            InsertNamesTextFieldAtom(value = p1, onValueChange = {
+            ShakerTextFieldAtom(value = p1, onValueChange = {
                 p1 = it
             }, modifier = Modifier.weight(1F), shaker = shakerP1)
-            InsertNamesTextFieldAtom(value = p2, onValueChange = {
+            ShakerTextFieldAtom(value = p2, onValueChange = {
                 p2 = it
             }, modifier = Modifier.weight(1F), shaker = shakerP2)
-            InsertNamesTextFieldAtom(value = p3, onValueChange = {
+            ShakerTextFieldAtom(value = p3, onValueChange = {
                 p3 = it
             }, modifier = Modifier.weight(1F), shaker = shakerP3)
-            InsertNamesTextFieldAtom(value = p4, onValueChange = {
+            ShakerTextFieldAtom(value = p4, onValueChange = {
                 p4 = it
             }, modifier = Modifier.weight(1F), shaker = shakerP4)
         }
@@ -653,10 +654,10 @@ fun InsertGame2Groups(
         }
     }) {
         Row {
-            InsertNamesTextFieldAtom(value = p1, onValueChange = {
+            ShakerTextFieldAtom(value = p1, onValueChange = {
                 p1 = it
             }, modifier = Modifier.weight(1F), shaker = shakerP1)
-            InsertNamesTextFieldAtom(value = p2, onValueChange = {
+            ShakerTextFieldAtom(value = p2, onValueChange = {
                 p2 = it
             }, modifier = Modifier.weight(1F), shaker = shakerP2)
         }
@@ -704,7 +705,7 @@ internal fun InsertGameDialogBase(
                 }
 
                 if (isChecked) {
-                    InsertNamesTextFieldAtom(value = winningPoints, onValueChange = { newText ->
+                    ShakerTextFieldAtom(value = winningPoints, onValueChange = { newText ->
                         if (newText.isEmpty()) {
                             winningPoints = ""
                         } else if (newText.all { it.isDigit() } && !(newText.startsWith("0"))) {
@@ -766,11 +767,12 @@ class TextFieldShaker {
 }
 
 @Composable
-private fun InsertNamesTextFieldAtom(
+fun ShakerTextFieldAtom(
     value: String,
     onValueChange: (String) -> Unit,
     shaker: TextFieldShaker,
     isOnlyDigit: Boolean = false,
+    placeholder: String = "",
     modifier: Modifier = Modifier
 ) {
     val vibrationOffset = remember { Animatable(0f) }
@@ -778,8 +780,7 @@ private fun InsertNamesTextFieldAtom(
 
     LaunchedEffect(shaker.shouldShake.value) {
         if (shaker.shouldShake.value) {
-            if (value.isEmpty()) {
-                focusRequester.requestFocus()
+            focusRequester.requestFocus()
                 repeat(6) {
                     vibrationOffset.snapTo(if (it % 2 == 0) 6f else -6f)
                     delay(30)
@@ -787,7 +788,6 @@ private fun InsertNamesTextFieldAtom(
                 vibrationOffset.snapTo(0f)
             }
             shaker.reset()
-        }
     }
 
     TextField(
@@ -806,7 +806,12 @@ private fun InsertNamesTextFieldAtom(
         maxLines = 1,
         keyboardOptions = if (isOnlyDigit) KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number) else KeyboardOptions.Default.copy(
             keyboardType = KeyboardType.Text
-        )
+        ),
+        placeholder = {
+            Text(
+                text = placeholder, fontStyle = FontStyle.Italic
+            )
+        },
     )
 }
 
