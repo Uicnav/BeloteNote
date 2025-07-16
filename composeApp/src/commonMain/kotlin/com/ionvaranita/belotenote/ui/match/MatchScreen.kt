@@ -88,6 +88,7 @@ import com.ionvaranita.belotenote.domain.model.Points2PUi
 import com.ionvaranita.belotenote.domain.model.Points3PUi
 import com.ionvaranita.belotenote.domain.model.Points4PUi
 import com.ionvaranita.belotenote.domain.model.toShortCustom
+import com.ionvaranita.belotenote.domain.model.toShortCustomCalculated
 import com.ionvaranita.belotenote.ui.table.GameCard
 import com.ionvaranita.belotenote.ui.table.InsertFloatingActionButton
 import com.ionvaranita.belotenote.ui.table.InsertGameDialogBase
@@ -298,7 +299,7 @@ internal fun MatchScreen2(viewModel: ViewModelBase) {
                         })
                     }
                     Keyboard(
-                        isPresedGames = isPressedPoints,
+                        isPressedGames = isPressedPoints,
                         modifier = Modifier.fillMaxWidth(),
                         onClick = { inputKey ->
                             if (inputKey == ADD) {
@@ -323,13 +324,10 @@ internal fun MatchScreen2(viewModel: ViewModelBase) {
                                         inputText = pointsMe, inputKey = inputKey
                                     ) { text ->
                                         pointsMe = text
-                                        if (inputKey.equals(MINUS_10) || inputKey.equals(BOLT)) {
-                                            if (pointsYouS.equals(MINUS_10) || pointsYouS.equals(
-                                                    BOLT
-                                                )
+                                        if (inputKey == MINUS_10 || inputKey == BOLT) {
+                                            if (pointsYouS == MINUS_10 || pointsYouS == BOLT
                                             ) {
                                                 pointsYouS = ""
-
                                             }
                                         }
                                         if (pointsGame.isNotEmpty()) {
@@ -593,7 +591,7 @@ internal fun MatchScreen3(viewModel: ViewModelBase) {
                         })
                     }
                     Keyboard(
-                        isPresedGames = isPressedPoints,
+                        isPressedGames = isPressedPoints,
                         modifier = Modifier.fillMaxWidth(),
                         onClick = { inputKey ->
                             if (inputKey == ADD) {
@@ -944,7 +942,7 @@ internal fun MatchScreen4(viewModel: ViewModelBase) {
                         })
                     }
                     Keyboard(
-                        isPresedGames = isPressedPoints,
+                        isPressedGames = isPressedPoints,
                         modifier = Modifier.fillMaxWidth(),
                         onClick = { inputKey ->
                             if (inputKey == ADD) {
@@ -1298,7 +1296,7 @@ internal fun MatchScreen2Groups(viewModel: ViewModelBase) {
                         })
                     }
                     Keyboard(
-                        isPresedGames = isPressedPoints,
+                        isPressedGames = isPressedPoints,
                         modifier = Modifier.fillMaxWidth(),
                         onClick = { inputKey ->
                             if (inputKey == ADD) {
@@ -1324,8 +1322,8 @@ internal fun MatchScreen2Groups(viewModel: ViewModelBase) {
                                         inputText = pointsWe, inputKey = inputKey
                                     ) { text ->
                                         pointsWe = text
-                                        if (inputKey.equals(MINUS_10) || inputKey.equals(BOLT)) {
-                                            if (pointsYouP.equals(MINUS_10) || pointsYouP.equals(
+                                        if (inputKey == MINUS_10 || inputKey == BOLT) {
+                                            if (pointsYouP == MINUS_10 || pointsYouP.equals(
                                                     BOLT
                                                 )
                                             ) {
@@ -1335,7 +1333,7 @@ internal fun MatchScreen2Groups(viewModel: ViewModelBase) {
                                         }
                                         if (pointsGame.isNotEmpty()) {
                                             pointsYouP =
-                                                (pointsGame.toShortCustom() - text.toShortCustom()).toCustomString()
+                                                (pointsGame.toShort() - text.toShortCustomCalculated()).toCustomString()
                                         }
                                     }
                                 }
@@ -1344,14 +1342,14 @@ internal fun MatchScreen2Groups(viewModel: ViewModelBase) {
                                         inputText = pointsYouP, inputKey = inputKey
                                     ) { text ->
                                         pointsYouP = text
-                                        if (inputKey.equals(MINUS_10) || inputKey.equals(BOLT)) {
-                                            if (pointsWe.equals(MINUS_10) || pointsWe.equals(BOLT)) {
+                                        if (inputKey == MINUS_10 || inputKey == BOLT) {
+                                            if (pointsWe == MINUS_10 || pointsWe == BOLT) {
                                                 pointsWe = ""
                                             }
                                         }
                                         if (pointsGame.isNotEmpty()) {
                                             pointsWe =
-                                                (pointsGame.toShortCustom() - text.toShortCustom()).toCustomString()
+                                                (pointsGame.toShort() - text.toShortCustomCalculated()).toCustomString()
                                         }
                                     }
 
@@ -1402,22 +1400,29 @@ fun Int.toCustomString(): String {
 private fun manageUserInputKey(
     inputText: String, inputKey: String, onInputTextChanged: (String) -> Unit
 ) {
-    if (inputKey.equals(DELETE)) {
-        if (inputText.equals(MINUS_10)) {
+    if (inputKey == DELETE) {
+        if (inputText == MINUS_10) {
             onInputTextChanged("")
 
         } else {
             onInputTextChanged(inputText.dropLast(1))
         }
-    } else if (inputKey.equals(MINUS_10) || inputKey.equals(BOLT)) {
+    } else if (inputKey == MINUS_10 || inputKey == BOLT) {
         onInputTextChanged(inputKey)
 
-    } else if (inputKey.equals(ZERO) && inputText.isEmpty()) {
+    } else if (inputKey == ZERO && inputText.isEmpty()) {
         onInputTextChanged(inputText)
     } else {
-        if (!inputText.equals(BOLT) && !inputText.equals(MINUS_10) && inputText.length < 3) onInputTextChanged(
-            inputText + inputKey
-        )
+        if (inputText.length < 3 || inputText == MINUS_10) {
+            val text = if (inputText == ZERO || inputText == BOLT || inputText == MINUS_10) {
+                inputKey
+            } else {
+                inputText + inputKey
+            }
+            onInputTextChanged(
+                text
+            )
+        }
     }
 }
 
@@ -1538,23 +1543,10 @@ fun WritingPenIcon(modifier: Modifier = Modifier) {
 
 
 @Composable
-fun IndicatorIcon(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.size(12.dp).background(Color.Red, shape = CircleShape),
-        contentAlignment = Alignment.Center
-    ) {
-        Box(
-            modifier = Modifier.size(4.dp).background(Color.White, shape = CircleShape)
-        )
-    }
-}
-
-
-@Composable
 private fun Keyboard(
-    isPresedGames: Boolean = false, onClick: (String) -> Unit, modifier: Modifier = Modifier
+    isPressedGames: Boolean = false, onClick: (String) -> Unit, modifier: Modifier = Modifier
 ) {
-    val keyAlpha = if (!isPresedGames) 1f else 0f
+    val keyAlpha = if (!isPressedGames) 1f else 0f
     Column(modifier = modifier.fillMaxWidth().padding(top = 4.dp)) {
         Row(modifier = Modifier.fillMaxWidth()) {
             KeyAtom(text = ONE, onClick = onClick)
@@ -1604,7 +1596,7 @@ private const val EIGHT = "8"
 private const val NINE = "9"
 private const val ZERO = "0"
 const val BOLT = "B"
-private const val MINUS_10 = "-10"
+const val MINUS_10 = "-10"
 private const val ADD = "add"
 private const val DELETE = "delete"
 
