@@ -11,9 +11,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val dao = getRoomDatabase(getDatabaseBuilder(applicationContext))
+        val database = getRoomDatabase(getDatabaseBuilder(applicationContext))
         setContent {
-            App(dao)
+            App(database)
         }
     }
 }

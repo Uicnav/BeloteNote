@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="about">О приложении</string>
-    <string name="about_best_scorer">Лучший блокнот для Беллота.</string>
-    <string name="about_forget_paper_pencil">Забудьте про ручку и лист, это приложение создано для вас.</string>
     <string name="alert_dialog_finished">Окончено!</string>
     <string name="alert_dialog_games_name">Название стола</string>
     <string name="alert_dialog_playing">Играешь</string>
@@ -17,35 +14,27 @@
     <string name="dialog_fragment_insert_table">Создать новый стол</string>
     <string name="dialog_fragment_mandatory_extend_match_info1">У нас больше победителей с одинаковыми очками.</string>
     <string name="dialog_fragment_mandatory_extend_match_info2">Это обязательно, чтобы продлить игру.</string>
-    <string name="dialog_fragment_player_names">Имя игроков</string>
-    <string name="dialog_fragment_team_names">Названия команд</string>
     <string name="dialog_fragment_win">Выиграет \'%s\'</string>
     <string name="dialog_fragment_winner_points">Выигрышные очки:</string>
     <string name="game">Игра</string>
-    <string name="list_of_tables">Список столов</string>
     <string name="main_menu_title">Главное меню</string>
     <string name="me">Я</string>
     <string name="p">И</string>
-    <string name="rate_app">Оцените это приложение</string>
-    <string name="share_body">Забудь про карандаш и бумагу. Играйте в Белоту с друзьями в любое время и в любом месте! Проверьте мое приложение на:</string>
-    <string name="share_subject">Лучший блокнот для Белота!</string>
-    <string name="share_title">Отправить по</string>
-    <string name="table">Стол %s</string>
-    <string name="today">Сегодня</string>
-    <string name="version">Версия</string>
     <string name="we">Мы</string>
-    <string name="yesterday">Вчера</string>
     <string name="you_p">Вы</string>
     <string name="you_s">Ты</string>
     <string name="alert_dialog_finish_match">Закончи игру!</string>
     <string name="dialog_are_you_sure">Ты уверен?</string>
-    <string name="no">Нет</string>
-    <string name="snackbar_table_deleted">Стол был удален из списка.</string>
     <string name="winner_is">Победитель:</string>
-    <string name="support_text_info">Нужна помощь или есть идея улучшить приложение?\nСкажи это разработчику!</string>
-    <string name="support">Помощь</string>
-    <string name="messagge">Сообщение:</string>
-    <string name="send_email">Отправить письмо...</string>
-    <string name="share_score">Поделиться баллом</string>
-    <string name="how_it_works">Как работает приложение</string>
+
+    <string name="two_players">2 игрока</string>
+    <string name="three_players">3 игрока</string>
+    <string name="four_players">4 игрока</string>
+    <string name="two_vs_two">2 на 2</string>
+
+    <string name="confirm_delete">Подтвердить удаление</string>
+    <string name="sure_delete_table">Вы уверены, что хотите удалить эту таблицу?</string>
+    <string name="sure_delete_row">Вы уверены, что хотите удалить эту строку?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
 </resources>

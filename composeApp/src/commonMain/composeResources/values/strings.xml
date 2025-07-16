@@ -8,11 +8,7 @@
     <string name="alert_dialog_to_extend">To extend</string>
     <string name="alert_dialog_finish_match">Finish match!</string>
     <string name="dialog_are_you_sure">Are you sure?</string>
-    <string name="no">No</string>
-    <string name="confirm_delete">Confirm Delete</string>
-    <string name="sure_delete_table">Are you sure you want to delete this table?</string>
-    <string name="sure_delete_row">Are you sure you want to delete this row?</string>
-    <string name="yes">Yes</string>
+
     <!--DIALOG FRAGMENT -->
     <string name="dialog_fragment_insert_match">Insert new match</string>
     <string name="dialog_fragment_insert_table">Insert new table</string>
@@ -38,12 +34,16 @@
     <string name="ok" translatable="false">Ok</string>
 
 
-    <string name="how_it_works">How app works</string>
+    <string name="two_players">2 Players</string>
+    <string name="three_players">3 Players</string>
+    <string name="four_players">4 Players</string>
+    <string name="two_vs_two">2VS2</string>
 
-    <string name="two_players">Two players</string>
-    <string name="three_players">Three players</string>
-    <string name="four_players">Four players</string>
-    <string name="two_vs_two">Two versus two</string>
+    <string name="confirm_delete">Confirm Delete</string>
+    <string name="sure_delete_table">Are you sure you want to delete this table?</string>
+    <string name="sure_delete_row">Are you sure you want to delete this row?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
 </resources>
 

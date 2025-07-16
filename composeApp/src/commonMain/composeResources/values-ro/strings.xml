@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="about">Despre aplicație</string>
     <string name="alert_dialog_finished">Terminat!</string>
     <string name="alert_dialog_games_name">Numele mesei</string>
     <string name="alert_dialog_playing">Se joacă</string>
     <string name="alert_dialog_to_extend">A se extinde</string>
     <string name="alert_dialog_winner_points">Puncte câștigătoare</string>
-    <string name="about_best_scorer">Cel mai bun caiet de noțe pentru Belote.</string>
-    <string name="about_forget_paper_pencil">Uită de pix și foaie, această aplicație este creată pentru tine.</string>
     <string name="dialog_fragment_extend_match">Extinde partida</string>
     <string name="dialog_fragment_greater_than">mai mare decât %s</string>
     <string name="dialog_fragment_insert_manually_winner_points">Intoduc manual punctele câștigătoare</string>
@@ -15,37 +12,29 @@
     <string name="dialog_fragment_insert_table">Creează masă nouă</string>
     <string name="dialog_fragment_mandatory_extend_match_info1">Avem mai mulți câștigători cu același punctaj.</string>
     <string name="dialog_fragment_mandatory_extend_match_info2">Este obligatoriu să extinzi partida.</string>
-    <string name="dialog_fragment_player_names">Numele jucătorilor</string>
-    <string name="dialog_fragment_team_names">Numele echipelor</string>
     <string name="dialog_fragment_win">Câștigă \'%s\'</string>
     <string name="dialog_fragment_extend_match_info">Avem mai mulți câștigători.</string>
     <string name="dialog_fragment_extend_match_q">Ce vrei să faci?</string>
     <string name="dialog_fragment_winner_points">Puncte câștigătoare:</string>
-    <string name="game">Joc</string>
-    <string name="list_of_tables">Lista meselor</string>
-    <string name="main_menu_title">Meniul Principal</string>
     <string name="p">J</string>
-    <string name="rate_app">Evaluează aplicația</string>
-    <string name="table">Masa %s</string>
-    <string name="today">Astăzi</string>
-    <string name="version">Versiune</string>
-    <string name="yesterday">Ieri</string>
     <string name="me">Eu</string>
     <string name="we">Noi</string>
     <string name="you_p">Voi</string>
     <string name="you_s">Tu</string>
-    <string name="share_body">Uită de pix și foaie. Joacă Belot cu prietenii oriunde, oricând! Vizitează-mi aplicația:</string>
-    <string name="share_subject">Cel mai bun scorer pentru Belote!</string>
-    <string name="share_title">Partajare prin</string>
     <string name="alert_dialog_finish_match">Terminã partida!</string>
     <string name="dialog_are_you_sure">Ești sigur?</string>
-    <string name="no">Nu</string>
-    <string name="snackbar_table_deleted">Masa a fost eliminată din listă.</string>
     <string name="winner_is">Câștigătorul este:</string>
-    <string name="support_text_info">Ai nevoie de ajutor sau ai o idee pentru a îmbunătăți aplicația?\nContactează dezvoltatorul!</string>
-    <string name="support">Asistență</string>
-    <string name="messagge">Mesaj:</string>
-    <string name="send_email">Trimiteți către...</string>
-    <string name="share_score">Distribuiți scorul</string>
-    <string name="how_it_works">Cum funcționează aplicația</string>
+
+
+    <string name="two_players">2 Jucători</string>
+    <string name="three_players">3 Jucători</string>
+    <string name="four_players">4 Jucători</string>
+    <string name="two_vs_two">2 contra 2</string>
+
+    <string name="confirm_delete">Confirmă ștergerea</string>
+    <string name="sure_delete_table">Ești sigur că vrei să ștergi acest tabel?</string>
+    <string name="sure_delete_row">Ești sigur că vrei să ștergi acest rând?</string>
+    <string name="yes">Da</string>
+    <string name="no">Nu</string>
+
 </resources>
