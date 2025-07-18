@@ -4,10 +4,10 @@
     <string name="alert_dialog_playing">Si gioca</string>
     <string name="alert_dialog_to_extend">Da estendere</string>
     <string name="alert_dialog_winner_points">Punti vincenti</string>
-    <string name="dialog_fragment_extend_match">Estendi partita</string>
+    <string name="dialog_fragment_extend_match">Estendi\npartita</string>
     <string name="dialog_fragment_extend_match_info">Abbiamo più vincitori.</string>
     <string name="dialog_fragment_extend_match_q">Cosa vuoi fare?</string>
-    <string name="dialog_fragment_greater_than">maggiore di %s</string>
+    <string name="dialog_fragment_greater_than">maggiore di %1$s</string>
     <string name="you_s">Tu</string>
     <string name="you_p">Voi</string>
     <string name="we">Noi</string>
@@ -17,8 +17,7 @@
     <string name="dialog_fragment_insert_table">Inserisci nuova tavola</string>
     <string name="dialog_fragment_mandatory_extend_match_info1">Ci sono più vincitori con lo stesso risultato.</string>
     <string name="dialog_fragment_mandatory_extend_match_info2">È obbligatorio estendere la partida.</string>
-    <string name="dialog_fragment_win">Vince \'%s\'</string>
-    <string name="dialog_fragment_winner_points">Punti vincenti:</string>
+    <string name="dialog_fragment_win">Vince\n%1$s</string>
     <string name="p">G</string>
     <string name="alert_dialog_finish_match">Termina partita!</string>
     <string name="dialog_are_you_sure">Sei sicuro?</string>

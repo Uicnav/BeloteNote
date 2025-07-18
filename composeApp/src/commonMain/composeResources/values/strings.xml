@@ -16,11 +16,11 @@
     <string name="dialog_fragment_insert_manually_winner_points">Insert manually winning points</string>
     <string name="dialog_fragment_extend_match_info">We have more winners.</string>
     <string name="dialog_fragment_extend_match_q">What do you want to do?</string>
-    <string name="dialog_fragment_extend_match">Extend match</string>
+    <string name="dialog_fragment_extend_match">Extend\nmatch</string>
     <string name="dialog_fragment_mandatory_extend_match_info1">We have more winners with the same points.</string>
     <string name="dialog_fragment_mandatory_extend_match_info2">It is mandatory to extend the match.</string>
-    <string name="dialog_fragment_win">Win %1$s</string>
     <string name="dialog_fragment_greater_than">greater than %1$s</string>
+    <string name="dialog_fragment_win">Win&#10;%1$s</string>
 
     <!--POINTS TABLE -->
     <string name="game">Game</string>

@@ -5,14 +5,14 @@
     <string name="alert_dialog_playing">Se joacă</string>
     <string name="alert_dialog_to_extend">A se extinde</string>
     <string name="alert_dialog_winner_points">Puncte câștigătoare</string>
-    <string name="dialog_fragment_extend_match">Extinde partida</string>
-    <string name="dialog_fragment_greater_than">mai mare decât %s</string>
+    <string name="dialog_fragment_extend_match">Extinde\npartida</string>
+    <string name="dialog_fragment_greater_than">mai mare decât %1$s</string>
     <string name="dialog_fragment_insert_manually_winner_points">Intoduc manual punctele câștigătoare</string>
     <string name="dialog_fragment_insert_match">Creează partidă nouă</string>
     <string name="dialog_fragment_insert_table">Creează masă nouă</string>
     <string name="dialog_fragment_mandatory_extend_match_info1">Avem mai mulți câștigători cu același punctaj.</string>
     <string name="dialog_fragment_mandatory_extend_match_info2">Este obligatoriu să extinzi partida.</string>
-    <string name="dialog_fragment_win">Câștigă \'%s\'</string>
+    <string name="dialog_fragment_win">Câștigă\n%1$s</string>
     <string name="dialog_fragment_extend_match_info">Avem mai mulți câștigători.</string>
     <string name="dialog_fragment_extend_match_q">Ce vrei să faci?</string>
     <string name="dialog_fragment_winner_points">Puncte câștigătoare:</string>

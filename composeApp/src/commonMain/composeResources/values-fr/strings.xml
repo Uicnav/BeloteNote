@@ -10,10 +10,10 @@
     <string name="dialog_fragment_insert_manually_winner_points">Saisir manuellement les points du gagnant</string>
     <string name="dialog_fragment_extend_match_info">Nous avons plusieurs gagnants.</string>
     <string name="dialog_fragment_extend_match_q">Que voulez-vous faire ?</string>
-    <string name="dialog_fragment_extend_match">Prolonger la partie</string>
+    <string name="dialog_fragment_extend_match">Prolonger\nla partie</string>
     <string name="dialog_fragment_mandatory_extend_match_info1">Nous avons plusieurs gagnants avec le même nombre de points.</string>
     <string name="dialog_fragment_mandatory_extend_match_info2">Il est obligatoire de prolonger la partie.</string>
-    <string name="dialog_fragment_win">Victoire de %1$s</string>
+    <string name="dialog_fragment_win">Victoire de \n%1$s</string>
     <string name="dialog_fragment_greater_than">supérieur à %1$s</string>
     <string name="game">Jeu</string>
     <string name="we">Nous</string>

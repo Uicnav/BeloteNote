@@ -36,6 +36,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -80,6 +81,7 @@ import belotenote.composeapp.generated.resources.ic_writting_indicator
 import belotenote.composeapp.generated.resources.no
 import belotenote.composeapp.generated.resources.ok
 import belotenote.composeapp.generated.resources.winner_is
+import belotenote.composeapp.generated.resources.yes
 import com.ionvaranita.belotenote.Circle
 import com.ionvaranita.belotenote.StatusImage
 import com.ionvaranita.belotenote.constants.GameStatus
@@ -332,7 +334,7 @@ internal fun MatchScreen2(viewModel: ViewModelBase) {
                                         }
                                         if (pointsGame.isNotEmpty()) {
                                             pointsYouS =
-                                                (pointsGame.toShortCustom() - text.toShortCustom()).toCustomString()
+                                                (pointsGame.toShort() - text.toShortCustomCalculated()).toCustomString()
                                         }
                                     }
                                 }
@@ -348,7 +350,7 @@ internal fun MatchScreen2(viewModel: ViewModelBase) {
                                         }
                                         if (pointsGame.isNotEmpty()) {
                                             pointsMe =
-                                                (pointsGame.toShortCustom() - text.toShortCustom()).toCustomString()
+                                                (pointsGame.toShort() - text.toShortCustomCalculated()).toCustomString()
                                         }
                                     }
 
@@ -625,16 +627,6 @@ internal fun MatchScreen3(viewModel: ViewModelBase) {
                                                 pointsP3 = ""
                                             }
                                         }
-                                        if (pointsGame.isNotEmpty()) {
-                                            if (pointsP3.isNotEmpty() && pointsP2.isEmpty()) {
-                                                pointsP2 =
-                                                    (pointsGame.toShortCustom() - pointsP1.toShortCustom() - pointsP3.toShortCustom()).toCustomString()
-                                            }
-                                            if (pointsP2.isNotEmpty() && pointsP3.isEmpty()) {
-                                                pointsP3 =
-                                                    (pointsGame.toShortCustom() - pointsP1.toShortCustom() - pointsP2.toShortCustom()).toCustomString()
-                                            }
-                                        }
                                     }
                                 }
                                 if (isPressedP2) {
@@ -642,22 +634,12 @@ internal fun MatchScreen3(viewModel: ViewModelBase) {
                                         inputText = pointsP2, inputKey = inputKey
                                     ) { text ->
                                         pointsP2 = text
-                                        if (inputKey.equals(MINUS_10) || inputKey.equals(BOLT)) {
-                                            if (pointsP1.equals(MINUS_10) || pointsP1.equals(BOLT)) {
+                                        if (inputKey == MINUS_10 || inputKey == BOLT) {
+                                            if (pointsP1 == MINUS_10 || pointsP1 == BOLT) {
                                                 pointsP1 = ""
                                             }
-                                            if (pointsP3.equals(MINUS_10) || pointsP3.equals(BOLT)) {
+                                            if (pointsP3 == MINUS_10 || pointsP3 == BOLT) {
                                                 pointsP3 = ""
-                                            }
-                                        }
-                                        if (pointsGame.isNotEmpty()) {
-                                            if (pointsP1.isNotEmpty() && pointsP3.isEmpty()) {
-                                                pointsP3 =
-                                                    (pointsGame.toShortCustom() - pointsP2.toShortCustom() - pointsP1.toShortCustom()).toCustomString()
-                                            }
-                                            if (pointsP3.isNotEmpty() && pointsP1.isEmpty()) {
-                                                pointsP1 =
-                                                    (pointsGame.toShortCustom() - pointsP2.toShortCustom() - pointsP3.toShortCustom()).toCustomString()
                                             }
                                         }
                                     }
@@ -674,16 +656,6 @@ internal fun MatchScreen3(viewModel: ViewModelBase) {
                                             }
                                             if (pointsP2 == MINUS_10 || pointsP2.equals(BOLT)) {
                                                 pointsP2 = ""
-                                            }
-                                        }
-                                        if (pointsGame.isNotEmpty()) {
-                                            if (pointsP1.isNotEmpty() && pointsP2.isEmpty()) {
-                                                pointsP2 =
-                                                    (pointsGame.toShortCustom() - pointsP3.toShortCustom() - pointsP1.toShortCustom()).toCustomString()
-                                            }
-                                            if (pointsP2.isNotEmpty() && pointsP1.isEmpty()) {
-                                                pointsP1 =
-                                                    (pointsGame.toShortCustom() - pointsP3.toShortCustom() - pointsP2.toShortCustom()).toCustomString()
                                             }
                                         }
                                     }
@@ -1639,7 +1611,8 @@ private fun InfoGameDialog(
     Dialog(onDismissRequest = onDismiss) {
         Box(
             modifier = Modifier.padding(24.dp).fillMaxWidth()
-                .background(Color.White, shape = RoundedCornerShape(16.dp)).padding(24.dp)
+                .background(MaterialTheme.colorScheme.background, shape = RoundedCornerShape(16.dp))
+                .padding(24.dp)
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -1650,8 +1623,14 @@ private fun InfoGameDialog(
                 Text(text = statusGameText, fontSize = 18.sp, fontWeight = FontWeight.Bold)
                 Text(text = infoGame.winningPoints, fontSize = 16.sp)
                 if (showFinishMatch) {
-                    Button(onClick = onConfirm) {
-                        Text(text = stringResource(Res.string.alert_dialog_finish_match))
+                    Button(
+                        onClick = onConfirm,
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.alert_dialog_finish_match),
+                            color = Color.White
+                        )
                     }
                 }
             }
@@ -1667,7 +1646,8 @@ private fun WinnerDialog(
     Dialog(onDismissRequest = onDismiss) {
         Box(
             modifier = Modifier.padding(24.dp).fillMaxWidth()
-                .background(Color.White, shape = RoundedCornerShape(16.dp)).padding(24.dp)
+                .background(MaterialTheme.colorScheme.background, shape = RoundedCornerShape(16.dp))
+                .padding(24.dp)
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -1705,7 +1685,8 @@ private fun ExtendedDialog(
 
         Box(
             modifier = Modifier.padding(24.dp).fillMaxWidth()
-                .background(Color.White, shape = RoundedCornerShape(16.dp)).padding(24.dp)
+                .background(MaterialTheme.colorScheme.background, shape = RoundedCornerShape(16.dp))
+                .padding(24.dp)
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -1725,46 +1706,64 @@ private fun ExtendedDialog(
                 if (winnerText != null) {
                     Text(
                         text = stringResource(Res.string.dialog_fragment_extend_match_info),
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
                     )
                     Text(
                         text = stringResource(Res.string.dialog_fragment_extend_match_q),
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.ExtraBold
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.ExtraBold,
+                        textAlign = TextAlign.Center
+
                     )
                 } else {
                     Text(
                         text = stringResource(Res.string.dialog_fragment_mandatory_extend_match_info1),
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
                     )
                     Text(
                         text = stringResource(Res.string.dialog_fragment_mandatory_extend_match_info2),
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.ExtraBold
+                        fontWeight = FontWeight.ExtraBold,
+                        textAlign = TextAlign.Center
                     )
                 }
 
                 Row {
-                    Button(onClick = {
-                        val winningPoints = newWinningPoints.toShortCustom()
-                        if (winningPoints > maxPoints.toShort()) {
-                            onExtend(winningPoints)
-                        } else {
-                            shakerWinningPoints.shake()
-                            newWinningPoints = ""
-                        }
-                    }) {
-                        Text(text = stringResource(Res.string.dialog_fragment_extend_match))
+                    Button(
+                        onClick = {
+                            val winningPoints = newWinningPoints.toShortCustom()
+                            if (winningPoints > maxPoints.toShort()) {
+                                onExtend(winningPoints)
+                            } else {
+                                shakerWinningPoints.shake()
+                                newWinningPoints = ""
+                            }
+                        }, colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow)
+                    ) {
+                        Text(
+                            fontSize = 10.sp,
+                            text = stringResource(Res.string.dialog_fragment_extend_match),
+                            color = Color.Black,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
+                        )
                     }
                     winnerText?.let {
-                        Button(onClick = {
+                        Button(
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                            onClick = {
                             onWin()
                         }) {
                             Text(
+                                fontSize = 10.sp,
                                 text = stringResource(Res.string.dialog_fragment_win, it),
-                                maxLines = 1
+                                maxLines = 2,
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center
                             )
                         }
                     }
@@ -1782,7 +1781,9 @@ private fun UpdateStatusGameDialog(
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Column(
-            modifier = modifier.background(Color.White, shape = RoundedCornerShape(16.dp))
+            modifier = modifier.background(
+                MaterialTheme.colorScheme.background, shape = RoundedCornerShape(16.dp)
+            )
                 .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(Modifier.height(16.dp))
@@ -1797,8 +1798,13 @@ private fun UpdateStatusGameDialog(
                 Button(onClick = onDismiss) {
                     Text(text = stringResource(Res.string.no))
                 }
-                Button(onClick = onConfirm) {
-                    Text(text = stringResource(Res.string.alert_dialog_finish_match))
+                Button(
+                    onClick = onConfirm,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                ) {
+                    Text(
+                        text = stringResource(Res.string.yes), color = Color.White
+                    )
                 }
             }
         }

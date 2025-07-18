@@ -512,13 +512,15 @@ fun InsertGame2(
                 value = p1,
                 onValueChange = { p1 = it },
                 shaker = shaker1,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                charLength = 4
             )
             ShakerTextFieldAtom(
                 value = p2,
                 onValueChange = { p2 = it },
                 shaker = shaker2,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                charLength = 4
             )
         }
     }
@@ -656,10 +658,10 @@ fun InsertGame2Groups(
         Row {
             ShakerTextFieldAtom(value = p1, onValueChange = {
                 p1 = it
-            }, modifier = Modifier.weight(1F), shaker = shakerP1)
+            }, modifier = Modifier.weight(1F), shaker = shakerP1, charLength = 4)
             ShakerTextFieldAtom(value = p2, onValueChange = {
                 p2 = it
-            }, modifier = Modifier.weight(1F), shaker = shakerP2)
+            }, modifier = Modifier.weight(1F), shaker = shakerP2,charLength = 4)
         }
     }
 }
@@ -675,7 +677,8 @@ internal fun InsertGameDialogBase(
     Dialog(onDismissRequest = { onDismissRequest() }) { // Draw a rectangle shape with rounded corners inside the dialog
 
         Card(
-            modifier = Modifier.fillMaxWidth().height(375.dp).padding(16.dp),
+            modifier = Modifier.fillMaxWidth().height(375.dp).padding(16.dp)
+                .background(MaterialTheme.colorScheme.background),
             shape = RoundedCornerShape(16.dp),
         ) {
             Column(
@@ -693,7 +696,10 @@ internal fun InsertGameDialogBase(
                 ) {
                     Text(
                         text = stringResource(Res.string.dialog_fragment_insert_manually_winner_points),
-                        style = MaterialTheme.typography.labelLarge
+                        style = MaterialTheme.typography.labelLarge,
+                        textAlign = TextAlign.Center,
+                        maxLines = 2,
+                        modifier = Modifier.weight(1F)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Switch(checked = isChecked, onCheckedChange = { isChecked = it })
@@ -773,6 +779,7 @@ fun ShakerTextFieldAtom(
     shaker: TextFieldShaker,
     isOnlyDigit: Boolean = false,
     placeholder: String = "",
+    charLength: Int = 3,
     modifier: Modifier = Modifier
 ) {
     val vibrationOffset = remember { Animatable(0f) }
@@ -793,7 +800,7 @@ fun ShakerTextFieldAtom(
     TextField(
         value = value,
         onValueChange = {
-            if (it.length <= 3) {
+            if (it.length <= charLength) {
                 val filtered =
                     it.filter { char -> if (isOnlyDigit) char.isDigit() else char.isLetterOrDigit() }
                 onValueChange(filtered)
