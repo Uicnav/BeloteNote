@@ -2,11 +2,8 @@ package com.ionvaranita.belotenote.ui.viewmodel.game
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ionvaranita.belotenote.datalayer.database.AppDatabase
 import com.ionvaranita.belotenote.datalayer.database.entity.players4.Game4PEntity
-import com.ionvaranita.belotenote.datalayer.datasource.game.Game4PDataSourceImpl
-import com.ionvaranita.belotenote.datalayer.repo.game.Games4PRepositoryImpl
-import com.ionvaranita.belotenote.domain.model.Game3PUi
+import com.ionvaranita.belotenote.domain.model.Game4PUi
 import com.ionvaranita.belotenote.domain.usecase.game.delete.DeleteGame4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGames4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.insert.InsertGame4PUseCase
@@ -44,7 +41,8 @@ class Game4PViewModel(private val getGamesUseCase: GetGames4PUseCase, private va
     }
 }
 
-sealed class Games3PUiState {
-    data class Success(val data: List<Game3PUi>) : Games3PUiState()
-    data class Error(val exception: Throwable) : Games3PUiState()
+sealed interface Games4PUiState {
+    object Loading : Games4PUiState
+    data class Success(val data: List<Game4PUi>) : Games4PUiState
+    data class Error(val exception: Throwable) : Games4PUiState
 }

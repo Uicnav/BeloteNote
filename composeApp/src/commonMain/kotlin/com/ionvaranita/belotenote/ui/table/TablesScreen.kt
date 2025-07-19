@@ -35,10 +35,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -81,7 +80,6 @@ import belotenote.composeapp.generated.resources.p
 import belotenote.composeapp.generated.resources.sure_delete_row
 import belotenote.composeapp.generated.resources.sure_delete_table
 import belotenote.composeapp.generated.resources.we
-import belotenote.composeapp.generated.resources.yes
 import belotenote.composeapp.generated.resources.you_p
 import belotenote.composeapp.generated.resources.you_s
 import com.ionvaranita.belotenote.Match2Dest
@@ -175,6 +173,10 @@ internal fun TablesScreen2(
 
             is Games2PUiState.Error -> { // Handle error
             }
+
+            Games2PUiState.Loading -> {
+                CircularProgressIndicator()
+            }
         }
     }
 }
@@ -239,6 +241,9 @@ internal fun TablesScreen3(
 
             is Games3PUiState.Error -> { // Handle error
             }
+
+            Games3PUiState.Loading -> CircularProgressIndicator()
+
         }
     }
 }
@@ -305,6 +310,9 @@ internal fun TablesScreen4(
 
             is Games4PUiState.Error -> { // Handle error
             }
+
+            Games4PUiState.Loading -> CircularProgressIndicator()
+
         }
     }
 }
@@ -365,6 +373,10 @@ internal fun TablesScreenGroups(viewModel: Game2GroupsViewModel) {
             }
 
             is Games2GroupsUiState.Error -> { // Handle error
+            }
+
+            Games2GroupsUiState.Loading -> {
+                CircularProgressIndicator()
             }
         }
     }
