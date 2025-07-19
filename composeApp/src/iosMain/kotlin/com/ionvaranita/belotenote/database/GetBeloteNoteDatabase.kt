@@ -9,7 +9,7 @@ import platform.Foundation.NSUserDomainMask
 import platform.Foundation.NSFileManager
 
 fun getDatabaseBuilder(): RoomDatabase.Builder<AppDatabase> {
-    val dbFilePath = documentDirectory() + "/my_room.db"
+    val dbFilePath = documentDirectory() + "/BeloteNoteDatabase.db"
     return Room.databaseBuilder<AppDatabase>(
         name = dbFilePath,
                                             ).fallbackToDestructiveMigration(true)

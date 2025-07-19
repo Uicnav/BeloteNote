@@ -8,7 +8,7 @@ import com.ionvaranita.belotenote.datalayer.database.AppDatabase
 
 fun getDatabaseBuilder(ctx: Context): RoomDatabase.Builder<AppDatabase> {
     val appContext = ctx.applicationContext
-    val dbFile = appContext.getDatabasePath("my_room.db")
+    val dbFile = appContext.getDatabasePath("BeloteNoteDatabase.db")
     return Room.databaseBuilder<AppDatabase>(
         context = appContext,
         name = dbFile.absolutePath
