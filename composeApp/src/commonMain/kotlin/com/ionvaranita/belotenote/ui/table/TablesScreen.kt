@@ -35,6 +35,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -93,6 +95,7 @@ import com.ionvaranita.belotenote.datalayer.database.entity.players2.Game2PEntit
 import com.ionvaranita.belotenote.datalayer.database.entity.players3.Game3PEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players4.Game4PEntity
 import com.ionvaranita.belotenote.ui.LocalNavHostController
+import com.ionvaranita.belotenote.ui.match.ConfirmYesButton
 import com.ionvaranita.belotenote.ui.viewmodel.game.Game2GroupsViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.game.Game2PViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.game.Game3PViewModel
@@ -378,9 +381,7 @@ fun ConfirmDeleteDialog(onConfirm: () -> Unit, onDismiss: () -> Unit, isTable: B
             )
         )
     }, confirmButton = {
-        Button(onClick = onConfirm) {
-            Text(stringResource(Res.string.yes))
-        }
+        ConfirmYesButton(onConfirm = onConfirm)
     }, dismissButton = {
         Button(onClick = onDismiss) {
             Text(stringResource(Res.string.no))

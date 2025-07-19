@@ -1798,16 +1798,20 @@ private fun UpdateStatusGameDialog(
                 Button(onClick = onDismiss) {
                     Text(text = stringResource(Res.string.no))
                 }
-                Button(
-                    onClick = onConfirm,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
-                ) {
-                    Text(
-                        text = stringResource(Res.string.yes), color = Color.White
-                    )
-                }
+                ConfirmYesButton(onConfirm = onConfirm)
             }
         }
+    }
+}
+
+@Composable
+fun ConfirmYesButton(onConfirm: () -> Unit) {
+    Button(
+        onClick = onConfirm, colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+    ) {
+        Text(
+            text = stringResource(Res.string.yes), color = Color.White
+        )
     }
 }
 
