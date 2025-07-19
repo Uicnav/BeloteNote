@@ -1,44 +1,35 @@
 <resources>
-
-    <!-- ALERT DIALOG -->
     <string name="alert_dialog_finished">Готово!</string>
-    <string name="alert_dialog_playing">Играе се</string>
-    <string name="alert_dialog_to_extend">Удължи</string>
+    <string name="alert_dialog_playing">В игра</string>
+    <string name="alert_dialog_to_extend">За продължаване</string>
     <string name="alert_dialog_finish_match">Завърши мача!</string>
-    <string name="dialog_are_you_sure">Сигурен ли си?</string>
-
-    <!-- DIALOG FRAGMENT -->
-    <string name="dialog_fragment_insert_match">Добави нов мач</string>
-    <string name="dialog_fragment_insert_table">Добави нова маса</string>
-    <string name="dialog_fragment_winner_points">Точки на победителя:</string>
-    <string name="dialog_fragment_insert_manually_winner_points">Въведи на ръка точките на победителя</string>
-    <string name="dialog_fragment_extend_match_info">Имаме повече победители.</string>
-    <string name="dialog_fragment_extend_match_q">Какво искаш да направиш?</string>
-    <string name="dialog_fragment_extend_match">Удължи\nмача</string>
-    <string name="dialog_fragment_mandatory_extend_match_info1">Имаме повече победители с еднакъв брой точки.</string>
-    <string name="dialog_fragment_mandatory_extend_match_info2">Удължаването на мача е задължително.</string>
-    <string name="dialog_fragment_win">Победа за\n%1$s</string>
-    <string name="dialog_fragment_greater_than">повече от %1$s</string>
-
-    <!-- POINTS TABLE -->
+    <string name="dialog_are_you_sure">Сигурни ли сте?</string>
+    <string name="dialog_fragment_insert_match">Въведете нов мач</string>
+    <string name="dialog_fragment_insert_table">Въведете нова игра</string>
+    <string name="dialog_fragment_winner_points">Победни точки:</string>
+    <string name="dialog_fragment_insert_manually_winner_points">Въведете ръчно победните точки</string>
+    <string name="dialog_fragment_extend_match_info">Има повече победители.</string>
+    <string name="dialog_fragment_extend_match_q">Какво искате да направите?</string>
+    <string name="dialog_fragment_extend_match">Продължи\nмача</string>
+    <string name="dialog_fragment_mandatory_extend_match_info1">Има повече победители с еднакъв брой точки.</string>
+    <string name="dialog_fragment_mandatory_extend_match_info2">Задължително е да продължите мача.</string>
+    <string name="dialog_fragment_greater_than">по-голямо от %1$s</string>
+    <string name="dialog_fragment_win">Спечели\n%1$s</string>
     <string name="game">Игра</string>
     <string name="we">Ние</string>
     <string name="you_s">Ти</string>
     <string name="you_p">Вие</string>
     <string name="me">Аз</string>
-
+    <string name="p">И</string>
     <string name="winner_is">Победителят е:</string>
-
-
-    <string name="two_players">2 играча</string>
-    <string name="three_players">3 играча</string>
-    <string name="four_players">4 играча</string>
-    <string name="two_vs_two">2 срещу 2</string>
-
-    <string name="confirm_delete">Потвърди изтриването</string>
-    <string name="sure_delete_table">Сигурен ли си, че искаш да изтриеш тази маса?</string>
-    <string name="sure_delete_row">Сигурен ли си, че искаш да изтриеш този ред?</string>
+    <string name="two_players">2 играчи</string>
+    <string name="three_players">3 играчи</string>
+    <string name="four_players">4 играчи</string>
+    <string name="two_vs_two">2VS2</string>
+    <string name="tables_list">Списък с игри</string>
+    <string name="confirm_delete">Потвърдете изтриването</string>
+    <string name="sure_delete_table">Сигурни ли сте, че искате да изтриете тази игра?</string>
+    <string name="sure_delete_row">Сигурни ли сте, че искате да изтриете този ред?</string>
     <string name="yes">Да</string>
     <string name="no">Не</string>
-
 </resources>

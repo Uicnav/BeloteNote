@@ -1,40 +1,35 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="alert_dialog_finished">Terminat!</string>
-    <string name="alert_dialog_games_name">Numele mesei</string>
-    <string name="alert_dialog_playing">Se joacă</string>
-    <string name="alert_dialog_to_extend">A se extinde</string>
-    <string name="alert_dialog_winner_points">Puncte câștigătoare</string>
-    <string name="dialog_fragment_extend_match">Extinde\npartida</string>
-    <string name="dialog_fragment_greater_than">mai mare decât %1$s</string>
-    <string name="dialog_fragment_insert_manually_winner_points">Intoduc manual punctele câștigătoare</string>
-    <string name="dialog_fragment_insert_match">Creează partidă nouă</string>
-    <string name="dialog_fragment_insert_table">Creează masă nouă</string>
-    <string name="dialog_fragment_mandatory_extend_match_info1">Avem mai mulți câștigători cu același punctaj.</string>
-    <string name="dialog_fragment_mandatory_extend_match_info2">Este obligatoriu să extinzi partida.</string>
-    <string name="dialog_fragment_win">Câștigă\n%1$s</string>
+    <string name="alert_dialog_finished">Gata!</string>
+    <string name="alert_dialog_playing">În curs</string>
+    <string name="alert_dialog_to_extend">Extinde</string>
+    <string name="alert_dialog_finish_match">Termină partida!</string>
+    <string name="dialog_are_you_sure">Ești sigur?</string>
+    <string name="dialog_fragment_insert_match">Introdu o partidă nouă</string>
+    <string name="dialog_fragment_insert_table">Introdu un joc nou</string>
+    <string name="dialog_fragment_winner_points">Puncte câștigătoare:</string>
+    <string name="dialog_fragment_insert_manually_winner_points">Introdu manual punctele câștigătoare</string>
     <string name="dialog_fragment_extend_match_info">Avem mai mulți câștigători.</string>
     <string name="dialog_fragment_extend_match_q">Ce vrei să faci?</string>
-    <string name="dialog_fragment_winner_points">Puncte câștigătoare:</string>
-    <string name="p">J</string>
-    <string name="me">Eu</string>
+    <string name="dialog_fragment_extend_match">Extinde\njocul</string>
+    <string name="dialog_fragment_mandatory_extend_match_info1">Avem mai mulți câștigători cu același număr de puncte.</string>
+    <string name="dialog_fragment_mandatory_extend_match_info2">Este obligatoriu să extinzi jocul.</string>
+    <string name="dialog_fragment_greater_than">mai mare decât %1$s</string>
+    <string name="dialog_fragment_win">Câștigă\n%1$s</string>
+    <string name="game">Joc</string>
     <string name="we">Noi</string>
-    <string name="you_p">Voi</string>
     <string name="you_s">Tu</string>
-    <string name="alert_dialog_finish_match">Terminã partida!</string>
-    <string name="dialog_are_you_sure">Ești sigur?</string>
+    <string name="you_p">Voi</string>
+    <string name="me">Eu</string>
+    <string name="p">J</string>
     <string name="winner_is">Câștigătorul este:</string>
-
-
-    <string name="two_players">2 Jucători</string>
-    <string name="three_players">3 Jucători</string>
-    <string name="four_players">4 Jucători</string>
-    <string name="two_vs_two">2 contra 2</string>
-
+    <string name="two_players">2 jucători</string>
+    <string name="three_players">3 jucători</string>
+    <string name="four_players">4 jucători</string>
+    <string name="two_vs_two">2VS2</string>
+    <string name="tables_list">Lista jocurilor</string>
     <string name="confirm_delete">Confirmă ștergerea</string>
-    <string name="sure_delete_table">Ești sigur că vrei să ștergi acest tabel?</string>
+    <string name="sure_delete_table">Ești sigur că vrei să ștergi acest joc?</string>
     <string name="sure_delete_row">Ești sigur că vrei să ștergi acest rând?</string>
     <string name="yes">Da</string>
     <string name="no">Nu</string>
-
 </resources>

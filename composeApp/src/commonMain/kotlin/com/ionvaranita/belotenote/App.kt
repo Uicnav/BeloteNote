@@ -32,8 +32,10 @@ import androidx.navigation.toRoute
 import belotenote.composeapp.generated.resources.Res
 import belotenote.composeapp.generated.resources.app_name
 import belotenote.composeapp.generated.resources.four_players
+import belotenote.composeapp.generated.resources.game
 import belotenote.composeapp.generated.resources.image_background_dark
 import belotenote.composeapp.generated.resources.image_background_light
+import belotenote.composeapp.generated.resources.tables_list
 import belotenote.composeapp.generated.resources.three_players
 import belotenote.composeapp.generated.resources.two_players
 import belotenote.composeapp.generated.resources.two_vs_two
@@ -451,28 +453,51 @@ fun BeloteAppBar(
 
 @Composable
 private inline fun ScreenTitle(currentRoute: String?) {
+    val tablesList = stringResource(Res.string.tables_list)
+    val game = stringResource(Res.string.game)
+    val twoPlayers = stringResource(Res.string.two_players)
+    val threePlayers = stringResource(Res.string.three_players)
+    val fourPlayers = stringResource(Res.string.four_players)
+    val twoVsTwo = stringResource(Res.string.two_vs_two)
     val text = when (currentRoute) {
         HomeDest::class.qualifiedName -> {
             stringResource(Res.string.app_name)
         }
 
-        Match2Dest::class.qualifiedName + "/{idGame}", Games2Dest::class.qualifiedName -> {
-            stringResource(Res.string.two_players)
+        Games2Dest::class.qualifiedName -> {
+             "$tablesList $twoPlayers"
 
         }
 
-        Match3Dest::class.qualifiedName + "/{idGame}", Games3Dest::class.qualifiedName -> {
-            stringResource(Res.string.three_players)
+        Match2Dest::class.qualifiedName + "/{idGame}"->{
+            "$game $twoPlayers"
 
         }
 
-        Match4Dest::class.qualifiedName + "/{idGame}", Games4Dest::class.qualifiedName -> {
-            stringResource(Res.string.four_players)
+        Games3Dest::class.qualifiedName -> {
+            "$tablesList $threePlayers"
+
 
         }
 
-        MatchGroupsDest::class.qualifiedName + "/{idGame}", GamesGroupsDest::class.qualifiedName -> {
-            stringResource(Res.string.two_vs_two)
+        Match3Dest::class.qualifiedName + "/{idGame}" -> {
+            "$game $threePlayers"
+        }
+        Games4Dest::class.qualifiedName -> {
+            "$tablesList $fourPlayers"
+
+
+        }
+        Match4Dest::class.qualifiedName + "/{idGame}"-> {
+            "$game $fourPlayers"
+        }
+
+        GamesGroupsDest::class.qualifiedName -> {
+            "$tablesList $twoVsTwo"
+        }
+
+        MatchGroupsDest::class.qualifiedName + "/{idGame}"->{
+            "$game $twoVsTwo"
         }
 
         else -> {

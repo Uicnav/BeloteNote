@@ -1,41 +1,35 @@
 <resources>
-
-
-    <string name="alert_dialog_finished">Završeno!</string>
-    <string name="alert_dialog_playing">Igra se</string>
-    <string name="alert_dialog_to_extend">Produžiti</string>
-    <string name="alert_dialog_finish_match">Završi meč!</string>
-    <string name="dialog_are_you_sure">Jesi li siguran?</string>
-
-    <string name="dialog_fragment_insert_match">Dodaj novi meč</string>
-    <string name="dialog_fragment_insert_table">Dodaj novi stol</string>
-    <string name="dialog_fragment_winner_points">Bodovi pobjednika:</string>
-    <string name="dialog_fragment_insert_manually_winner_points">Unesi ručno bodove pobjednika</string>
+    <string name="alert_dialog_finished">Gotovo!</string>
+    <string name="alert_dialog_playing">U tijeku</string>
+    <string name="alert_dialog_to_extend">Proširi</string>
+    <string name="alert_dialog_finish_match">Završi partiju!</string>
+    <string name="dialog_are_you_sure">Jeste li sigurni?</string>
+    <string name="dialog_fragment_insert_match">Umetni novu partiju</string>
+    <string name="dialog_fragment_insert_table">Umetni novu igru</string>
+    <string name="dialog_fragment_winner_points">Pobjednički bodovi:</string>
+    <string name="dialog_fragment_insert_manually_winner_points">Ručno unesite pobjedničke bodove</string>
     <string name="dialog_fragment_extend_match_info">Imamo više pobjednika.</string>
-    <string name="dialog_fragment_extend_match_q">Što želiš učiniti?</string>
-    <string name="dialog_fragment_extend_match">Produži\nmeč</string>
+    <string name="dialog_fragment_extend_match_q">Što želite učiniti?</string>
+    <string name="dialog_fragment_extend_match">Proširi\npartiju</string>
     <string name="dialog_fragment_mandatory_extend_match_info1">Imamo više pobjednika s istim brojem bodova.</string>
-    <string name="dialog_fragment_mandatory_extend_match_info2">Produženje meča je obavezno.</string>
-    <string name="dialog_fragment_win">Pobjeda\n%1$s</string>
+    <string name="dialog_fragment_mandatory_extend_match_info2">Obavezno je proširiti partiju.</string>
     <string name="dialog_fragment_greater_than">veće od %1$s</string>
-
+    <string name="dialog_fragment_win">Pobijedi\n%1$s</string>
     <string name="game">Igra</string>
     <string name="we">Mi</string>
     <string name="you_s">Ti</string>
     <string name="you_p">Vi</string>
     <string name="me">Ja</string>
-
+    <string name="p">I</string>
     <string name="winner_is">Pobjednik je:</string>
-
     <string name="two_players">2 igrača</string>
     <string name="three_players">3 igrača</string>
     <string name="four_players">4 igrača</string>
-    <string name="two_vs_two">2 na 2</string>
-
+    <string name="two_vs_two">2VS2</string>
+    <string name="tables_list">Popis igara</string>
     <string name="confirm_delete">Potvrdi brisanje</string>
-    <string name="sure_delete_table">Jesi li siguran da želiš izbrisati ovaj stol?</string>
-    <string name="sure_delete_row">Jesi li siguran da želiš izbrisati ovaj red?</string>
+    <string name="sure_delete_table">Jeste li sigurni da želite izbrisati ovu tablicu?</string>
+    <string name="sure_delete_row">Jeste li sigurni da želite izbrisati ovaj red?</string>
     <string name="yes">Da</string>
     <string name="no">Ne</string>
-
 </resources>

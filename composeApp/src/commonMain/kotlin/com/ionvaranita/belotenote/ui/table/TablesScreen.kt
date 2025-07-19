@@ -2,6 +2,11 @@ package com.ionvaranita.belotenote.ui.table
 
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -51,6 +56,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -65,6 +71,7 @@ import belotenote.composeapp.generated.resources.Res
 import belotenote.composeapp.generated.resources.confirm_delete
 import belotenote.composeapp.generated.resources.dialog_fragment_insert_manually_winner_points
 import belotenote.composeapp.generated.resources.dialog_fragment_insert_match
+import belotenote.composeapp.generated.resources.dialog_fragment_insert_table
 import belotenote.composeapp.generated.resources.ic_delete_white
 import belotenote.composeapp.generated.resources.me
 import belotenote.composeapp.generated.resources.no
@@ -115,9 +122,10 @@ internal fun TablesScreen2(
     var shouDialog by remember { mutableStateOf(false) }
     val gameListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
+    var isEmptyList by remember { mutableStateOf(false) }
     TablesBase(onInsertGameClick = {
         shouDialog = true
-    }) { paddingValues ->
+    }, isEmptyList = isEmptyList) { paddingValues ->
         if (shouDialog) {
             InsertGame2(onClick = {
                 scope.launch {
@@ -133,6 +141,7 @@ internal fun TablesScreen2(
 
         when (val state = gamesUiState.value) {
             is Games2PUiState.Success -> {
+                isEmptyList = state.data.isEmpty()
                 scope.launch {
                     gameListState.animateScrollToItem(state.data.size)
                 }
@@ -176,9 +185,11 @@ internal fun TablesScreen3(
     var shouDialog by remember { mutableStateOf(false) }
     val gameListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
+    var isEmptyList by remember { mutableStateOf(false) }
+
     TablesBase(onInsertGameClick = {
         shouDialog = true
-    }) { paddingValues ->
+    }, isEmptyList = isEmptyList) { paddingValues ->
         if (shouDialog) {
             InsertGame3(onClick = {
                 scope.launch {
@@ -193,6 +204,7 @@ internal fun TablesScreen3(
 
         when (val state = gamesUiState.value) {
             is Games3PUiState.Success -> {
+                isEmptyList = state.data.isEmpty()
                 scope.launch {
                     gameListState.animateScrollToItem(state.data.size)
                 }
@@ -237,10 +249,10 @@ internal fun TablesScreen4(
     var shouDialog by remember { mutableStateOf(false) }
     val gameListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
-
+    var isEmptyList by remember { mutableStateOf(false) }
     TablesBase(onInsertGameClick = {
         shouDialog = true
-    }) { paddingValues ->
+    }, isEmptyList = isEmptyList) { paddingValues ->
         if (shouDialog) {
             InsertGame4(onClick = {
                 scope.launch {
@@ -255,6 +267,7 @@ internal fun TablesScreen4(
 
         when (val state = gamesUiState.value) {
             is Games4PUiState.Success -> {
+                isEmptyList = state.data.isEmpty()
                 LazyColumn(
                     contentPadding = paddingValues,
                     modifier = Modifier.fillMaxSize().padding(16.dp),
@@ -300,10 +313,10 @@ internal fun TablesScreenGroups(viewModel: Game2GroupsViewModel) {
     var shouDialog by remember { mutableStateOf(false) }
     val gameListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
-
+    var isEmptyList by remember { mutableStateOf(false) }
     TablesBase(onInsertGameClick = {
         shouDialog = true
-    }) { paddingValues ->
+    }, isEmptyList = isEmptyList) { paddingValues ->
         if (shouDialog) {
             InsertGame2Groups(onClick = { game ->
                 scope.launch {
@@ -319,6 +332,7 @@ internal fun TablesScreenGroups(viewModel: Game2GroupsViewModel) {
 
         when (val state = gamesUiState.value) {
             is Games2GroupsUiState.Success -> {
+                isEmptyList = state.data.isEmpty()
                 scope.launch {
                     gameListState.animateScrollToItem(state.data.size)
                 }
@@ -458,12 +472,14 @@ private fun TableTextAtom(text: String, modifier: Modifier = Modifier) {
 
 @Composable
 private fun TablesBase(
-    onInsertGameClick: () -> Unit, content: @Composable (PaddingValues) -> Unit
+    onInsertGameClick: () -> Unit,
+    isEmptyList: Boolean,
+    content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold(floatingActionButton = {
         InsertFloatingActionButton(onClick = {
             onInsertGameClick()
-        }, modifier = Modifier)
+        }, animate = isEmptyList, modifier = Modifier)
     }, containerColor = Color.Transparent) { paddingValues ->
         content(paddingValues)
     }
@@ -471,12 +487,32 @@ private fun TablesBase(
 }
 
 @Composable
-fun InsertFloatingActionButton(onClick: () -> Unit, modifier: Modifier) {
+fun InsertFloatingActionButton(
+    onClick: () -> Unit,
+    animate: Boolean = false,
+    modifier: Modifier = Modifier
+) {
+    val scale by if (animate) {
+        rememberInfiniteTransition().animateFloat(
+            initialValue = 1f,
+            targetValue = 1.2f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis = 600, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            )
+        )
+    } else {
+        remember { mutableStateOf(1f) }
+    }
     FloatingActionButton(
-        modifier = modifier,
-        onClick = { onClick() },
+        onClick = onClick,
+        modifier = modifier
+            .scale(scale)
     ) {
-        Icon(Icons.Filled.Add, "Floating action button.")
+        Icon(
+            imageVector = Icons.Filled.Add,
+            contentDescription = "Floating action button"
+        )
     }
 }
 
@@ -506,7 +542,7 @@ fun InsertGame2(
                 onDismissRequest()
             }
         }
-    }) {
+    }, isNewGame = true) {
         Row {
             ShakerTextFieldAtom(
                 value = p1,
@@ -559,7 +595,7 @@ fun InsertGame3(
             )
             onDismissRequest()
         }
-    }) {
+    }, isNewGame = true) {
         Row {
             ShakerTextFieldAtom(value = p1, onValueChange = {
                 p1 = it
@@ -610,7 +646,7 @@ fun InsertGame4(
             )
             onDismissRequest()
         }
-    }) {
+    }, isNewGame = true) {
         Row {
             ShakerTextFieldAtom(value = p1, onValueChange = {
                 p1 = it
@@ -654,7 +690,7 @@ fun InsertGame2Groups(
             onDismissRequest()
 
         }
-    }) {
+    }, isNewGame = true) {
         Row {
             ShakerTextFieldAtom(value = p1, onValueChange = {
                 p1 = it
@@ -670,6 +706,7 @@ fun InsertGame2Groups(
 internal fun InsertGameDialogBase(
     onDismissRequest: () -> Unit,
     onClick: (Short) -> Unit,
+    isNewGame: Boolean = false,
     content: (@Composable () -> Unit)? = null
 ) {
     var winningPoints by remember { mutableStateOf(WinningPointsEnum.ONE_HUNDRED_ONE.stringValue) }
@@ -726,7 +763,14 @@ internal fun InsertGameDialogBase(
                         shakerWinningPoints.shake()
                     }
                 }) {
-                    Text(stringResource(Res.string.dialog_fragment_insert_match))
+                    Text(
+                        text = if (isNewGame) {
+                            stringResource(Res.string.dialog_fragment_insert_table)
+                        } else {
+                            stringResource(Res.string.dialog_fragment_insert_match)
+
+                        }
+                    )
                 }
             }
         }
