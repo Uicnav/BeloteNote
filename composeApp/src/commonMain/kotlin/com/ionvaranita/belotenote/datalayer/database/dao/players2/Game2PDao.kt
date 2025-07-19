@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface Game2PDao {
     @Insert
-    suspend fun insert(game2PEntity: Game2PEntity)
+    suspend fun insert(game2PEntity: Game2PEntity) : Long
 
     @Query("select * from Game2PEntity order by dateGame desc")
     fun getGames(): Flow<List<Game2PEntity>>

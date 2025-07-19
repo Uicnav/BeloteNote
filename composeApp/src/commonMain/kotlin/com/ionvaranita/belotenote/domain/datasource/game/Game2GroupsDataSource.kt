@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface Game2GroupsDataSource {
     suspend fun getGame(idGame: Int): Flow<Game2GroupsEntity>
     suspend fun getGames(): Flow<List<Game2GroupsEntity>>
-    suspend fun insertGame(game: Game2GroupsEntity)
+    suspend fun insertGame(game: Game2GroupsEntity) : Int
     suspend fun deleteGame(idGame: Int)
     suspend fun updateStatusFinishedAndScoreName1(
         idGame: Int,

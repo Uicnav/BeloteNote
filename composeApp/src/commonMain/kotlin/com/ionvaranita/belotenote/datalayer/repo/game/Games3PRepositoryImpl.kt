@@ -14,8 +14,8 @@ class Games3PRepositoryImpl(private val datasource: Game3PDataSource) : Games3PR
         return datasource.getGame(idGame)
     }
 
-    override suspend fun insetGame(game: Game3PEntity) {
-        datasource.insertGame(game)
+    override suspend fun insetGame(game: Game3PEntity): Int {
+        return datasource.insertGame(game)
     }
 
     override suspend fun deleteGame(idGame: Int) {

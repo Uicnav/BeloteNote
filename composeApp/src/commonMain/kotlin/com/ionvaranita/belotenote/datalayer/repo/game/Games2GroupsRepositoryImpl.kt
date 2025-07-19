@@ -14,8 +14,8 @@ class Games2GroupsRepositoryImpl(private val datasource: Game2GroupsDataSource) 
         return datasource.getGames()
     }
 
-    override suspend fun insetGame(game: Game2GroupsEntity) {
-        datasource.insertGame(game)
+    override suspend fun insetGame(game: Game2GroupsEntity): Int {
+        return datasource.insertGame(game)
     }
 
     override suspend fun deleteGame(idGame: Int) {

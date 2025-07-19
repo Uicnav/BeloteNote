@@ -22,5 +22,5 @@ interface Points3PDao {
     suspend fun delete(idGame: Int): Int
 
     @Delete
-    fun delete(entity: Points3PEntity)
+    suspend fun delete(entity: Points3PEntity)
 }

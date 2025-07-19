@@ -1,6 +1,7 @@
 package com.ionvaranita.belotenote
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -30,8 +31,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import belotenote.composeapp.generated.resources.Res
 import belotenote.composeapp.generated.resources.app_name
-import belotenote.composeapp.generated.resources.belote_backround
 import belotenote.composeapp.generated.resources.four_players
+import belotenote.composeapp.generated.resources.game
+import belotenote.composeapp.generated.resources.image_background_dark
+import belotenote.composeapp.generated.resources.image_background_light
+import belotenote.composeapp.generated.resources.tables_list
 import belotenote.composeapp.generated.resources.three_players
 import belotenote.composeapp.generated.resources.two_players
 import belotenote.composeapp.generated.resources.two_vs_two
@@ -44,6 +48,7 @@ import com.ionvaranita.belotenote.datalayer.datasource.game.Game4PDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.datasource.match.Points2GroupsDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.datasource.match.Points2PDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.datasource.match.Points3PDataSourceImpl
+import com.ionvaranita.belotenote.datalayer.datasource.match.Points4PDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.repo.game.Games2GroupsRepositoryImpl
 import com.ionvaranita.belotenote.datalayer.repo.game.Games2PRepositoryImpl
 import com.ionvaranita.belotenote.datalayer.repo.game.Games3PRepositoryImpl
@@ -51,6 +56,7 @@ import com.ionvaranita.belotenote.datalayer.repo.game.Games4PRepositoryImpl
 import com.ionvaranita.belotenote.datalayer.repo.match.Points2GroupsRepositoryImpl
 import com.ionvaranita.belotenote.datalayer.repo.match.Points2PRepositoryImpl
 import com.ionvaranita.belotenote.datalayer.repo.match.Points3PRepositoryImpl
+import com.ionvaranita.belotenote.datalayer.repo.match.Points4PRepositoryImpl
 import com.ionvaranita.belotenote.domain.usecase.game.delete.DeleteGame2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.delete.DeleteGame2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.delete.DeleteGame3PUseCase
@@ -58,6 +64,7 @@ import com.ionvaranita.belotenote.domain.usecase.game.delete.DeleteGame4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGame2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGame2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGame3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.get.GetGame4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGames2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGames2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGames3PUseCase
@@ -69,28 +76,38 @@ import com.ionvaranita.belotenote.domain.usecase.game.insert.InsertGame4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateOnlyStatusGame2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateOnlyStatusGame2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateOnlyStatusGame3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateOnlyStatusGame4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreGame2GroupsName1UseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreGame2GroupsName2UseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName1Game2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName1Game3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName1Game4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName2Game2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName2Game3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName2Game4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName3Game3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName3Game4PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusScoreName4Game4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusWinningPointsGame2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusWinningPointsGame2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusWinningPointsGame3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.game.update.UpdateStatusWinningPointsGame4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteAllPoints2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteAllPoints2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteAllPoints3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteAllPoints4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteLastRowPoints2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteLastRowPoints2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteLastRowPoints3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteLastRowPoints4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetPoints2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetPoints2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetPoints3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.match.get.GetPoints4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.insert.InsertPoints2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.insert.InsertPoints2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.insert.InsertPoints3PUseCase
+import com.ionvaranita.belotenote.domain.usecase.match.insert.InsertPoints4PUseCase
 import com.ionvaranita.belotenote.ui.HomeScreen
 import com.ionvaranita.belotenote.ui.LocalNavHostController
 import com.ionvaranita.belotenote.ui.match.MatchScreen2
@@ -108,6 +125,7 @@ import com.ionvaranita.belotenote.ui.viewmodel.game.Game4PViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.match.Match2GroupsViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.match.Match2PPViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.match.Match3PPViewModel
+import com.ionvaranita.belotenote.ui.viewmodel.match.Match4PPViewModel
 import com.ionvaranita.belotenote.utils.BeloteTheme
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.painterResource
@@ -124,7 +142,9 @@ fun App(appDatabase: AppDatabase) {
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
                 Image(
-                    painter = painterResource(Res.drawable.belote_backround),
+                    painter = if (isSystemInDarkTheme()) painterResource(Res.drawable.image_background_dark) else painterResource(
+                        Res.drawable.image_background_light
+                    ),
                     contentDescription = "",
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.FillBounds
@@ -137,10 +157,9 @@ fun App(appDatabase: AppDatabase) {
                     mutableStateOf(navController.currentDestination?.route)
                 }
                 LaunchedEffect(navController) {
-                    navController.addOnDestinationChangedListener { _, _, backStackEntry ->
+                    navController.addOnDestinationChangedListener { _, _, _ ->
                         canNavigateBack = navController.previousBackStackEntry != null
                         currentRoute = navController.currentDestination?.route
-                        println("Current route : =========== $currentRoute")
                     }
                 }
                 Scaffold(
@@ -309,8 +328,52 @@ fun App(appDatabase: AppDatabase) {
                             MatchScreen3(viewModel = match3PPViewModel)
                         }
                         composable<Match4Dest> {
-                            val args = it.toRoute<Match4Dest>()
-                            MatchScreen4(idGame = args.idGame)
+                            val idGame = it.toRoute<Match3Dest>().idGame
+
+                            val repositoryGame =
+                                Games4PRepositoryImpl(Game4PDataSourceImpl(appDatabase.game4PDao()))
+                            val repositoryPoints =
+                                Points4PRepositoryImpl(Points4PDataSourceImpl(appDatabase.points4PDao()))
+                            val getGameUseCase = GetGame4PUseCase(repositoryGame)
+                            val getPointsUseCase = GetPoints4PUseCase(repositoryPoints)
+                            val insertPointsUseCase = InsertPoints4PUseCase(repositoryPoints)
+                            val deleteLastRowUseCase =
+                                DeleteLastRowPoints4PUseCase(repositoryPoints)
+
+                            val updateStatusScoreName1UseCase =
+                                UpdateStatusScoreName1Game4PUseCase(repositoryGame)
+                            val updateStatusScoreName2UseCase =
+                                UpdateStatusScoreName2Game4PUseCase(repositoryGame)
+
+                            val updateStatusScoreName3UseCase =
+                                UpdateStatusScoreName3Game4PUseCase(repositoryGame)
+
+                            val updateStatusScoreName4UseCase =
+                                UpdateStatusScoreName4Game4PUseCase(repositoryGame)
+
+                            val updateStatusWinningPointsUseCase =
+                                UpdateStatusWinningPointsGame4PUseCase(repositoryGame)
+                            val updateOnlyStatusUseCase =
+                                UpdateOnlyStatusGame4PUseCase(repositoryGame)
+                            val deleteAllPointsUseCase = DeleteAllPoints4PUseCase(repositoryPoints)
+
+                            val match4PPViewModel = viewModel {
+                                Match4PPViewModel(
+                                    idGame,
+                                    getGameUseCase,
+                                    getPointsUseCase,
+                                    insertPointsUseCase,
+                                    deleteLastRowUseCase,
+                                    updateStatusScoreName1UseCase,
+                                    updateStatusScoreName2UseCase,
+                                    updateStatusScoreName3UseCase,
+                                    updateStatusScoreName4UseCase,
+                                    updateStatusWinningPointsUseCase,
+                                    updateOnlyStatusUseCase,
+                                    deleteAllPointsUseCase
+                                )
+                            }
+                            MatchScreen4(viewModel = match4PPViewModel)
                         }
                         composable<MatchGroupsDest> {
                             val idGame = it.toRoute<MatchGroupsDest>().idGame
@@ -390,28 +453,51 @@ fun BeloteAppBar(
 
 @Composable
 private inline fun ScreenTitle(currentRoute: String?) {
+    val tablesList = stringResource(Res.string.tables_list)
+    val game = stringResource(Res.string.game)
+    val twoPlayers = stringResource(Res.string.two_players)
+    val threePlayers = stringResource(Res.string.three_players)
+    val fourPlayers = stringResource(Res.string.four_players)
+    val twoVsTwo = stringResource(Res.string.two_vs_two)
     val text = when (currentRoute) {
         HomeDest::class.qualifiedName -> {
             stringResource(Res.string.app_name)
         }
 
-        Match2Dest::class.qualifiedName + "/{idGame}", Games2Dest::class.qualifiedName -> {
-            stringResource(Res.string.two_players)
+        Games2Dest::class.qualifiedName -> {
+             "$tablesList $twoPlayers"
 
         }
 
-        Match3Dest::class.qualifiedName + "/{idGame}", Games3Dest::class.qualifiedName -> {
-            stringResource(Res.string.three_players)
+        Match2Dest::class.qualifiedName + "/{idGame}"->{
+            "$game $twoPlayers"
 
         }
 
-        Match4Dest::class.qualifiedName + "/{idGame}", Games4Dest::class.qualifiedName -> {
-            stringResource(Res.string.four_players)
+        Games3Dest::class.qualifiedName -> {
+            "$tablesList $threePlayers"
+
 
         }
 
-        MatchGroupsDest::class.qualifiedName + "/{idGame}", GamesGroupsDest::class.qualifiedName -> {
-            stringResource(Res.string.two_vs_two)
+        Match3Dest::class.qualifiedName + "/{idGame}" -> {
+            "$game $threePlayers"
+        }
+        Games4Dest::class.qualifiedName -> {
+            "$tablesList $fourPlayers"
+
+
+        }
+        Match4Dest::class.qualifiedName + "/{idGame}"-> {
+            "$game $fourPlayers"
+        }
+
+        GamesGroupsDest::class.qualifiedName -> {
+            "$tablesList $twoVsTwo"
+        }
+
+        MatchGroupsDest::class.qualifiedName + "/{idGame}"->{
+            "$game $twoVsTwo"
         }
 
         else -> {

@@ -2,12 +2,13 @@ package com.ionvaranita.belotenote.datalayer.repo.match
 
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.Points2PEntity
 import com.ionvaranita.belotenote.domain.datasource.match.Points2PDataSource
+import com.ionvaranita.belotenote.domain.model.Points2PUi
 import com.ionvaranita.belotenote.domain.repo.match.Points2PRepository
 import kotlinx.coroutines.flow.Flow
 
 class Points2PRepositoryImpl(private val datasource: Points2PDataSource) : Points2PRepository {
-    override suspend fun insert(entity: Points2PEntity): Long {
-        return datasource.insert(entity)
+    override suspend fun insert(entity: Points2PUi): Long {
+        return datasource.insert(entity.toDataClass())
     }
 
     override fun getPoints(idGame: Int): Flow<List<Points2PEntity>> {

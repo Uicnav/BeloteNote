@@ -1,10 +1,11 @@
 package com.ionvaranita.belotenote.domain.repo.match
 
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.Points2PEntity
+import com.ionvaranita.belotenote.domain.model.Points2PUi
 import kotlinx.coroutines.flow.Flow
 
 interface Points2PRepository {
-    suspend fun insert(entity: Points2PEntity): Long
+    suspend fun insert(entity: Points2PUi): Long
 
     fun getPoints(idGame: Int): Flow<List<Points2PEntity>>
 

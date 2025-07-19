@@ -27,7 +27,7 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 @Composable
 fun HomeScreen(onClick: (Any) -> Unit) {
     Box(modifier = Modifier.fillMaxSize()) {
-        Column(verticalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxSize()) {
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxSize()) {
             MainButton(gamePath = GamePath.TWO, onClick = {
                 onClick(Games2Dest)
             })
@@ -48,7 +48,7 @@ fun HomeScreen(onClick: (Any) -> Unit) {
 private fun ColumnScope.MainButton(gamePath: GamePath,onClick: () -> Unit) {
     Button(onClick = {
         onClick()
-    }, modifier = Modifier.fillMaxWidth().weight(1F).padding(16.dp).alpha(GLOBAL_ALPHA), shape = RoundedCornerShape(20.dp)) {
+    }, modifier = Modifier.fillMaxWidth().weight(1F).padding(4.dp).alpha(GLOBAL_ALPHA), shape = RoundedCornerShape(20.dp)) {
         Text(text = gamePath.title, fontSize = 64.sp, fontWeight = FontWeight.Bold)
     }
 }

@@ -2,10 +2,7 @@ package com.ionvaranita.belotenote.ui.viewmodel.game
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ionvaranita.belotenote.datalayer.database.AppDatabase
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.Game2PEntity
-import com.ionvaranita.belotenote.datalayer.datasource.game.Game2PDataSourceImpl
-import com.ionvaranita.belotenote.datalayer.repo.game.Games2PRepositoryImpl
 import com.ionvaranita.belotenote.domain.model.Game2PUi
 import com.ionvaranita.belotenote.domain.usecase.game.delete.DeleteGame2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGames2PUseCase
@@ -20,7 +17,7 @@ import kotlinx.coroutines.launch
 class Game2PViewModel(private val getGamesUseCase: GetGames2PUseCase, private val insertGameUseCase: InsertGame2PUseCase, private val deleteGameUseCase: DeleteGame2PUseCase) : ViewModel() {
 
     // Backing property to avoid state updates from other classes
-    private val _uiState = MutableStateFlow(Games2PUiState.Success(emptyList()))
+    private val _uiState = MutableStateFlow<Games2PUiState>(Games2PUiState.Loading)
 
     // The UI collects from this StateFlow to get its state updates
     val uiState: StateFlow<Games2PUiState> = _uiState
@@ -31,8 +28,8 @@ class Game2PViewModel(private val getGamesUseCase: GetGames2PUseCase, private va
     }
 
     //TODO for testing coroutine
-    fun insertGame(game: Game2PEntity, dispatcher: CoroutineDispatcher = Dispatchers.IO) = viewModelScope.launch(dispatcher) {
-        insertGameUseCase.execute(game)
+    suspend fun insertGame(game: Game2PEntity): Int {
+        return insertGameUseCase.execute(game)
     }
 
     fun deleteGame(idGame: Int, dispatcher: CoroutineDispatcher = Dispatchers.IO) = viewModelScope.launch(dispatcher) {
@@ -44,7 +41,8 @@ class Game2PViewModel(private val getGamesUseCase: GetGames2PUseCase, private va
     }
 }
 
-sealed class Games2PUiState {
-    data class Success(val data: List<Game2PUi>) : Games2PUiState()
-    data class Error(val exception: Throwable) : Games2PUiState()
+sealed interface Games2PUiState {
+    object Loading : Games2PUiState
+    data class Success(val data: List<Game2PUi>) : Games2PUiState
+    data class Error(val exception: Throwable) : Games2PUiState
 }

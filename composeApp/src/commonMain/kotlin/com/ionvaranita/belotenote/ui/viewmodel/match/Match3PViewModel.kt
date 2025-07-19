@@ -45,9 +45,9 @@ class Match3PPViewModel(
         getMatchData()
     }
 
-    var countBoltP1 = 0
-    var countBoltP2 = 0
-    var countBoltP3 = 0
+    private var countBoltP1 = 0
+    private var countBoltP2 = 0
+    private var countBoltP3 = 0
 
     private var scoreName1 by Delegates.notNull<Short>()
     private var scoreName2 by Delegates.notNull<Short>()
@@ -66,6 +66,13 @@ class Match3PPViewModel(
                 getGameUseCase.execute(idGame),
                 getPointsUseCase.execute(idGame),
             ) { game, points ->
+                lastPoints = points.lastOrNull()?.copy() ?: Points3PUi(
+                    idGame = idGame,
+                    pointsP1 = 0.toString(),
+                    pointsP2 = 0.toString(),
+                    pointsP3 = 0.toString(),
+                    pointsGame = 0.toString()
+                )
                 countBoltP1 = 0
                 countBoltP2 = 0
                 countBoltP3 = 0
@@ -94,13 +101,7 @@ class Match3PPViewModel(
                         ++countBoltP3
                     }
                 }
-                lastPoints = points.lastOrNull() ?: Points3PUi(
-                    idGame = idGame,
-                    pointsP1 = 0.toString(),
-                    pointsP2 = 0.toString(),
-                    pointsP3 = 0.toString(),
-                    pointsGame = 0.toString()
-                )
+
                 MatchData3P(game = game, points = points)
             }.catch { exception ->
                 _uiState.value = MatchUiState.Error(exception)
@@ -115,51 +116,50 @@ class Match3PPViewModel(
     private var isMinus10P2 = false
     private var isMinus10P3 = false
 
-    private var minus10Inserted = false
-
 
     override fun <T> insertPoints(
         model: T, dispatcher: CoroutineDispatcher
     ) {
-        val model = model as Points3PUi
+        val modelPoints = model as Points3PUi
         viewModelScope.launch(dispatcher) {
-            model.idGame = idGame
-            if (model.pointsP1 == BOLT) {
+            modelPoints.idGame = idGame
+            if (modelPoints.pointsP1 == BOLT) {
+                modelPoints.pointsP1 = lastPoints.pointsP1
                 if (!isMinus10P1 && countBoltP1 != 0 && countBoltP1 % 2 == 0) {
                     isMinus10P1 = true
-                    model.pointsP1 = "-10"
-                    minus10Inserted = true
+                    modelPoints.pointsP1 = "-10"
                 } else {
                     isMinus10P1 = false
-                    model.isBoltP1 = true
+                    modelPoints.isBoltP1 = true
                 }
             }
-            if (model.pointsP2 == BOLT) {
+            if (modelPoints.pointsP2 == BOLT) {
+                modelPoints.pointsP2 = lastPoints.pointsP2
                 if (!isMinus10P2 && countBoltP2 != 0 && countBoltP2 % 2 == 0) {
                     isMinus10P2 = true
-                    model.pointsP2 = "-10"
+                    modelPoints.pointsP2 = "-10"
                 } else {
                     isMinus10P2 = false
-                    model.isBoltP2 = true
+                    modelPoints.isBoltP2 = true
                 }
             }
-            if (model.pointsP3 == BOLT) {
+            if (modelPoints.pointsP3 == BOLT) {
+                modelPoints.pointsP3 = lastPoints.pointsP3
                 if (!isMinus10P3 && countBoltP3 != 0 && countBoltP3 % 2 == 0) {
                     isMinus10P3 = true
-                    model.pointsP3 = "-10"
+                    modelPoints.pointsP3 = "-10"
                 } else {
                     isMinus10P3 = false
-                    model.isBoltP3 = true
+                    modelPoints.isBoltP3 = true
                 }
             }
-            val updatedModel = model.add(lastPoints.toDataClass())
+            val updatedModel = modelPoints.add(lastPoints)
 
-            val isToExtend = checkIsExtended(updatedModel.toUiModel())
+            val isToExtend = checkIsExtended(updatedModel)
             if (isToExtend) {
                 updateOnlyStatusUseCase.execute(
                     params = UpdateOnlyStatusGameParams(
-                        idGame = idGame,
-                        statusGame = GameStatus.EXTENDED.id
+                        idGame = idGame, statusGame = GameStatus.EXTENDED.id
                     )
                 )
             }

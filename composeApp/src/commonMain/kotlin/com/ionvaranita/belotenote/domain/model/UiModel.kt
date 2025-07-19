@@ -9,6 +9,7 @@ import com.ionvaranita.belotenote.datalayer.database.entity.players3.Points3PEnt
 import com.ionvaranita.belotenote.datalayer.database.entity.players4.Game4PEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players4.Points4PEntity
 import com.ionvaranita.belotenote.ui.match.BOLT
+import com.ionvaranita.belotenote.ui.match.MINUS_10
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -60,7 +61,7 @@ data class Game3PUi(
 data class Game4PUi(
     val idGame: Int,
     val statusGame: Byte,
-    val winnerPoints: Short,
+    val winningPoints: Short,
     val name1: String,
     val name2: String,
     val name3: String,
@@ -74,7 +75,7 @@ data class Game4PUi(
         return Game4PEntity(
             idGame = this.idGame,
             statusGame = this.statusGame,
-            winnerPoints = this.winnerPoints,
+            winningPoints = this.winningPoints,
             name1 = this.name1,
             name2 = this.name2,
             name3 = this.name3,
@@ -106,25 +107,28 @@ data class Game2GroupsUi(
 data class Points2PUi(
     val id: Int = 0,
     var idGame: Int = 0,
-    var pointsMe: String,
-    var pointsYouS: String,
+    var pointsP1: String,
+    var pointsP2: String,
     val pointsGame: String,
-    var isBoltMe: Boolean = false,
-    var isBoltYouS: Boolean = false
+    var isBoltP1: Boolean = false,
+    var isBoltP2: Boolean = false
 ) {
-    fun add(lastPoints: Points2PEntity): Points2PEntity {
+    fun add(lastPoints: Points2PUi): Points2PUi {
+        return this.copy(
+            pointsP1 = (this.pointsP1.toShortCustom() + (if (isBoltP1) 0 else lastPoints.pointsP1.toShortCustom())).toString(),
+            pointsP2 = (this.pointsP2.toShortCustom() + (if (isBoltP2) 0 else lastPoints.pointsP2.toShortCustom())).toString(),
+        )
+    }
+
+    fun toDataClass(): Points2PEntity {
         return Points2PEntity(
             id = this.id,
             idGame = this.idGame,
-            pointsMe = (this.pointsMe.toShortCustom() + lastPoints.pointsMe).toShort(),
-            pointsYouS = (this.pointsYouS.toShortCustom() + lastPoints.pointsYouS).toShort(),
-            pointsGame = this.pointsGame.toShort(),
-            isBoltMe = this.isBoltMe,
-            isBoltYouS = this.isBoltYouS,
+            pointsP1 = this.pointsP1.toShortCustom(),
+            pointsP2 = this.pointsP2.toShortCustom(), pointsGame = this.pointsGame.toShortCustom(),
+            isBoltP1 = this.isBoltP1,
+            isBoltP2 = this.isBoltP2
         )
-    }
-    fun toDataClass(): Points2PEntity {
-        return Points2PEntity(id = this.id, idGame = this.idGame, pointsMe = this.pointsMe.toShortCustom(), pointsYouS = this.pointsYouS.toShortCustom(), pointsGame = this.pointsGame.toShort(), isBoltMe = this.isBoltMe, isBoltYouS = this.isBoltYouS)
     }
 }
 
@@ -139,44 +143,59 @@ data class Points3PUi(
     var isBoltP2: Boolean = false,
     var isBoltP3: Boolean = false
 ) {
-    fun add(lastPoints: Points3PEntity): Points3PEntity {
+    fun add(lastPoints: Points3PUi): Points3PUi {
+        return this.copy(
+            pointsP1 = (this.pointsP1.toShortCustom() + (if (isBoltP1) 0 else lastPoints.pointsP1.toShortCustom())).toString(),
+            pointsP2 = (this.pointsP2.toShortCustom() + (if (isBoltP2) 0 else lastPoints.pointsP2.toShortCustom())).toString(),
+            pointsP3 = (this.pointsP3.toShortCustom() + (if (isBoltP3) 0 else lastPoints.pointsP3.toShortCustom())).toString(),
+        )
+    }
+
+    fun toDataClass(): Points3PEntity {
         return Points3PEntity(
             id = this.id,
             idGame = this.idGame,
-            pointsP1 = (this.pointsP1.toShortCustom() + lastPoints.pointsP1).toShort(),
-            pointsP2 = (this.pointsP2.toShortCustom() + lastPoints.pointsP2).toShort(),
-            pointsP3 = (this.pointsP3.toShortCustom() + lastPoints.pointsP3).toShort(),
-            pointsGame = this.pointsGame.toShort(),
+            pointsP1 = this.pointsP1.toShortCustom(),
+            pointsP2 = this.pointsP2.toShortCustom(),
+            pointsP3 = this.pointsP3.toShortCustom(),
+            pointsGame = this.pointsGame.toShortCustom(),
             isBoltP1 = this.isBoltP1,
             isBoltP2 = this.isBoltP2,
-            isBoltP3 = this.isBoltP3
+            isBoltP3 = isBoltP3
         )
-    }
-    fun toDataClass(): Points3PEntity {
-        return Points3PEntity(id = this.id, idGame = this.idGame, pointsP1 = this.pointsP1.toShortCustom(), pointsP2 = this.pointsP2.toShortCustom(), pointsP3 = this.pointsP3.toShortCustom(), pointsGame = this.pointsGame.toShort(), isBoltP1 = this.isBoltP1, isBoltP2 = this.isBoltP2, isBoltP3 = isBoltP3)
     }
 }
 
 data class Points4PUi(
-    val idGame: Int,
+    val id: Int = 0,
+    var idGame: Int = 0,
     val pointsGame: String,
-    val pointsP1: String,
-    val pointsP2: String,
-    val pointsP3: String,
-    val pointsP4: String,
-    val isBoltP1: Boolean = false,
-    val isBoltP2: Boolean = false,
-    val isBoltP3: Boolean = false,
-    val isBoltP4: Boolean = false
+    var pointsP1: String,
+    var pointsP2: String,
+    var pointsP3: String,
+    var pointsP4: String,
+    var isBoltP1: Boolean = false,
+    var isBoltP2: Boolean = false,
+    var isBoltP3: Boolean = false,
+    var isBoltP4: Boolean = false
 ) {
-    fun add(lastPoints: Points4PEntity): Points4PEntity {
+    fun add(lastPoints: Points4PUi): Points4PUi {
+        return this.copy(
+            pointsP1 = (this.pointsP1.toShortCustom() + (if (isBoltP1) 0 else lastPoints.pointsP1.toShortCustom())).toString(),
+            pointsP2 = (this.pointsP2.toShortCustom() + (if (isBoltP2) 0 else lastPoints.pointsP2.toShortCustom())).toString(),
+            pointsP3 = (this.pointsP3.toShortCustom() + (if (isBoltP3) 0 else lastPoints.pointsP3.toShortCustom())).toString(),
+            pointsP4 = (this.pointsP4.toShortCustom() + (if (isBoltP4) 0 else lastPoints.pointsP4.toShortCustom())).toString(),
+        )
+    }
+
+    fun toDataClass(): Points4PEntity {
         return Points4PEntity(
+            id = this.id,
             idGame = this.idGame,
-            pointsP1 = (this.pointsP1.toShortCustom() + lastPoints.pointsP1).toShort(),
-            pointsP2 = (this.pointsP2.toShortCustom() + lastPoints.pointsP2).toShort(),
-            pointsP3 = (this.pointsP3.toShortCustom() + lastPoints.pointsP3).toShort(),
-            pointsP4 = (this.pointsP4.toShortCustom() + lastPoints.pointsP4).toShort(),
-            pointsGame = this.pointsGame.toShort(),
+            pointsP1 = this.pointsP1.toShortCustom(),
+            pointsP2 = this.pointsP2.toShortCustom(),
+            pointsP3 = this.pointsP3.toShortCustom(),
+            pointsP4 = this.pointsP4.toShortCustom(), pointsGame = this.pointsGame.toShortCustom(),
             isBoltP1 = this.isBoltP1,
             isBoltP2 = this.isBoltP2,
             isBoltP3 = this.isBoltP3,
@@ -189,31 +208,40 @@ data class Points4PUi(
 data class Points2GroupsUi(
     val id: Int = 0,
     var idGame: Int = 0,
-    var pointsWe: String,
-    var pointsYouP: String,
+    var pointsP1: String,
+    var pointsP2: String,
     val pointsGame: String,
-    var isBoltWe: Boolean = false,
-    var isBoltYouP: Boolean = false
+    var isBoltP1: Boolean = false,
+    var isBoltP2: Boolean = false
 ) {
-    fun add(lastPoints: Points2GroupsEntity): Points2GroupsEntity {
-        return Points2GroupsEntity(
-            id = this.id,
-            idGame = this.idGame,
-            pointsWe = (this.pointsWe.toShortCustom() + lastPoints.pointsWe).toShort(),
-            pointsYouP = (this.pointsYouP.toShortCustom() + lastPoints.pointsYouP).toShort(),
-            pointsGame = this.pointsGame.toShort(),
-            isBoltWe = this.isBoltWe,
-            isBoltYouP = this.isBoltYouP
+    fun add(lastPoints: Points2GroupsUi): Points2GroupsUi {
+        return this.copy(
+            pointsP1 = (this.pointsP1.toShortCustom() + (if (isBoltP1) 0 else lastPoints.pointsP1.toShortCustom())).toString(),
+            pointsP2 = (this.pointsP2.toShortCustom() + (if (isBoltP2) 0 else lastPoints.pointsP2.toShortCustom())).toString(),
         )
     }
 
     fun toDataClass(): Points2GroupsEntity {
-        return Points2GroupsEntity(id = this.id, idGame = this.idGame, pointsWe = this.pointsWe.toShortCustom(), pointsYouP = this.pointsYouP.toShortCustom(), pointsGame = this.pointsGame.toShort(), isBoltWe = this.isBoltWe, isBoltYouP = this.isBoltYouP)
+        return Points2GroupsEntity(
+            id = this.id,
+            idGame = this.idGame,
+            pointsP1 = this.pointsP1.toShortCustom(),
+            pointsP2 = this.pointsP2.toShortCustom(),
+            pointsGame = this.pointsGame.toShortCustom(),
+            isBoltP1 = this.isBoltP1,
+            isBoltP2 = this.isBoltP2
+        )
     }
 }
 
 fun String.toShortCustom(): Short {
-    return if (this.isEmpty() || this == BOLT) {
+    return if (this.isEmpty() || this.contains(BOLT)) {
+        0
+    } else this.toShort()
+}
+
+fun String.toShortCustomCalculated(): Short {
+    return if (this.isEmpty() || this.contains(BOLT) || this == MINUS_10) {
         0
     } else this.toShort()
 }
