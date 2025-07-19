@@ -735,9 +735,7 @@ internal fun InsertGameDialogBase(
 ) {
     var winningPoints by remember { mutableStateOf(WinningPointsEnum.ONE_HUNDRED_ONE.stringValue) }
     val shakerWinningPoints by remember { mutableStateOf(TextFieldShaker()) }
-    Dialog(onDismissRequest = { onDismissRequest() }) { // Draw a rectangle shape with rounded corners inside the dialog
-
-
+    Dialog(onDismissRequest = { onDismissRequest() }) {
         Column(
             modifier = Modifier.wrapContentSize().background(
                     MaterialTheme.colorScheme.background, shape = RoundedCornerShape(16.dp)
