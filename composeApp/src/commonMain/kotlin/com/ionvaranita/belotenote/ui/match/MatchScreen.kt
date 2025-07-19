@@ -1487,11 +1487,8 @@ private fun manageUserInputKey(
         } else {
             onInputTextChanged(inputText.dropLast(1))
         }
-    } else if (inputKey == MINUS_10 || inputKey == BOLT) {
+    } else if (inputKey == MINUS_10 || inputKey == BOLT ||inputKey == ZERO && inputText.isEmpty()) {
         onInputTextChanged(inputKey)
-
-    } else if (inputKey == ZERO && inputText.isEmpty()) {
-        onInputTextChanged(inputText)
     } else {
         if (inputText.length < 3 || inputText == MINUS_10) {
             val text = if (inputText == ZERO || inputText == BOLT || inputText == MINUS_10) {
