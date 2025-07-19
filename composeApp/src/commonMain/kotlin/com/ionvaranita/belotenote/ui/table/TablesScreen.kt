@@ -22,10 +22,10 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -737,13 +737,11 @@ internal fun InsertGameDialogBase(
     val shakerWinningPoints by remember { mutableStateOf(TextFieldShaker()) }
     Dialog(onDismissRequest = { onDismissRequest() }) { // Draw a rectangle shape with rounded corners inside the dialog
 
-        Card(
-            modifier = Modifier.fillMaxWidth().height(375.dp).padding(16.dp)
-                .background(MaterialTheme.colorScheme.background),
-            shape = RoundedCornerShape(16.dp),
-        ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
+
+        Column(
+            modifier = Modifier.wrapContentSize().background(
+                    MaterialTheme.colorScheme.background, shape = RoundedCornerShape(16.dp)
+                ).padding(16.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -797,7 +795,6 @@ internal fun InsertGameDialogBase(
                     )
                 }
             }
-        }
     }
 }
 
