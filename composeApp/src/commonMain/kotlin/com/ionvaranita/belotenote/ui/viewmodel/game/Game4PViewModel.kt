@@ -18,7 +18,7 @@ class Game4PViewModel(private val getGamesUseCase: GetGames4PUseCase, private va
 
 
     // Backing property to avoid state updates from other classes
-    private val _uiState = MutableStateFlow(Games4PUiState.Success(emptyList()))
+    private val _uiState = MutableStateFlow<Games4PUiState>(Games4PUiState.Loading)
 
     // The UI collects from this StateFlow to get its state updates
     val uiState: StateFlow<Games4PUiState> = _uiState

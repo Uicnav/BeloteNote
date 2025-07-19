@@ -39,7 +39,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -91,6 +90,7 @@ import com.ionvaranita.belotenote.domain.model.Points3PUi
 import com.ionvaranita.belotenote.domain.model.Points4PUi
 import com.ionvaranita.belotenote.domain.model.toShortCustom
 import com.ionvaranita.belotenote.domain.model.toShortCustomCalculated
+import com.ionvaranita.belotenote.ui.table.CenteredCircularProgressIndicator
 import com.ionvaranita.belotenote.ui.table.GameCard
 import com.ionvaranita.belotenote.ui.table.InsertFloatingActionButton
 import com.ionvaranita.belotenote.ui.table.InsertGameDialogBase
@@ -385,7 +385,7 @@ internal fun MatchScreen2(viewModel: ViewModelBase) {
             }
 
             MatchUiState.Loading -> {
-                CircularProgressIndicator()
+                CenteredCircularProgressIndicator()
             }
         }
 
@@ -689,7 +689,7 @@ internal fun MatchScreen3(viewModel: ViewModelBase) {
             }
 
             MatchUiState.Loading -> {
-                CircularProgressIndicator()
+                CenteredCircularProgressIndicator()
             }
         }
 
@@ -1078,7 +1078,7 @@ internal fun MatchScreen4(viewModel: ViewModelBase) {
             }
 
             MatchUiState.Loading -> {
-                CircularProgressIndicator()
+                CenteredCircularProgressIndicator()
             }
         }
 
@@ -1355,7 +1355,7 @@ internal fun MatchScreen2Groups(viewModel: ViewModelBase) {
             }
 
             MatchUiState.Loading -> {
-                CircularProgressIndicator()
+                CenteredCircularProgressIndicator()
             }
         }
 

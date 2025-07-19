@@ -175,7 +175,7 @@ internal fun TablesScreen2(
             }
 
             Games2PUiState.Loading -> {
-                CircularProgressIndicator()
+                CenteredCircularProgressIndicator()
             }
         }
     }
@@ -242,7 +242,7 @@ internal fun TablesScreen3(
             is Games3PUiState.Error -> { // Handle error
             }
 
-            Games3PUiState.Loading -> CircularProgressIndicator()
+            Games3PUiState.Loading -> CenteredCircularProgressIndicator()
 
         }
     }
@@ -311,7 +311,7 @@ internal fun TablesScreen4(
             is Games4PUiState.Error -> { // Handle error
             }
 
-            Games4PUiState.Loading -> CircularProgressIndicator()
+            Games4PUiState.Loading -> CenteredCircularProgressIndicator()
 
         }
     }
@@ -376,9 +376,20 @@ internal fun TablesScreenGroups(viewModel: Game2GroupsViewModel) {
             }
 
             Games2GroupsUiState.Loading -> {
-                CircularProgressIndicator()
+                CenteredCircularProgressIndicator()
             }
         }
+    }
+}
+
+@Composable
+fun CenteredCircularProgressIndicator(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
     }
 }
 

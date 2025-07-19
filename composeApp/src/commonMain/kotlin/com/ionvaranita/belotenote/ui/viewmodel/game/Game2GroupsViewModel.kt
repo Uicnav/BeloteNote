@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 class Game2GroupsViewModel(private val getGamesUseCase: GetGames2GroupsUseCase ,private val insertGameUseCase: InsertGame2GroupsUseCase,private val deleteGameUseCase: DeleteGame2GroupsUseCase ) : ViewModel() {
 
     // Backing property to avoid state updates from other classes
-    private val _uiState = MutableStateFlow(Games2GroupsUiState.Success(emptyList()))
+    private val _uiState = MutableStateFlow<Games2GroupsUiState>(Games2GroupsUiState.Loading)
 
     // The UI collects from this StateFlow to get its state updates
     val uiState: StateFlow<Games2GroupsUiState> = _uiState
