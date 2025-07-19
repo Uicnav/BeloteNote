@@ -26,7 +26,7 @@ class Game2GroupsViewModel(private val getGamesUseCase: GetGames2GroupsUseCase ,
             _uiState.value = Games2GroupsUiState.Success(gameList)
         }
     }
-    //TODO for testing coroutine
+
     suspend fun insertGame(game: Game2GroupsEntity): Int {
         return insertGameUseCase.execute(game)
     }
@@ -40,7 +40,7 @@ class Game2GroupsViewModel(private val getGamesUseCase: GetGames2GroupsUseCase ,
 }
 
 sealed interface Games2GroupsUiState {
-    object Loading : Games2GroupsUiState
+    data object Loading : Games2GroupsUiState
     data class Success(val data: List<Game2GroupsUi>) : Games2GroupsUiState
     data class Error(val exception: Throwable) : Games2GroupsUiState
 }

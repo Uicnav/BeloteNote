@@ -39,7 +39,7 @@ class Game3PViewModel(private val getGamesUseCase: GetGames3PUseCase, private va
 }
 
 sealed interface Games3PUiState {
-    object Loading : Games3PUiState
+    data object Loading : Games3PUiState
     data class Success(val data: List<Game3PUi>) : Games3PUiState
     data class Error(val exception: Throwable) : Games3PUiState
 }

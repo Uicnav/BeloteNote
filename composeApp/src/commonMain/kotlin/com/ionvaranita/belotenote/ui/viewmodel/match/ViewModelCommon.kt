@@ -22,14 +22,14 @@ sealed interface SideEffect {
 data class Winner(val id: Int, val name: String)
 
 sealed interface WinnerResult {
-    object ToContinue : WinnerResult
+    data object ToContinue : WinnerResult
     data class ToFinish(val idWinner: Int) : WinnerResult
     data class ToExtend(val idWinner: Int, val maxPoints: Short) : WinnerResult
     data class ToExtendMandatory(val maxPoints: Short) : WinnerResult
 }
 
 sealed interface MatchUiState {
-    object Loading : MatchUiState
+    data object Loading : MatchUiState
     data class Success<T>(val data: T) : MatchUiState
     data class Error(val exception: Throwable) : MatchUiState
 }

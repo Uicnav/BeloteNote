@@ -28,7 +28,7 @@ class Game4PViewModel(private val getGamesUseCase: GetGames4PUseCase, private va
         }
     }
 
-    suspend fun insertGame(game: Game4PEntity, dispatcher: CoroutineDispatcher = Dispatchers.IO): Int{
+    suspend fun insertGame(game: Game4PEntity): Int{
         return insertGameUseCase.execute(game)
     }
 
@@ -42,7 +42,7 @@ class Game4PViewModel(private val getGamesUseCase: GetGames4PUseCase, private va
 }
 
 sealed interface Games4PUiState {
-    object Loading : Games4PUiState
+    data object Loading : Games4PUiState
     data class Success(val data: List<Game4PUi>) : Games4PUiState
     data class Error(val exception: Throwable) : Games4PUiState
 }

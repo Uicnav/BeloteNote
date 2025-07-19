@@ -27,7 +27,6 @@ class Game2PViewModel(private val getGamesUseCase: GetGames2PUseCase, private va
         }
     }
 
-    //TODO for testing coroutine
     suspend fun insertGame(game: Game2PEntity): Int {
         return insertGameUseCase.execute(game)
     }
@@ -42,7 +41,7 @@ class Game2PViewModel(private val getGamesUseCase: GetGames2PUseCase, private va
 }
 
 sealed interface Games2PUiState {
-    object Loading : Games2PUiState
+    data object Loading : Games2PUiState
     data class Success(val data: List<Game2PUi>) : Games2PUiState
     data class Error(val exception: Throwable) : Games2PUiState
 }
