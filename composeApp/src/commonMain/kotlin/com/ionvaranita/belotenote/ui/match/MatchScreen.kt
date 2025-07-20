@@ -1658,7 +1658,7 @@ private fun Keyboard(
     isPressedGames: Boolean = false, onClick: (String) -> Unit, modifier: Modifier = Modifier
 ) {
     val keyAlpha = if (!isPressedGames) 1f else 0f
-    Column(modifier = modifier.fillMaxWidth().padding(top = 4.dp)) {
+    Column(modifier = modifier.fillMaxWidth().padding(top = 4.dp).background(color = MaterialTheme.colorScheme.background, shape = MaterialTheme.shapes.large)) {
         Row(modifier = Modifier.fillMaxWidth()) {
             KeyAtom(text = ONE, onClick = onClick)
             KeyAtom(text = TWO, onClick = onClick)
@@ -1689,7 +1689,6 @@ private fun Keyboard(
             Card(modifier = modifier.padding(4.dp).fillMaxHeight().weight(1F).clickable {
                 onClick(ADD)
             }, elevation = CardDefaults.cardElevation(4.dp)) {
-
                 AddIcon()
             }
             Card(modifier = modifier.padding(4.dp).fillMaxHeight().weight(1F).clickable {
@@ -1722,9 +1721,9 @@ private const val DELETE = "delete"
 private fun RowScope.KeyAtom(
     text: String, onClick: (String) -> Unit, modifier: Modifier = Modifier
 ) {
-    Card(modifier = modifier.padding(4.dp).weight(1F).clickable {
+    Card(modifier = modifier.clickable {
         onClick(text)
-    }, elevation = CardDefaults.cardElevation(4.dp)) {
+    }.padding(4.dp).weight(1F), elevation = CardDefaults.cardElevation(4.dp)) {
         Text(
             text = text,
             maxLines = 1,
