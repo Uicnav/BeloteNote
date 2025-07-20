@@ -124,9 +124,10 @@ internal fun TablesScreen2(
     val gameListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     var isEmptyList by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
     TablesBase(onInsertGameClick = {
         shouDialog = true
-    }, isEmptyList = isEmptyList) { paddingValues ->
+    }, isEmptyList = isEmptyList, isLoading = isLoading) { paddingValues ->
         if (shouDialog) {
             InsertGame2(onClick = {
                 scope.launch {
@@ -142,6 +143,7 @@ internal fun TablesScreen2(
 
         when (val state = gamesUiState.value) {
             is Games2PUiState.Success -> {
+                isLoading = false
                 isEmptyList = state.data.isEmpty()
                 scope.launch {
                     gameListState.animateScrollToItem(state.data.size)
@@ -172,10 +174,12 @@ internal fun TablesScreen2(
             }
 
             is Games2PUiState.Error -> { // Handle error
+                isLoading = false
             }
 
             Games2PUiState.Loading -> {
                 CenteredCircularProgressIndicator()
+                isLoading = true
             }
         }
     }
@@ -191,10 +195,11 @@ internal fun TablesScreen3(
     val gameListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     var isEmptyList by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
 
     TablesBase(onInsertGameClick = {
         shouDialog = true
-    }, isEmptyList = isEmptyList) { paddingValues ->
+    }, isEmptyList = isEmptyList, isLoading = isLoading) { paddingValues ->
         if (shouDialog) {
             InsertGame3(onClick = {
                 scope.launch {
@@ -209,6 +214,7 @@ internal fun TablesScreen3(
 
         when (val state = gamesUiState.value) {
             is Games3PUiState.Success -> {
+                isLoading = false
                 isEmptyList = state.data.isEmpty()
                 scope.launch {
                     gameListState.animateScrollToItem(state.data.size)
@@ -239,10 +245,14 @@ internal fun TablesScreen3(
                 }
             }
 
-            is Games3PUiState.Error -> { // Handle error
+            is Games3PUiState.Error -> {
+                isLoading = false
             }
 
-            Games3PUiState.Loading -> CenteredCircularProgressIndicator()
+            Games3PUiState.Loading -> {
+                isLoading = true
+                CenteredCircularProgressIndicator()
+            }
 
         }
     }
@@ -258,9 +268,10 @@ internal fun TablesScreen4(
     val gameListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     var isEmptyList by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
     TablesBase(onInsertGameClick = {
         shouDialog = true
-    }, isEmptyList = isEmptyList) { paddingValues ->
+    }, isEmptyList = isEmptyList, isLoading = isLoading) { paddingValues ->
         if (shouDialog) {
             InsertGame4(onClick = {
                 scope.launch {
@@ -275,6 +286,7 @@ internal fun TablesScreen4(
 
         when (val state = gamesUiState.value) {
             is Games4PUiState.Success -> {
+                isLoading = false
                 isEmptyList = state.data.isEmpty()
                 LazyColumn(
                     contentPadding = paddingValues,
@@ -308,10 +320,14 @@ internal fun TablesScreen4(
                 }
             }
 
-            is Games4PUiState.Error -> { // Handle error
+            is Games4PUiState.Error -> {
+            isLoading = false// Handle error
             }
 
-            Games4PUiState.Loading -> CenteredCircularProgressIndicator()
+            Games4PUiState.Loading -> {
+                isLoading = true
+                CenteredCircularProgressIndicator()
+            }
 
         }
     }
@@ -325,9 +341,10 @@ internal fun TablesScreenGroups(viewModel: Game2GroupsViewModel) {
     val gameListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     var isEmptyList by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
     TablesBase(onInsertGameClick = {
         shouDialog = true
-    }, isEmptyList = isEmptyList) { paddingValues ->
+    }, isEmptyList = isEmptyList, isLoading = isLoading) { paddingValues ->
         if (shouDialog) {
             InsertGame2Groups(onClick = { game ->
                 scope.launch {
@@ -343,6 +360,7 @@ internal fun TablesScreenGroups(viewModel: Game2GroupsViewModel) {
 
         when (val state = gamesUiState.value) {
             is Games2GroupsUiState.Success -> {
+                isLoading = false
                 isEmptyList = state.data.isEmpty()
                 scope.launch {
                     gameListState.animateScrollToItem(state.data.size)
@@ -373,9 +391,11 @@ internal fun TablesScreenGroups(viewModel: Game2GroupsViewModel) {
             }
 
             is Games2GroupsUiState.Error -> { // Handle error
+                isLoading = false
             }
 
             Games2GroupsUiState.Loading -> {
+                isLoading = true
                 CenteredCircularProgressIndicator()
             }
         }
@@ -385,7 +405,7 @@ internal fun TablesScreenGroups(viewModel: Game2GroupsViewModel) {
 @Composable
 fun CenteredCircularProgressIndicator(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier
+        modifier = modifier.background(MaterialTheme.colorScheme.background)
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
@@ -498,12 +518,13 @@ private fun TableTextAtom(text: String, modifier: Modifier = Modifier) {
 private fun TablesBase(
     onInsertGameClick: () -> Unit,
     isEmptyList: Boolean,
+    isLoading: Boolean,
     content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold(floatingActionButton = {
         InsertFloatingActionButton(onClick = {
             onInsertGameClick()
-        }, animate = isEmptyList, modifier = Modifier)
+        }, animate = isEmptyList, isLoading = isLoading, modifier = Modifier)
     }, containerColor = Color.Transparent) { paddingValues ->
         content(paddingValues)
     }
@@ -513,6 +534,7 @@ private fun TablesBase(
 @Composable
 fun InsertFloatingActionButton(
     onClick: () -> Unit,
+    isLoading: Boolean = false,
     animate: Boolean = false,
     modifier: Modifier = Modifier
 ) {
@@ -529,7 +551,9 @@ fun InsertFloatingActionButton(
         remember { mutableStateOf(1f) }
     }
     FloatingActionButton(
-        onClick = onClick,
+        onClick = {
+            if (!isLoading)onClick()
+        },
         modifier = modifier
             .scale(scale)
     ) {

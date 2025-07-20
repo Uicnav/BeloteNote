@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -367,8 +369,8 @@ internal fun MatchScreen2(viewModel: ViewModelBase) {
                                         inputText = pointsP2, inputKey = inputKey
                                     ) { text ->
                                         pointsP2 = text
-                                        if (inputKey.equals(MINUS_10) || inputKey.equals(BOLT)) {
-                                            if (pointsP1.equals(MINUS_10) || pointsP1.equals(BOLT)) {
+                                        if (inputKey == MINUS_10 || inputKey == BOLT) {
+                                            if (pointsP1 == MINUS_10 || pointsP1 == BOLT) {
                                                 pointsP1 = ""
                                             }
                                         }
@@ -704,7 +706,7 @@ internal fun MatchScreen3(viewModel: ViewModelBase) {
                                             if (pointsP1 == MINUS_10 || pointsP1 == BOLT) {
                                                 pointsP1 = ""
                                             }
-                                            if (pointsP2 == MINUS_10 || pointsP2.equals(BOLT)) {
+                                            if (pointsP2 == MINUS_10 || pointsP2 == BOLT) {
                                                 pointsP2 = ""
                                             }
                                         }
@@ -1504,32 +1506,38 @@ private fun manageUserInputKey(
 }
 
 @Composable
-fun ColumnScope.AddIcon(modifier: Modifier = Modifier) {
+fun AddIcon(modifier: Modifier = Modifier) {
     val color = if (isSystemInDarkTheme()) Color.White else Color.Black
-    Icon(
-        imageVector = Icons.Filled.Add,
-        contentDescription = "Add Icon",
-        modifier = modifier
-            .padding(8.dp)
-            .size(24.dp)
-            .align(Alignment.CenterHorizontally),
-        tint = color
-    )
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Add,
+            contentDescription = "Add Icon",
+            tint = color,
+            modifier = Modifier.size(32.dp)
+        )
+    }
+
 }
 
 
 @Composable
-fun ColumnScope.BackspaceIcon(modifier: Modifier = Modifier) {
+fun BackspaceIcon(modifier: Modifier = Modifier) {
     val color = if (isSystemInDarkTheme()) Color.White else Color.Black
-    Icon(
-        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-        contentDescription = "Backspace Icon",
-        modifier = modifier
-            .padding(8.dp)
-            .size(24.dp)
-            .align(Alignment.CenterHorizontally),
-        tint = color
-    )
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+            contentDescription = "Backspace Icon",
+            tint = color,
+            modifier = Modifier.size(32.dp)
+        )
+    }
+
 }
 
 
@@ -1548,11 +1556,16 @@ private fun MatchWrapper(
 }
 
 @Composable
-private fun RowScope.PointsTextAtom(text: String, isBody: Boolean = false, modifier: Modifier = Modifier) {
+private fun RowScope.PointsTextAtom(
+    text: String, isBody: Boolean = false, modifier: Modifier = Modifier
+) {
+    val textColor = if (isSystemInDarkTheme()) Color.White else Color.Black
+
     Text(
         text = text,
         modifier = modifier.padding(8.dp).weight(1F).align(Alignment.CenterVertically),
         textAlign = TextAlign.Center,
+        color = textColor,
         style = if (isBody) MaterialTheme.typography.bodyMedium
         else MaterialTheme.typography.titleMedium,
     )
@@ -1660,19 +1673,26 @@ private fun Keyboard(
             KeyAtom(text = NINE, onClick = onClick)
             KeyAtom(text = ZERO, onClick = onClick)
         }
-        Row(modifier = Modifier.fillMaxWidth()) {
-            KeyAtom(text = BOLT, onClick = onClick, modifier = Modifier.graphicsLayer {
+        Row(modifier = Modifier.fillMaxWidth().height(64.dp)) {
+            KeyAtom(
+                text = BOLT,
+                onClick = onClick,
+                modifier = modifier.fillMaxHeight().graphicsLayer {
                 alpha = keyAlpha
             })
-            KeyAtom(text = MINUS_10, onClick = onClick, modifier = Modifier.graphicsLayer {
+            KeyAtom(
+                text = MINUS_10,
+                onClick = onClick,
+                modifier = modifier.fillMaxHeight().graphicsLayer {
                 alpha = keyAlpha
             })
-            Card(modifier = modifier.padding(4.dp).weight(1F).padding(4.dp).clickable {
+            Card(modifier = modifier.padding(4.dp).fillMaxHeight().weight(1F).clickable {
                 onClick(ADD)
             }, elevation = CardDefaults.cardElevation(4.dp)) {
+
                 AddIcon()
             }
-            Card(modifier = modifier.padding(4.dp).weight(1F).padding(4.dp).clickable {
+            Card(modifier = modifier.padding(4.dp).fillMaxHeight().weight(1F).clickable {
                 onClick(DELETE)
 
             }, elevation = CardDefaults.cardElevation(4.dp)) {
