@@ -17,6 +17,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -66,7 +67,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -237,7 +237,9 @@ internal fun TablesScreen3(
                                 TableTextAtom(game.name1)
                                 TableTextAtom(game.name2)
                             }
-                            TableTextAtom(game.name3, modifier = Modifier.weight(1F))
+                            Column(modifier = Modifier.weight(1F)) {
+                                TableTextAtom(game.name3)
+                            }
                             Spacer(modifier = Modifier.width(16.dp))
                             StatusImage(
                                 gameStatus = GameStatus.fromId(game.statusGame)
@@ -508,12 +510,13 @@ fun GameCard(
 }
 
 @Composable
-private fun TableTextAtom(text: String, modifier: Modifier = Modifier) {
+private fun ColumnScope.TableTextAtom(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
         style = MaterialTheme.typography.displayLarge,
         maxLines = 1,
-        modifier = modifier
+        textAlign = TextAlign.Center,
+        modifier = Modifier.fillMaxWidth()
     )
 }
 
