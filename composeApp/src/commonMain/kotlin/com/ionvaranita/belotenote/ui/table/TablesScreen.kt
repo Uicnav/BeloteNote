@@ -66,6 +66,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -435,10 +436,11 @@ fun ConfirmDeleteDialog(onConfirm: () -> Unit, onDismiss: () -> Unit, isTable: B
 
 @Composable
 fun GameCard(
-    modifier: Modifier = Modifier,
     onDelete: () -> Unit,
-    onTap: () -> Unit = {}, isTable: Boolean = false,
-    content: @Composable RowScope.() -> Unit
+    onTap: () -> Unit = {},
+    isTable: Boolean = false,
+    modifier: Modifier = Modifier,
+    content: @Composable RowScope.() -> Unit,
 ) {
     var showDialog by remember { mutableStateOf(false) }
     val offsetX = remember { Animatable(0f) }
@@ -485,7 +487,7 @@ fun GameCard(
             })
         }) {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                modifier = Modifier.fillMaxWidth().padding(if (isTable)16.dp else 0.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 content()
