@@ -13,6 +13,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -780,6 +781,7 @@ internal fun InsertGameDialogBase(
                         style = MaterialTheme.typography.labelLarge,
                         textAlign = TextAlign.Center,
                         maxLines = 2,
+                        color = if (isSystemInDarkTheme()) Color.White else Color.Black,
                         modifier = Modifier.weight(1F)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
@@ -834,7 +836,10 @@ fun WinningPointsRadioButtons(
             RadioButton(
                 selected = selectedValue == WinningPointsEnum.ONE_HUNDRED_ONE.intValue,
                 onClick = { onValueChange(WinningPointsEnum.ONE_HUNDRED_ONE.intValue) })
-            Text(text = WinningPointsEnum.ONE_HUNDRED_ONE.stringValue)
+            Text(
+                text = WinningPointsEnum.ONE_HUNDRED_ONE.stringValue,
+                color = if (isSystemInDarkTheme()) Color.White else Color.Black
+            )
         }
 
         Row(
@@ -843,7 +848,10 @@ fun WinningPointsRadioButtons(
             RadioButton(
                 selected = selectedValue == WinningPointsEnum.FIFTY_ONE.intValue,
                 onClick = { onValueChange(WinningPointsEnum.FIFTY_ONE.intValue) })
-            Text(text = WinningPointsEnum.FIFTY_ONE.stringValue)
+            Text(
+                text = WinningPointsEnum.FIFTY_ONE.stringValue,
+                color = if (isSystemInDarkTheme()) Color.White else Color.Black
+            )
         }
     }
 }

@@ -1765,8 +1765,17 @@ private fun InfoGameDialog(
                 modifier = Modifier.fillMaxWidth()
             ) {
 
-                Text(text = statusGameText, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                Text(text = infoGame.winningPoints, fontSize = 16.sp)
+                Text(
+                    text = statusGameText,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = if (isSystemInDarkTheme()) Color.White else Color.Black
+                )
+                Text(
+                    text = infoGame.winningPoints,
+                    fontSize = 16.sp,
+                    color = if (isSystemInDarkTheme()) Color.White else Color.Black
+                )
                 if (showFinishMatch) {
                     Button(
                         onClick = onConfirm,
@@ -1934,7 +1943,8 @@ private fun UpdateStatusGameDialog(
             Spacer(Modifier.height(16.dp))
             Text(
                 text = stringResource(Res.string.dialog_are_you_sure),
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
+                color = if (isSystemInDarkTheme()) Color.White else Color.Black,
             )
             Spacer(Modifier.height(16.dp))
             AnimatedColorCircle()
