@@ -1673,17 +1673,21 @@ private fun Keyboard(
             KeyAtom(text = NINE, onClick = onClick)
             KeyAtom(text = ZERO, onClick = onClick)
         }
-        Row(modifier = Modifier.fillMaxWidth().height(64.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth().height(64.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             KeyAtom(
                 text = BOLT,
                 onClick = onClick,
-                modifier = modifier.fillMaxHeight().graphicsLayer {
+                modifier = modifier.graphicsLayer {
                 alpha = keyAlpha
             })
             KeyAtom(
                 text = MINUS_10,
                 onClick = onClick,
-                modifier = modifier.fillMaxHeight().graphicsLayer {
+                modifier = modifier.graphicsLayer {
                 alpha = keyAlpha
             })
             Card(modifier = modifier.padding(4.dp).fillMaxHeight().weight(1F).clickable {
@@ -1691,7 +1695,7 @@ private fun Keyboard(
             }, elevation = CardDefaults.cardElevation(4.dp)) {
                 AddIcon()
             }
-            Card(modifier = modifier.padding(4.dp).fillMaxHeight().weight(1F).clickable {
+            Card(modifier = modifier.padding(8.dp).weight(1F).clickable {
                 onClick(DELETE)
 
             }, elevation = CardDefaults.cardElevation(4.dp)) {
