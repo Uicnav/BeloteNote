@@ -8,6 +8,7 @@ import com.ionvaranita.belotenote.datalayer.database.entity.players3.Game3PEntit
 import com.ionvaranita.belotenote.datalayer.database.entity.players3.Points3PEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players4.Game4PEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players4.Points4PEntity
+import com.ionvaranita.belotenote.datalayer.database.entity.winningpoints.WinningPointsEntity
 import com.ionvaranita.belotenote.ui.match.BOLT
 import com.ionvaranita.belotenote.ui.match.MINUS_10
 import kotlinx.serialization.Serializable
@@ -238,6 +239,16 @@ fun String.toShortCustom(): Short {
     return if (this.isEmpty() || this.contains(BOLT)) {
         0
     } else this.toShort()
+}
+
+data class WinningPointsUi(
+    val winningPoints: Short
+) {
+    fun toDataClass(): WinningPointsEntity {
+        return WinningPointsEntity(
+            winningPoints = this.winningPoints
+        )
+    }
 }
 
 fun String.toShortCustomCalculated(): Short {

@@ -40,9 +40,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -94,8 +99,10 @@ import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Game2GroupsE
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.Game2PEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players3.Game3PEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players4.Game4PEntity
+import com.ionvaranita.belotenote.domain.model.WinningPointsUi
 import com.ionvaranita.belotenote.ui.LocalNavHostController
 import com.ionvaranita.belotenote.ui.match.ConfirmYesButton
+import com.ionvaranita.belotenote.ui.viewmodel.WinningPointsViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.game.Game2GroupsViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.game.Game2PViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.game.Game3PViewModel
@@ -118,7 +125,7 @@ enum class WinningPointsEnum(val stringValue: String, val intValue: Int) {
 
 @Composable
 internal fun TablesScreen2(
-    viewModel: Game2PViewModel
+    viewModel: Game2PViewModel, winningPointsViewModel: WinningPointsViewModel
 ) {
     val navController = LocalNavHostController.current
     val gamesUiState = viewModel.uiState.collectAsState()
@@ -140,7 +147,7 @@ internal fun TablesScreen2(
 
             }, onDismissRequest = {
                 shouDialog = false
-            })
+            }, viewModel = winningPointsViewModel)
         }
 
         when (val state = gamesUiState.value) {
@@ -189,7 +196,7 @@ internal fun TablesScreen2(
 
 @Composable
 internal fun TablesScreen3(
-    viewModel: Game3PViewModel
+    viewModel: Game3PViewModel, winningPointsViewModel: WinningPointsViewModel
 ) {
     val navController = LocalNavHostController.current
     val gamesUiState = viewModel.uiState.collectAsState()
@@ -211,7 +218,7 @@ internal fun TablesScreen3(
                 }
             }, onDismissRequest = {
                 shouDialog = false
-            })
+            }, viewModel = winningPointsViewModel)
         }
 
         when (val state = gamesUiState.value) {
@@ -264,7 +271,7 @@ internal fun TablesScreen3(
 
 @Composable
 internal fun TablesScreen4(
-    game4PViewModel: Game4PViewModel
+    game4PViewModel: Game4PViewModel, winningPointsViewModel: WinningPointsViewModel
 ) {
     val navController = LocalNavHostController.current
     val gamesUiState = game4PViewModel.uiState.collectAsState()
@@ -285,7 +292,7 @@ internal fun TablesScreen4(
                 }
             }, onDismissRequest = {
                 shouDialog = false
-            })
+            }, winningPointsViewModel = winningPointsViewModel)
         }
 
         when (val state = gamesUiState.value) {
@@ -325,7 +332,7 @@ internal fun TablesScreen4(
             }
 
             is Games4PUiState.Error -> {
-            isLoading = false// Handle error
+                isLoading = false// Handle error
             }
 
             Games4PUiState.Loading -> {
@@ -338,7 +345,9 @@ internal fun TablesScreen4(
 }
 
 @Composable
-internal fun TablesScreenGroups(viewModel: Game2GroupsViewModel) {
+internal fun TablesScreenGroups(
+    viewModel: Game2GroupsViewModel, winningPointsViewModel: WinningPointsViewModel
+) {
     val navController = LocalNavHostController.current
     val gamesUiState = viewModel.uiState.collectAsState()
     var shouDialog by remember { mutableStateOf(false) }
@@ -359,7 +368,7 @@ internal fun TablesScreenGroups(viewModel: Game2GroupsViewModel) {
 
             }, onDismissRequest = {
                 shouDialog = false
-            })
+            }, winningPointsViewModel = winningPointsViewModel)
         }
 
         when (val state = gamesUiState.value) {
@@ -409,8 +418,7 @@ internal fun TablesScreenGroups(viewModel: Game2GroupsViewModel) {
 @Composable
 fun CenteredCircularProgressIndicator(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier.background(MaterialTheme.colorScheme.background)
-            .fillMaxSize(),
+        modifier = modifier.background(MaterialTheme.colorScheme.background).fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator()
@@ -489,7 +497,7 @@ fun GameCard(
             })
         }) {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(if (isTable)16.dp else 0.dp),
+                modifier = Modifier.fillMaxWidth().padding(if (isTable) 16.dp else 0.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 content()
@@ -546,9 +554,7 @@ fun InsertFloatingActionButton(
 ) {
     val scale by if (animate) {
         rememberInfiniteTransition().animateFloat(
-            initialValue = 1f,
-            targetValue = 1.2f,
-            animationSpec = infiniteRepeatable(
+            initialValue = 1f, targetValue = 1.2f, animationSpec = infiniteRepeatable(
                 animation = tween(durationMillis = 600, easing = FastOutSlowInEasing),
                 repeatMode = RepeatMode.Reverse
             )
@@ -558,21 +564,18 @@ fun InsertFloatingActionButton(
     }
     FloatingActionButton(
         onClick = {
-            if (!isLoading)onClick()
-        },
-        modifier = modifier
-            .scale(scale)
+            if (!isLoading) onClick()
+        }, modifier = modifier.scale(scale)
     ) {
         Icon(
-            imageVector = Icons.Filled.Add,
-            contentDescription = "Floating action button"
+            imageVector = Icons.Filled.Add, contentDescription = "Floating action button"
         )
     }
 }
 
 @Composable
 fun InsertGame2(
-    onDismissRequest: () -> Unit, onClick: (Game2PEntity) -> Unit
+    viewModel: WinningPointsViewModel, onDismissRequest: () -> Unit, onClick: (Game2PEntity) -> Unit
 ) {
     val p1Hint = stringResource(Res.string.me)
     val p2Hint = stringResource(Res.string.you_s)
@@ -596,7 +599,7 @@ fun InsertGame2(
                 onDismissRequest()
             }
         }
-    }, isNewGame = true) {
+    }, isNewGame = true, winningPointsViewModel = viewModel) {
         Row {
             ShakerTextFieldAtom(
                 value = p1,
@@ -618,7 +621,7 @@ fun InsertGame2(
 
 @Composable
 fun InsertGame3(
-    onDismissRequest: () -> Unit, onClick: (Game3PEntity) -> Unit
+    viewModel: WinningPointsViewModel, onDismissRequest: () -> Unit, onClick: (Game3PEntity) -> Unit
 ) {
     val p1Hint = stringResource(Res.string.p) + 1
     val p2Hint = stringResource(Res.string.p) + 2
@@ -649,7 +652,7 @@ fun InsertGame3(
             )
             onDismissRequest()
         }
-    }, isNewGame = true) {
+    }, isNewGame = true, winningPointsViewModel = viewModel) {
         Row {
             ShakerTextFieldAtom(value = p1, onValueChange = {
                 p1 = it
@@ -666,7 +669,9 @@ fun InsertGame3(
 
 @Composable
 fun InsertGame4(
-    onDismissRequest: () -> Unit, onClick: (Game4PEntity) -> Unit
+    winningPointsViewModel: WinningPointsViewModel,
+    onDismissRequest: () -> Unit,
+    onClick: (Game4PEntity) -> Unit
 ) {
     val p1Hint = stringResource(Res.string.p) + 1
     val p2Hint = stringResource(Res.string.p) + 2
@@ -695,12 +700,13 @@ fun InsertGame4(
                     name1 = p1.capitalizeName(),
                     name2 = p2.capitalizeName(),
                     name3 = p3.capitalizeName(),
-                    name4 = p4.capitalizeName(), winningPoints = winningPoints
+                    name4 = p4.capitalizeName(),
+                    winningPoints = winningPoints
                 )
             )
             onDismissRequest()
         }
-    }, isNewGame = true) {
+    }, isNewGame = true, winningPointsViewModel = winningPointsViewModel) {
         Row {
             ShakerTextFieldAtom(value = p1, onValueChange = {
                 p1 = it
@@ -720,7 +726,9 @@ fun InsertGame4(
 
 @Composable
 fun InsertGame2Groups(
-    onDismissRequest: () -> Unit, onClick: (Game2GroupsEntity) -> Unit
+    winningPointsViewModel: WinningPointsViewModel,
+    onDismissRequest: () -> Unit,
+    onClick: (Game2GroupsEntity) -> Unit
 ) {
     val p1Hint = stringResource(Res.string.we)
     val p2Hint = stringResource(Res.string.you_p)
@@ -744,30 +752,40 @@ fun InsertGame2Groups(
             onDismissRequest()
 
         }
-    }, isNewGame = true) {
+    }, isNewGame = true, winningPointsViewModel = winningPointsViewModel) {
         Row {
             ShakerTextFieldAtom(value = p1, onValueChange = {
                 p1 = it
             }, modifier = Modifier.weight(1F), shaker = shakerP1, charLength = 4)
             ShakerTextFieldAtom(value = p2, onValueChange = {
                 p2 = it
-            }, modifier = Modifier.weight(1F), shaker = shakerP2,charLength = 4)
+            }, modifier = Modifier.weight(1F), shaker = shakerP2, charLength = 4)
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun InsertGameDialogBase(
+    winningPointsViewModel: WinningPointsViewModel,
     onDismissRequest: () -> Unit,
     onClick: (Short) -> Unit,
     isNewGame: Boolean = false,
     content: (@Composable () -> Unit)? = null
 ) {
-    var winningPoints by remember { mutableStateOf(WinningPointsEnum.ONE_HUNDRED_ONE.stringValue) }
-    val shakerWinningPoints by remember { mutableStateOf(TextFieldShaker()) }
-    Dialog(onDismissRequest = { onDismissRequest() }) {
-        Column(
-            modifier = Modifier.wrapContentSize().background(
+    val winningPointsDb by winningPointsViewModel.winningPoints.collectAsState()
+    var showDropdownMenu by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        winningPointsViewModel.getWinningPoints()
+        showDropdownMenu = true
+    }
+
+    if (showDropdownMenu && winningPointsDb.isNotEmpty()) {
+        var winningPoints by remember { mutableStateOf(winningPointsDb[0].winningPoints.toString()) }
+        val shakerWinningPoints by remember { mutableStateOf(TextFieldShaker()) }
+        Dialog(onDismissRequest = { onDismissRequest() }) {
+            Column(
+                modifier = Modifier.wrapContentSize().background(
                     MaterialTheme.colorScheme.background, shape = RoundedCornerShape(16.dp)
                 ).padding(16.dp),
                 verticalArrangement = Arrangement.Center,
@@ -793,10 +811,36 @@ internal fun InsertGameDialogBase(
                     Switch(checked = isChecked, onCheckedChange = { isChecked = it })
                 }
                 if (!isChecked) {
-                    WinningPointsRadioButtons(
-                        selectedValue = winningPoints.toInt(),
-                        onValueChange = { winningPoints = it.toString() })
+                    var expanded by remember { mutableStateOf(false) }
+                    ExposedDropdownMenuBox(
+                        expanded = expanded, onExpandedChange = { expanded = !expanded }) {
+                        TextField(
+                            value = winningPoints,
+                            onValueChange = {},
+                            readOnly = true,
+                            modifier = Modifier.menuAnchor(
+                                type = MenuAnchorType.PrimaryNotEditable, enabled = true
+                            ).fillMaxWidth(),
+                            trailingIcon = {
+                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                            },
+                            colors = ExposedDropdownMenuDefaults.textFieldColors()
+                        )
+
+                        ExposedDropdownMenu(
+                            expanded = expanded, onDismissRequest = { expanded = false }) {
+                            winningPointsDb.forEach { option ->
+                                DropdownMenuItem(
+                                    text = { Text(option.winningPoints.toString()) },
+                                    onClick = {
+                                        winningPoints = option.winningPoints.toString()
+                                        expanded = false
+                                    })
+                            }
+                        }
+                    }
                 }
+
 
                 if (isChecked) {
                     ShakerTextFieldAtom(value = winningPoints, onValueChange = { newText ->
@@ -809,7 +853,9 @@ internal fun InsertGameDialogBase(
                 }
                 Button(onClick = {
                     if (winningPoints.isNotEmpty()) {
-                        onClick(winningPoints.toShort())
+                        val result = winningPoints.toShort()
+                        winningPointsViewModel.insertWinningPoints(WinningPointsUi(winningPoints = result))
+                        onClick(result)
                     } else {
                         shakerWinningPoints.shake()
                     }
@@ -824,6 +870,10 @@ internal fun InsertGameDialogBase(
                     )
                 }
             }
+        }
+    } else {
+        CenteredCircularProgressIndicator()
+
     }
 }
 
@@ -888,13 +938,13 @@ fun ShakerTextFieldAtom(
     LaunchedEffect(shaker.shouldShake.value) {
         if (shaker.shouldShake.value) {
             focusRequester.requestFocus()
-                repeat(6) {
-                    vibrationOffset.snapTo(if (it % 2 == 0) 6f else -6f)
-                    delay(30)
-                }
-                vibrationOffset.snapTo(0f)
+            repeat(6) {
+                vibrationOffset.snapTo(if (it % 2 == 0) 6f else -6f)
+                delay(30)
             }
-            shaker.reset()
+            vibrationOffset.snapTo(0f)
+        }
+        shaker.reset()
     }
 
     TextField(

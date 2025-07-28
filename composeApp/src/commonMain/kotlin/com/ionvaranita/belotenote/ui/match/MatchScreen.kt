@@ -94,13 +94,13 @@ import com.ionvaranita.belotenote.domain.model.Points2PUi
 import com.ionvaranita.belotenote.domain.model.Points3PUi
 import com.ionvaranita.belotenote.domain.model.Points4PUi
 import com.ionvaranita.belotenote.domain.model.toShortCustom
-import com.ionvaranita.belotenote.domain.model.toShortCustomCalculated
 import com.ionvaranita.belotenote.ui.table.CenteredCircularProgressIndicator
 import com.ionvaranita.belotenote.ui.table.GameCard
 import com.ionvaranita.belotenote.ui.table.InsertFloatingActionButton
 import com.ionvaranita.belotenote.ui.table.InsertGameDialogBase
 import com.ionvaranita.belotenote.ui.table.ShakerTextFieldAtom
 import com.ionvaranita.belotenote.ui.table.TextFieldShaker
+import com.ionvaranita.belotenote.ui.viewmodel.WinningPointsViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.match.MatchData2Groups
 import com.ionvaranita.belotenote.ui.viewmodel.match.MatchData2P
 import com.ionvaranita.belotenote.ui.viewmodel.match.MatchData3P
@@ -117,7 +117,10 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-internal fun MatchScreen2(viewModel: ViewModelBase) {
+internal fun MatchScreen2(
+    viewModel: ViewModelBase,
+    winningPointsViewModel: WinningPointsViewModel
+) {
 
 
     val matchUiState = viewModel.uiState.collectAsState()
@@ -263,18 +266,18 @@ internal fun MatchScreen2(viewModel: ViewModelBase) {
                                     }
                                 }, isTable = false) {
                                     PointsTextAtom(text = item.pointsGame, isBody = true)
-                                    PointsTextAtom(text = item.pointsP1,isBody = true)
+                                    PointsTextAtom(text = item.pointsP1, isBody = true)
                                     PointsTextAtom(text = item.pointsP2, isBody = true)
                                 }
                             } else {
-                                PointsTextAtom(text = item.pointsGame,isBody = true)
-                                PointsTextAtom(text = item.pointsP1,isBody = true)
-                                PointsTextAtom(text = item.pointsP2,isBody = true)
+                                PointsTextAtom(text = item.pointsGame, isBody = true)
+                                PointsTextAtom(text = item.pointsP1, isBody = true)
+                                PointsTextAtom(text = item.pointsP2, isBody = true)
                             }
                         }
                         if ((index + 1) % 2 == 0) {
                             HorizontalDivider(
-                                    thickness = 4.dp
+                                thickness = 4.dp
                             )
                         }
                     }
@@ -293,26 +296,26 @@ internal fun MatchScreen2(viewModel: ViewModelBase) {
                             isPressed = isPressedPoints,
                             onClick = {
 
-                            isPressedPoints = true
+                                isPressedPoints = true
                                 isPressedP1 = false
                                 isPressedP2 = false
 
-                        })
+                            })
 
                         TouchableText(
                             text = pointsP1, shaker = shakerP1, isPressed = isPressedP1, onClick = {
 
-                            isPressedPoints = false
+                                isPressedPoints = false
                                 isPressedP1 = true
                                 isPressedP2 = false
 
-                        })
+                            })
                         TouchableText(
                             text = pointsP2, shaker = shakerP2, isPressed = isPressedP2, onClick = {
-                            isPressedPoints = false
+                                isPressedPoints = false
                                 isPressedP1 = false
                                 isPressedP2 = true
-                        })
+                            })
                     }
                     Keyboard(
                         isPressedGames = isPressedPoints,
@@ -353,14 +356,9 @@ internal fun MatchScreen2(viewModel: ViewModelBase) {
                                     ) { text ->
                                         pointsP1 = text
                                         if (inputKey == MINUS_10 || inputKey == BOLT) {
-                                            if (pointsP2 == MINUS_10 || pointsP2 == BOLT
-                                            ) {
+                                            if (pointsP2 == MINUS_10 || pointsP2 == BOLT) {
                                                 pointsP2 = ""
                                             }
-                                        }
-                                        if (pointsGame.isNotEmpty()) {
-                                            pointsP2 =
-                                                (pointsGame.toShort() - text.toShortCustomCalculated()).toCustomString()
                                         }
                                     }
                                 }
@@ -373,10 +371,6 @@ internal fun MatchScreen2(viewModel: ViewModelBase) {
                                             if (pointsP1 == MINUS_10 || pointsP1 == BOLT) {
                                                 pointsP1 = ""
                                             }
-                                        }
-                                        if (pointsGame.isNotEmpty()) {
-                                            pointsP1 =
-                                                (pointsGame.toShort() - text.toShortCustomCalculated()).toCustomString()
                                         }
                                     }
 
@@ -398,7 +392,7 @@ internal fun MatchScreen2(viewModel: ViewModelBase) {
                             shouDialog = false
                         }, onClick = { winningPoints ->
                             viewModel.resetGame(winningPoints)
-                        })
+                        }, winningPointsViewModel = winningPointsViewModel)
                     }
 
                 }
@@ -419,7 +413,10 @@ internal fun MatchScreen2(viewModel: ViewModelBase) {
 }
 
 @Composable
-internal fun MatchScreen3(viewModel: ViewModelBase) {
+internal fun MatchScreen3(
+    viewModel: ViewModelBase,
+    winningPointsViewModel: WinningPointsViewModel
+) {
 
     val matchUiState = viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
@@ -566,15 +563,15 @@ internal fun MatchScreen3(viewModel: ViewModelBase) {
                                     }
                                 }) {
                                     PointsTextAtom(text = item.pointsGame, isBody = true)
-                                    PointsTextAtom(text = item.pointsP1,isBody = true)
-                                    PointsTextAtom(text = item.pointsP2,isBody = true)
-                                    PointsTextAtom(text = item.pointsP3,isBody = true)
+                                    PointsTextAtom(text = item.pointsP1, isBody = true)
+                                    PointsTextAtom(text = item.pointsP2, isBody = true)
+                                    PointsTextAtom(text = item.pointsP3, isBody = true)
                                 }
                             } else {
                                 PointsTextAtom(text = item.pointsGame, isBody = true)
-                                PointsTextAtom(text = item.pointsP1,isBody = true)
-                                PointsTextAtom(text = item.pointsP2,isBody = true)
-                                PointsTextAtom(text = item.pointsP3,isBody = true)
+                                PointsTextAtom(text = item.pointsP1, isBody = true)
+                                PointsTextAtom(text = item.pointsP2, isBody = true)
+                                PointsTextAtom(text = item.pointsP3, isBody = true)
                             }
                         }
                         if ((index + 1) % 3 == 0) {
@@ -598,36 +595,36 @@ internal fun MatchScreen3(viewModel: ViewModelBase) {
                             isPressed = isPressedPoints,
                             onClick = {
 
-                            isPressedPoints = true
-                            isPressedP1 = false
-                            isPressedP2 = false
-                            isPressedP3 = false
+                                isPressedPoints = true
+                                isPressedP1 = false
+                                isPressedP2 = false
+                                isPressedP3 = false
 
-                        })
+                            })
 
                         TouchableText(
                             text = pointsP1, shaker = shakerP1, isPressed = isPressedP1, onClick = {
 
-                            isPressedPoints = false
-                            isPressedP1 = true
-                            isPressedP2 = false
-                            isPressedP3 = false
+                                isPressedPoints = false
+                                isPressedP1 = true
+                                isPressedP2 = false
+                                isPressedP3 = false
 
-                        })
+                            })
                         TouchableText(
                             text = pointsP2, shaker = shakerP2, isPressed = isPressedP2, onClick = {
-                            isPressedPoints = false
-                            isPressedP1 = false
-                            isPressedP2 = true
-                            isPressedP3 = false
-                        })
+                                isPressedPoints = false
+                                isPressedP1 = false
+                                isPressedP2 = true
+                                isPressedP3 = false
+                            })
                         TouchableText(
                             text = pointsP3, shaker = shakerP3, isPressed = isPressedP3, onClick = {
-                            isPressedPoints = false
-                            isPressedP1 = false
-                            isPressedP2 = false
-                            isPressedP3 = true
-                        })
+                                isPressedPoints = false
+                                isPressedP1 = false
+                                isPressedP2 = false
+                                isPressedP3 = true
+                            })
                     }
                     Keyboard(
                         isPressedGames = isPressedPoints,
@@ -730,7 +727,7 @@ internal fun MatchScreen3(viewModel: ViewModelBase) {
                             shouDialog = false
                         }, onClick = { winningPoints ->
                             viewModel.resetGame(winningPoints)
-                        })
+                        }, winningPointsViewModel = winningPointsViewModel)
                     }
                 }
 
@@ -750,7 +747,10 @@ internal fun MatchScreen3(viewModel: ViewModelBase) {
 }
 
 @Composable
-internal fun MatchScreen4(viewModel: ViewModelBase) {
+internal fun MatchScreen4(
+    viewModel: ViewModelBase,
+    winningPointsViewModel: WinningPointsViewModel
+) {
     val matchUiState = viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
     var showInfoGameDialog by remember { mutableStateOf(false) }
@@ -936,48 +936,48 @@ internal fun MatchScreen4(viewModel: ViewModelBase) {
                             isPressed = isPressedPoints,
                             onClick = {
 
-                            isPressedPoints = true
-                            isPressedP1 = false
-                            isPressedP2 = false
-                            isPressedP3 = false
-                            isPressedP4 = false
+                                isPressedPoints = true
+                                isPressedP1 = false
+                                isPressedP2 = false
+                                isPressedP3 = false
+                                isPressedP4 = false
 
-                        })
+                            })
 
                         TouchableText(
                             text = pointsP1, shaker = shakerP1, isPressed = isPressedP1, onClick = {
 
-                            isPressedPoints = false
-                            isPressedP1 = true
-                            isPressedP2 = false
-                            isPressedP3 = false
-                            isPressedP4 = false
+                                isPressedPoints = false
+                                isPressedP1 = true
+                                isPressedP2 = false
+                                isPressedP3 = false
+                                isPressedP4 = false
 
-                        })
+                            })
                         TouchableText(
                             text = pointsP2, shaker = shakerP2, isPressed = isPressedP2, onClick = {
-                            isPressedPoints = false
-                            isPressedP1 = false
-                            isPressedP2 = true
-                            isPressedP3 = false
-                            isPressedP4 = false
-                        })
+                                isPressedPoints = false
+                                isPressedP1 = false
+                                isPressedP2 = true
+                                isPressedP3 = false
+                                isPressedP4 = false
+                            })
                         TouchableText(
                             text = pointsP3, shaker = shakerP3, isPressed = isPressedP3, onClick = {
-                            isPressedPoints = false
-                            isPressedP1 = false
-                            isPressedP2 = false
-                            isPressedP3 = true
-                            isPressedP4 = false
-                        })
+                                isPressedPoints = false
+                                isPressedP1 = false
+                                isPressedP2 = false
+                                isPressedP3 = true
+                                isPressedP4 = false
+                            })
                         TouchableText(
                             text = pointsP4, shaker = shakerP4, isPressed = isPressedP4, onClick = {
-                            isPressedPoints = false
-                            isPressedP1 = false
-                            isPressedP2 = false
-                            isPressedP3 = false
-                            isPressedP4 = true
-                        })
+                                isPressedPoints = false
+                                isPressedP1 = false
+                                isPressedP2 = false
+                                isPressedP3 = false
+                                isPressedP4 = true
+                            })
                     }
                     Keyboard(
                         isPressedGames = isPressedPoints,
@@ -1027,23 +1027,23 @@ internal fun MatchScreen4(viewModel: ViewModelBase) {
                                         if (inputKey == MINUS_10) {
                                             if (pointsP2 == MINUS_10) {
                                                 pointsP2 = ""
-                                                }
+                                            }
                                             if (pointsP3 == MINUS_10) {
                                                 pointsP3 = ""
                                             }
                                             if (pointsP4 == MINUS_10) {
                                                 pointsP4 = ""
                                             }
-                                        } else if(inputKey == BOLT) {
-                                                if (pointsP2 == BOLT) {
-                                                    pointsP2 = ""
-                                                }
-                                                if (pointsP3 == BOLT) {
-                                                    pointsP3 = ""
-                                                }
-                                                if (pointsP4 == BOLT) {
-                                                    pointsP4 = ""
-                                                }
+                                        } else if (inputKey == BOLT) {
+                                            if (pointsP2 == BOLT) {
+                                                pointsP2 = ""
+                                            }
+                                            if (pointsP3 == BOLT) {
+                                                pointsP3 = ""
+                                            }
+                                            if (pointsP4 == BOLT) {
+                                                pointsP4 = ""
+                                            }
                                         }
                                     }
                                 }
@@ -1062,7 +1062,7 @@ internal fun MatchScreen4(viewModel: ViewModelBase) {
                                             if (pointsP4 == MINUS_10) {
                                                 pointsP4 = ""
                                             }
-                                        } else if(inputKey == BOLT) {
+                                        } else if (inputKey == BOLT) {
                                             if (pointsP1 == BOLT) {
                                                 pointsP1 = ""
                                             }
@@ -1091,7 +1091,7 @@ internal fun MatchScreen4(viewModel: ViewModelBase) {
                                             if (pointsP4 == MINUS_10) {
                                                 pointsP4 = ""
                                             }
-                                        } else if(inputKey == BOLT) {
+                                        } else if (inputKey == BOLT) {
                                             if (pointsP1 == BOLT) {
                                                 pointsP1 = ""
                                             }
@@ -1120,7 +1120,7 @@ internal fun MatchScreen4(viewModel: ViewModelBase) {
                                             if (pointsP3 == MINUS_10) {
                                                 pointsP3 = ""
                                             }
-                                        } else if(inputKey == BOLT) {
+                                        } else if (inputKey == BOLT) {
                                             if (pointsP1 == BOLT) {
                                                 pointsP1 = ""
                                             }
@@ -1151,7 +1151,7 @@ internal fun MatchScreen4(viewModel: ViewModelBase) {
                             shouDialog = false
                         }, onClick = { winningPoints ->
                             viewModel.resetGame(winningPoints)
-                        })
+                        }, winningPointsViewModel = winningPointsViewModel)
                     }
                 }
 
@@ -1171,7 +1171,10 @@ internal fun MatchScreen4(viewModel: ViewModelBase) {
 }
 
 @Composable
-internal fun MatchScreen2Groups(viewModel: ViewModelBase) {
+internal fun MatchScreen2Groups(
+    viewModel: ViewModelBase,
+    winningPointsViewModel: WinningPointsViewModel
+) {
     val matchUiState = viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
     var showInfoGameDialog by remember { mutableStateOf(false) }
@@ -1340,32 +1343,26 @@ internal fun MatchScreen2Groups(viewModel: ViewModelBase) {
                             isPressed = isPressedPoints,
                             onClick = {
 
-                            isPressedPoints = true
+                                isPressedPoints = true
                                 isPressedP1 = false
                                 isPressedP2 = false
 
-                        })
+                            })
 
                         TouchableText(
-                            text = pointsP1,
-                            shaker = shakerP1,
-                            isPressed = isPressedP1,
-                            onClick = {
+                            text = pointsP1, shaker = shakerP1, isPressed = isPressedP1, onClick = {
 
-                            isPressedPoints = false
+                                isPressedPoints = false
                                 isPressedP1 = true
                                 isPressedP2 = false
 
-                        })
+                            })
                         TouchableText(
-                            text = pointsP2,
-                            shaker = shakerP2,
-                            isPressed = isPressedP2,
-                            onClick = {
-                            isPressedPoints = false
+                            text = pointsP2, shaker = shakerP2, isPressed = isPressedP2, onClick = {
+                                isPressedPoints = false
                                 isPressedP1 = false
                                 isPressedP2 = true
-                        })
+                            })
                     }
                     Keyboard(
                         isPressedGames = isPressedPoints,
@@ -1413,10 +1410,6 @@ internal fun MatchScreen2Groups(viewModel: ViewModelBase) {
 
                                             }
                                         }
-                                        if (pointsGame.isNotEmpty()) {
-                                            pointsP2 =
-                                                (pointsGame.toShort() - text.toShortCustomCalculated()).toCustomString()
-                                        }
                                     }
                                 }
                                 if (isPressedP2) {
@@ -1428,10 +1421,6 @@ internal fun MatchScreen2Groups(viewModel: ViewModelBase) {
                                             if (pointsP1 == MINUS_10 || pointsP1 == BOLT) {
                                                 pointsP1 = ""
                                             }
-                                        }
-                                        if (pointsGame.isNotEmpty()) {
-                                            pointsP1 =
-                                                (pointsGame.toShort() - text.toShortCustomCalculated()).toCustomString()
                                         }
                                     }
 
@@ -1453,7 +1442,7 @@ internal fun MatchScreen2Groups(viewModel: ViewModelBase) {
                             shouDialog = false
                         }, onClick = { winningPoints ->
                             viewModel.resetGame(winningPoints)
-                        })
+                        }, winningPointsViewModel = winningPointsViewModel)
                     }
                 }
 
@@ -1489,7 +1478,7 @@ private fun manageUserInputKey(
         } else {
             onInputTextChanged(inputText.dropLast(1))
         }
-    } else if (inputKey == MINUS_10 || inputKey == BOLT ||inputKey == ZERO && inputText.isEmpty()) {
+    } else if (inputKey == MINUS_10 || inputKey == BOLT || inputKey == ZERO && inputText.isEmpty()) {
         onInputTextChanged(inputKey)
     } else {
         if (inputText.length < 3 || inputText == MINUS_10) {
@@ -1509,8 +1498,7 @@ private fun manageUserInputKey(
 fun AddIcon(modifier: Modifier = Modifier) {
     val color = if (isSystemInDarkTheme()) Color.White else Color.Black
     Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
         Icon(
             imageVector = Icons.Filled.Add,
@@ -1527,8 +1515,7 @@ fun AddIcon(modifier: Modifier = Modifier) {
 fun BackspaceIcon(modifier: Modifier = Modifier) {
     val color = if (isSystemInDarkTheme()) Color.White else Color.Black
     Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
         Icon(
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -1636,13 +1623,10 @@ fun WritingPenIcon(modifier: Modifier = Modifier) {
     val isDark = isSystemInDarkTheme()
     val transition = rememberInfiniteTransition(label = "")
     val offsetX by transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 10f,
-        animationSpec = infiniteRepeatable(
+        initialValue = 0f, targetValue = 10f, animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = 400, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse
-        ),
-        label = ""
+        ), label = ""
     )
     Image(
         painter = painterResource(Res.drawable.ic_writting_indicator),
@@ -1658,7 +1642,12 @@ private fun Keyboard(
     isPressedGames: Boolean = false, onClick: (String) -> Unit, modifier: Modifier = Modifier
 ) {
     val keyAlpha = if (!isPressedGames) 1f else 0f
-    Column(modifier = modifier.fillMaxWidth().padding(top = 4.dp).background(color = MaterialTheme.colorScheme.background, shape = MaterialTheme.shapes.large)) {
+    Column(
+        modifier = modifier.fillMaxWidth().padding(top = 4.dp).background(
+            color = MaterialTheme.colorScheme.background,
+            shape = MaterialTheme.shapes.large
+        )
+    ) {
         Row(modifier = Modifier.fillMaxWidth()) {
             KeyAtom(text = ONE, onClick = onClick)
             KeyAtom(text = TWO, onClick = onClick)
@@ -1679,17 +1668,13 @@ private fun Keyboard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             KeyAtom(
-                text = BOLT,
-                onClick = onClick,
-                modifier = modifier.graphicsLayer {
-                alpha = keyAlpha
-            })
+                text = BOLT, onClick = onClick, modifier = modifier.graphicsLayer {
+                    alpha = keyAlpha
+                })
             KeyAtom(
-                text = MINUS_10,
-                onClick = onClick,
-                modifier = modifier.graphicsLayer {
-                alpha = keyAlpha
-            })
+                text = MINUS_10, onClick = onClick, modifier = modifier.graphicsLayer {
+                    alpha = keyAlpha
+                })
             Card(modifier = modifier.padding(4.dp).fillMaxHeight().weight(1F).clickable {
                 onClick(ADD)
             }, elevation = CardDefaults.cardElevation(4.dp)) {
@@ -1812,13 +1797,21 @@ private fun WinnerDialog(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()
             ) {
-
+                val textColor = if (isSystemInDarkTheme()) Color.White else Color.Black
                 Text(
                     text = stringResource(Res.string.winner_is),
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    color = textColor
                 )
-                Text(text = winnerText, fontSize = 18.sp, fontWeight = FontWeight.ExtraBold)
+                Text(
+                    text = winnerText,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    textAlign = TextAlign.Center,
+                    color = textColor
+                )
 
                 Button(onClick = onConfirm) {
                     Text(text = stringResource(Res.string.ok))
@@ -1852,8 +1845,7 @@ private fun ExtendedDialog(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 ShakerTextFieldAtom(
-                    value = newWinningPoints,
-                    onValueChange = { newText ->
+                    value = newWinningPoints, onValueChange = { newText ->
                         if (!newText.startsWith("0") && newText.all { it.isDigit() }) {
                             newWinningPoints = newText
                         }
@@ -1913,8 +1905,8 @@ private fun ExtendedDialog(
                         Button(
                             colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
                             onClick = {
-                            onWin()
-                        }) {
+                                onWin()
+                            }) {
                             Text(
                                 fontSize = 10.sp,
                                 text = stringResource(Res.string.dialog_fragment_win, it),
@@ -1941,8 +1933,7 @@ private fun UpdateStatusGameDialog(
         Column(
             modifier = modifier.background(
                 MaterialTheme.colorScheme.background, shape = RoundedCornerShape(16.dp)
-            )
-                .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
+            ).padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(Modifier.height(16.dp))
             Text(
