@@ -168,6 +168,19 @@ fun App(appDatabase: AppDatabase) {
                     }
                 }
 
+                val winningPointsRepository =
+                    WinningPointsRepositoryImpl(WinningPointsDataSourceImpl(appDatabase.winningPointsDao()))
+                val getWinningPointsUseCase =
+                    GetWinningPointsUseCase(winningPointsRepository)
+                val insertWinningPointsUseCase =
+                    InsertWinningPointsUseCase(winningPointsRepository)
+                val winningPointsViewModel = viewModel {
+                    WinningPointsViewModel(
+                        getWinningPointsUseCase = getWinningPointsUseCase,
+                        insertWinningPointsUseCase = insertWinningPointsUseCase
+                    )
+                }
+
                 Scaffold(
                     containerColor = Color.Transparent,
                     modifier = Modifier.alpha(GLOBAL_ALPHA),
@@ -182,12 +195,8 @@ fun App(appDatabase: AppDatabase) {
                         startDestination = HomeDest,
                         modifier = Modifier.fillMaxSize().padding(innerPadding)
                     ) {
-                        val winningPointsRepository =
-                            WinningPointsRepositoryImpl(WinningPointsDataSourceImpl(appDatabase.winningPointsDao()))
-                        val getWinningPointsUseCase =
-                            GetWinningPointsUseCase(winningPointsRepository)
-                        val insertWinningPointsUseCase =
-                            InsertWinningPointsUseCase(winningPointsRepository)
+
+
                         composable<HomeDest> {
                             HomeScreen(onClick = {
                                 navController.navigate(it)
@@ -204,12 +213,7 @@ fun App(appDatabase: AppDatabase) {
                                     getGamesUseCase, insertGameUseCase, deleteGameUseCase
                                 )
                             }
-                            val winningPointsViewModel = viewModel {
-                                WinningPointsViewModel(
-                                    getWinningPointsUseCase = getWinningPointsUseCase,
-                                    insertWinningPointsUseCase = insertWinningPointsUseCase
-                                )
-                            }
+
                             TablesScreen2(
                                 viewModel = game2PViewModel,
                                 winningPointsViewModel = winningPointsViewModel
@@ -228,12 +232,6 @@ fun App(appDatabase: AppDatabase) {
                                     getGamesUseCase, insertGameUseCase, deleteGameUseCase
                                 )
                             }
-                            val winningPointsViewModel = viewModel {
-                                WinningPointsViewModel(
-                                    getWinningPointsUseCase = getWinningPointsUseCase,
-                                    insertWinningPointsUseCase = insertWinningPointsUseCase
-                                )
-                            }
                             TablesScreen3(game3PViewModel, winningPointsViewModel)
                         }
                         composable<Games4Dest> {
@@ -245,12 +243,6 @@ fun App(appDatabase: AppDatabase) {
                             val game4PViewModel = viewModel {
                                 Game4PViewModel(
                                     getGamesUseCase, insertGameUseCase, deleteGameUseCase
-                                )
-                            }
-                            val winningPointsViewModel = viewModel {
-                                WinningPointsViewModel(
-                                    getWinningPointsUseCase = getWinningPointsUseCase,
-                                    insertWinningPointsUseCase = insertWinningPointsUseCase
                                 )
                             }
                             TablesScreen4(
@@ -269,12 +261,6 @@ fun App(appDatabase: AppDatabase) {
                             val game2GroupsViewModel = viewModel {
                                 Game2GroupsViewModel(
                                     getGamesUseCase, insertGameUseCase, deleteGameUseCase
-                                )
-                            }
-                            val winningPointsViewModel = viewModel {
-                                WinningPointsViewModel(
-                                    getWinningPointsUseCase = getWinningPointsUseCase,
-                                    insertWinningPointsUseCase = insertWinningPointsUseCase
                                 )
                             }
                             TablesScreenGroups(game2GroupsViewModel, winningPointsViewModel)
@@ -314,12 +300,6 @@ fun App(appDatabase: AppDatabase) {
                                     updateStatusWinningPointsUseCase,
                                     updateOnlyStatusUseCase,
                                     deleteAllPointsUseCase
-                                )
-                            }
-                            val winningPointsViewModel = viewModel {
-                                WinningPointsViewModel(
-                                    getWinningPointsUseCase = getWinningPointsUseCase,
-                                    insertWinningPointsUseCase = insertWinningPointsUseCase
                                 )
                             }
                             MatchScreen2(viewModel,winningPointsViewModel)
@@ -367,12 +347,6 @@ fun App(appDatabase: AppDatabase) {
                                 )
                             }
 
-                            val winningPointsViewModel = viewModel {
-                                WinningPointsViewModel(
-                                    getWinningPointsUseCase = getWinningPointsUseCase,
-                                    insertWinningPointsUseCase = insertWinningPointsUseCase
-                                )
-                            }
                             MatchScreen3(viewModel = match3PPViewModel,winningPointsViewModel)
                         }
                         composable<Match4Dest> {
@@ -421,12 +395,6 @@ fun App(appDatabase: AppDatabase) {
                                     deleteAllPointsUseCase
                                 )
                             }
-                            val winningPointsViewModel = viewModel {
-                                WinningPointsViewModel(
-                                    getWinningPointsUseCase = getWinningPointsUseCase,
-                                    insertWinningPointsUseCase = insertWinningPointsUseCase
-                                )
-                            }
                             MatchScreen4(viewModel = match4PPViewModel, winningPointsViewModel = winningPointsViewModel)
                         }
                         composable<MatchGroupsDest> {
@@ -464,12 +432,6 @@ fun App(appDatabase: AppDatabase) {
                                     updateStatusWinningPointsUseCase,
                                     updateOnlyStatusGameUseCase,
                                     deleteAllPointsUseCase
-                                )
-                            }
-                            val winningPointsViewModel = viewModel {
-                                WinningPointsViewModel(
-                                    getWinningPointsUseCase = getWinningPointsUseCase,
-                                    insertWinningPointsUseCase = insertWinningPointsUseCase
                                 )
                             }
                             MatchScreen2Groups(viewModel = match2GroupsViewModel, winningPointsViewModel = winningPointsViewModel)

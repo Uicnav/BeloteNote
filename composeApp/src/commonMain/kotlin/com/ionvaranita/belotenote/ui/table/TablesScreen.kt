@@ -518,13 +518,13 @@ fun GameCard(
 }
 
 @Composable
-private fun ColumnScope.TableTextAtom(text: String, modifier: Modifier = Modifier) {
+private fun TableTextAtom(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
         style = MaterialTheme.typography.displayLarge,
         maxLines = 1,
         textAlign = TextAlign.Center,
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     )
 }
 
@@ -774,13 +774,7 @@ internal fun InsertGameDialogBase(
     content: (@Composable () -> Unit)? = null
 ) {
     val winningPointsDb by winningPointsViewModel.winningPoints.collectAsState()
-    var showDropdownMenu by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) {
-        winningPointsViewModel.getWinningPoints()
-        showDropdownMenu = true
-    }
-
-    if (showDropdownMenu && winningPointsDb.isNotEmpty()) {
+    if (winningPointsDb.isNotEmpty()) {
         var winningPoints by remember { mutableStateOf(winningPointsDb[0].winningPoints.toString()) }
         val shakerWinningPoints by remember { mutableStateOf(TextFieldShaker()) }
         Dialog(onDismissRequest = { onDismissRequest() }) {
@@ -871,9 +865,6 @@ internal fun InsertGameDialogBase(
                 }
             }
         }
-    } else {
-        CenteredCircularProgressIndicator()
-
     }
 }
 

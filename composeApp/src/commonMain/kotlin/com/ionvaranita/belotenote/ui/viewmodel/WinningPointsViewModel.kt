@@ -7,9 +7,13 @@ import com.ionvaranita.belotenote.domain.usecase.winningpoints.get.GetWinningPoi
 import com.ionvaranita.belotenote.domain.usecase.winningpoints.insert.InsertWinningPointsUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class WinningPointsViewModel(
@@ -17,12 +21,14 @@ class WinningPointsViewModel(
     private val insertWinningPointsUseCase: InsertWinningPointsUseCase
 ) : ViewModel() {
 
-    private val _winningPoints = MutableStateFlow(emptyList<WinningPointsUi>())
-    val winningPoints: StateFlow<List<WinningPointsUi>> = _winningPoints
-
-    suspend fun getWinningPoints(dispatcher: CoroutineDispatcher = Dispatchers.IO)  {
-        _winningPoints.value = getWinningPointsUseCase.execute(Unit)
-    }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val winningPoints: StateFlow<List<WinningPointsUi>> = flowOf(Unit)
+        .flatMapLatest { getWinningPointsUseCase.execute(Unit) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     fun insertWinningPoints(winningPoints: WinningPointsUi, dispatcher: CoroutineDispatcher = Dispatchers.IO) {
         viewModelScope.launch(dispatcher) {

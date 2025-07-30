@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.ionvaranita.belotenote.datalayer.database.entity.winningpoints.WinningPointsEntity
+import kotlinx.coroutines.flow.Flow
 
 
 @Dao
@@ -13,5 +14,5 @@ interface WinningPointsDao {
     suspend fun insert(winningPointsEntity: WinningPointsEntity)
 
     @Query("select * from WinningPointsEntity order by date desc")
-    suspend fun getWinningPoints(): List<WinningPointsEntity>
+    fun getWinningPoints(): Flow<List<WinningPointsEntity>>
 }
