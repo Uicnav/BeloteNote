@@ -21,7 +21,8 @@ data class Game2PUi(
     val name1: String,
     val name2: String,
     val scoreName1: Short,
-    val scoreName2: Short
+    val scoreName2: Short,
+    var isVisible: Boolean = true
 ) {
     fun toDataClass(): Game2PEntity {
         return Game2PEntity(

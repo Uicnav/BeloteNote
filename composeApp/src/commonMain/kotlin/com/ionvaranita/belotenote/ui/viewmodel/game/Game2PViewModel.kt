@@ -27,8 +27,58 @@ class Game2PViewModel(private val getGamesUseCase: GetGames2PUseCase, private va
         }
     }
 
+    private var gameToDelete: Game2PUi? = null
+
     suspend fun insertGame(game: Game2PEntity): Int {
         return insertGameUseCase.execute(game)
+    }
+
+    fun prepareDeleteGame(game: Game2PUi, dispatcher: CoroutineDispatcher = Dispatchers.IO) {
+        game.isVisible = false
+        gameToDelete = game
+    }
+
+    fun prepareDeleteGame(game: Game2PUi) {
+        val currentList = _uiState.value as? Games2PUiState.Success ?: return
+        val updatedList = currentList.data.map {
+            if (it.idGame == game.idGame) {
+                gameToDelete = it.copy(isVisible = false)
+                gameToDelete!!
+            } else{
+                it
+            }
+        }
+        updatedList.let {
+            _uiState.value = Games2PUiState.Success(it)
+        }
+    }
+
+    fun undoDeleteGame(game: Game2PUi) {
+        gameToDelete?.let { gameToDelete->
+            if (gameToDelete.idGame == game.idGame) {
+                val currentList = _uiState.value as? Games2PUiState.Success ?: return
+                val updatedList = currentList.data.map {
+                    if (it.idGame == game.idGame) {
+                        it.copy(isVisible = true)
+                    } else{
+                        it
+                    }
+                }
+                updatedList.let {
+                    _uiState.value = Games2PUiState.Success(it)
+                }
+                this.gameToDelete = null
+            } else {
+                deleteGame((gameToDelete.idGame))
+            }
+        }
+    }
+
+    fun deleteGameToDelete() {
+        gameToDelete?.let {
+            deleteGame(it.idGame)
+        }
+        gameToDelete = null
     }
 
     fun deleteGame(idGame: Int, dispatcher: CoroutineDispatcher = Dispatchers.IO) = viewModelScope.launch(dispatcher) {

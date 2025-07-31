@@ -50,10 +50,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -125,8 +128,9 @@ enum class WinningPointsEnum(val stringValue: String, val intValue: Int) {
 
 @Composable
 internal fun TablesScreen2(
-    viewModel: Game2PViewModel, winningPointsViewModel: WinningPointsViewModel
+    viewModel: Game2PViewModel, winningPointsViewModel: WinningPointsViewModel,snackbarHostState: SnackbarHostState
 ) {
+
     val navController = LocalNavHostController.current
     val gamesUiState = viewModel.uiState.collectAsState()
     var shouDialog by remember { mutableStateOf(false) }
@@ -152,6 +156,11 @@ internal fun TablesScreen2(
 
         when (val state = gamesUiState.value) {
             is Games2PUiState.Success -> {
+                DisposableEffect(Unit) {
+                    onDispose {
+                        viewModel.deleteGameToDelete()
+                    }
+                }
                 isLoading = false
                 isEmptyList = state.data.isEmpty()
                 scope.launch {
@@ -162,9 +171,26 @@ internal fun TablesScreen2(
                     modifier = Modifier.fillMaxSize().padding(16.dp),
                     state = gameListState
                 ) {
-                    items(state.data) { game ->
+                    items(state.data.filter { it.isVisible }) { game ->
                         GameCard(onDelete = {
-                            viewModel.deleteGame(game.idGame)
+                            snackbarHostState.currentSnackbarData?.dismiss()
+                            viewModel.prepareDeleteGame(game)
+                            scope.launch {
+                                val result = snackbarHostState.showSnackbar(
+                                    message = "Game deleted",
+                                    actionLabel = "Undo"
+                                )
+                                when(result) {
+                                    SnackbarResult.ActionPerformed -> {
+                                        viewModel.undoDeleteGame(game)
+                                    }
+
+                                    SnackbarResult.Dismissed -> {
+                                        viewModel.deleteGame(game.idGame)
+                                    }
+                                }
+                            }
+                            //viewModel.deleteGame(game.idGame)
                         }, onTap = {
                             val route = Match2Dest(idGame = game.idGame)
                             navController.navigate(route)
@@ -463,58 +489,59 @@ fun GameCard(
         offsetX.animateTo(0f, tween(300))
     }
 
-    Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
-        Box(
-            modifier = Modifier.matchParentSize().clip(shape = CardDefaults.shape)
-                .background(Color.Red).padding(end = 16.dp), contentAlignment = Alignment.CenterEnd
-        ) {
-            Image(
-                painter = painterResource(Res.drawable.ic_delete_white),
-                contentDescription = null,
-                modifier = modifier.width(44.dp)
-            )
-        }
+        Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
+            Box(
+                modifier = Modifier.matchParentSize().clip(shape = CardDefaults.shape)
+                    .background(Color.Red).padding(end = 16.dp), contentAlignment = Alignment.CenterEnd
+            ) {
+                Image(
+                    painter = painterResource(Res.drawable.ic_delete_white),
+                    contentDescription = null,
+                    modifier = modifier.width(44.dp)
+                )
+            }
 
-        Card(modifier = modifier.offset { IntOffset(offsetX.value.toInt(), 0) }.pointerInput(Unit) {
-            detectHorizontalDragGestures(onDragEnd = {
-                if (offsetX.value <= swipeThreshold) {
-                    showDialog = true
-                } else {
+            Card(modifier = modifier.offset { IntOffset(offsetX.value.toInt(), 0) }.pointerInput(Unit) {
+                detectHorizontalDragGestures(onDragEnd = {
+                    if (offsetX.value <= swipeThreshold) {
+                        showDialog = true
+                    } else {
+                        scope.launch {
+                            offsetX.animateTo(0f, animationSpec = tween(300))
+                        }
+                    }
+                }) { change, dragAmount ->
+                    change.consume()
+                    val newOffset = offsetX.value + dragAmount
                     scope.launch {
-                        offsetX.animateTo(0f, animationSpec = tween(300))
+                        offsetX.snapTo(newOffset.coerceIn(-300f, 0f))
                     }
                 }
-            }) { change, dragAmount ->
-                change.consume()
-                val newOffset = offsetX.value + dragAmount
-                scope.launch {
-                    offsetX.snapTo(newOffset.coerceIn(-300f, 0f))
+            }.pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    onTap()
+                })
+            }) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(if (isTable) 16.dp else 0.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    content()
                 }
             }
-        }.pointerInput(Unit) {
-            detectTapGestures(onTap = {
-                onTap()
-            })
-        }) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(if (isTable) 16.dp else 0.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                content()
-            }
         }
-    }
 
-    if (showDialog) {
-        ConfirmDeleteDialog(onConfirm = {
-            onDelete()
-            showDialog = false
-            scope.launch { offsetX.snapTo(0f) }
-        }, onDismiss = {
-            showDialog = false
-            scope.launch { offsetX.snapTo(0f) }
-        }, isTable = isTable)
-    }
+        if (showDialog) {
+            ConfirmDeleteDialog(onConfirm = {
+                onDelete()
+                showDialog = false
+                scope.launch { offsetX.snapTo(0f) }
+            }, onDismiss = {
+                showDialog = false
+                scope.launch { offsetX.snapTo(0f) }
+            }, isTable = isTable)
+        }
+
 }
 
 @Composable
@@ -864,40 +891,6 @@ internal fun InsertGameDialogBase(
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun WinningPointsRadioButtons(
-    selectedValue: Int, onValueChange: (Int) -> Unit
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.clickable { onValueChange(WinningPointsEnum.ONE_HUNDRED_ONE.intValue) }) {
-            RadioButton(
-                selected = selectedValue == WinningPointsEnum.ONE_HUNDRED_ONE.intValue,
-                onClick = { onValueChange(WinningPointsEnum.ONE_HUNDRED_ONE.intValue) })
-            Text(
-                text = WinningPointsEnum.ONE_HUNDRED_ONE.stringValue,
-                color = if (isSystemInDarkTheme()) Color.White else Color.Black
-            )
-        }
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.clickable { onValueChange(WinningPointsEnum.FIFTY_ONE.intValue) }) {
-            RadioButton(
-                selected = selectedValue == WinningPointsEnum.FIFTY_ONE.intValue,
-                onClick = { onValueChange(WinningPointsEnum.FIFTY_ONE.intValue) })
-            Text(
-                text = WinningPointsEnum.FIFTY_ONE.stringValue,
-                color = if (isSystemInDarkTheme()) Color.White else Color.Black
-            )
         }
     }
 }
