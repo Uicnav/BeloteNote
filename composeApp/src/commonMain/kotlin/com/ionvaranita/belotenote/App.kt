@@ -116,6 +116,7 @@ import com.ionvaranita.belotenote.domain.usecase.winningpoints.get.GetWinningPoi
 import com.ionvaranita.belotenote.domain.usecase.winningpoints.insert.InsertWinningPointsUseCase
 import com.ionvaranita.belotenote.ui.HomeScreen
 import com.ionvaranita.belotenote.ui.LocalNavHostController
+import com.ionvaranita.belotenote.ui.LocalSnackbarHostState
 import com.ionvaranita.belotenote.ui.match.MatchScreen2
 import com.ionvaranita.belotenote.ui.match.MatchScreen2Groups
 import com.ionvaranita.belotenote.ui.match.MatchScreen3
@@ -144,8 +145,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun App(appDatabase: AppDatabase) {
 
     BeloteTheme {
+        val snackbarHostState = remember { SnackbarHostState() }
         CompositionLocalProvider(
-            LocalNavHostController provides rememberNavController()
+            LocalNavHostController provides rememberNavController(),
+            LocalSnackbarHostState provides snackbarHostState
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
                 Image(
@@ -182,7 +185,7 @@ fun App(appDatabase: AppDatabase) {
                         insertWinningPointsUseCase = insertWinningPointsUseCase
                     )
                 }
-                val snackbarHostState = remember { SnackbarHostState() }
+
                 Scaffold(
                     snackbarHost = { SnackbarHost(snackbarHostState) },
                     containerColor = Color.Transparent,
@@ -220,7 +223,6 @@ fun App(appDatabase: AppDatabase) {
                             TablesScreen2(
                                 viewModel = game2PViewModel,
                                 winningPointsViewModel = winningPointsViewModel,
-                                snackbarHostState = snackbarHostState
                             )
                         }
                         composable<Games3Dest> {

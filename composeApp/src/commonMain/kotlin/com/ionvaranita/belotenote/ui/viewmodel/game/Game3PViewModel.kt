@@ -3,6 +3,7 @@ package com.ionvaranita.belotenote.ui.viewmodel.game
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ionvaranita.belotenote.datalayer.database.entity.players3.Game3PEntity
+import com.ionvaranita.belotenote.domain.model.Game2PUi
 import com.ionvaranita.belotenote.domain.model.Game3PUi
 import com.ionvaranita.belotenote.domain.usecase.game.delete.DeleteGame3PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGames3PUseCase
@@ -29,6 +30,50 @@ class Game3PViewModel(private val getGamesUseCase: GetGames3PUseCase, private va
 
     suspend fun insertGame(game: Game3PEntity): Int {
         return insertGameUseCase.execute(game)
+    }
+    private var gameToDelete: Game3PUi? = null
+
+    fun prepareDeleteGame(game: Game3PUi) {
+        val currentList = _uiState.value as? Games3PUiState.Success ?: return
+        val updatedList = currentList.data.map {
+            if (it.idGame == game.idGame) {
+                gameToDelete = it.copy(isVisible = false)
+                gameToDelete!!
+            } else{
+                it
+            }
+        }
+        updatedList.let {
+            _uiState.value = Games3PUiState.Success(it)
+        }
+    }
+
+    fun undoDeleteGame(game: Game3PUi) {
+        gameToDelete?.let { gameToDelete->
+            if (gameToDelete.idGame == game.idGame) {
+                val currentList = _uiState.value as? Games3PUiState.Success ?: return
+                val updatedList = currentList.data.map {
+                    if (it.idGame == game.idGame) {
+                        it.copy(isVisible = true)
+                    } else{
+                        it
+                    }
+                }
+                updatedList.let {
+                    _uiState.value = Games3PUiState.Success(it)
+                }
+                this.gameToDelete = null
+            } else {
+                deleteGame((gameToDelete.idGame))
+            }
+        }
+    }
+
+    fun deleteGameToDelete() {
+        gameToDelete?.let {
+            deleteGame(it.idGame)
+        }
+        gameToDelete = null
     }
     fun deleteGame(idGame: Int, dispatcher: CoroutineDispatcher = Dispatchers.IO) = viewModelScope.launch(dispatcher) {
         deleteGameUseCase.execute(idGame)

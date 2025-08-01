@@ -10,14 +10,12 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -48,7 +46,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -104,6 +101,7 @@ import com.ionvaranita.belotenote.datalayer.database.entity.players3.Game3PEntit
 import com.ionvaranita.belotenote.datalayer.database.entity.players4.Game4PEntity
 import com.ionvaranita.belotenote.domain.model.WinningPointsUi
 import com.ionvaranita.belotenote.ui.LocalNavHostController
+import com.ionvaranita.belotenote.ui.LocalSnackbarHostState
 import com.ionvaranita.belotenote.ui.match.ConfirmYesButton
 import com.ionvaranita.belotenote.ui.viewmodel.WinningPointsViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.game.Game2GroupsViewModel
@@ -120,17 +118,12 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-enum class WinningPointsEnum(val stringValue: String, val intValue: Int) {
-    ONE_HUNDRED_ONE(stringValue = "101", intValue = 101), FIFTY_ONE(
-        stringValue = "51", intValue = 51
-    )
-}
 
 @Composable
 internal fun TablesScreen2(
-    viewModel: Game2PViewModel, winningPointsViewModel: WinningPointsViewModel,snackbarHostState: SnackbarHostState
+    viewModel: Game2PViewModel, winningPointsViewModel: WinningPointsViewModel
 ) {
-
+    val snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
     val navController = LocalNavHostController.current
     val gamesUiState = viewModel.uiState.collectAsState()
     var shouDialog by remember { mutableStateOf(false) }
@@ -177,10 +170,9 @@ internal fun TablesScreen2(
                             viewModel.prepareDeleteGame(game)
                             scope.launch {
                                 val result = snackbarHostState.showSnackbar(
-                                    message = "Game deleted",
-                                    actionLabel = "Undo"
+                                    message = "Game deleted", actionLabel = "Undo"
                                 )
-                                when(result) {
+                                when (result) {
                                     SnackbarResult.ActionPerformed -> {
                                         viewModel.undoDeleteGame(game)
                                     }
@@ -190,7 +182,6 @@ internal fun TablesScreen2(
                                     }
                                 }
                             }
-                            //viewModel.deleteGame(game.idGame)
                         }, onTap = {
                             val route = Match2Dest(idGame = game.idGame)
                             navController.navigate(route)
@@ -224,6 +215,7 @@ internal fun TablesScreen2(
 internal fun TablesScreen3(
     viewModel: Game3PViewModel, winningPointsViewModel: WinningPointsViewModel
 ) {
+    val snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
     val navController = LocalNavHostController.current
     val gamesUiState = viewModel.uiState.collectAsState()
     var shouDialog by remember { mutableStateOf(false) }
@@ -249,6 +241,11 @@ internal fun TablesScreen3(
 
         when (val state = gamesUiState.value) {
             is Games3PUiState.Success -> {
+                DisposableEffect(Unit) {
+                    onDispose {
+                        viewModel.deleteGameToDelete()
+                    }
+                }
                 isLoading = false
                 isEmptyList = state.data.isEmpty()
                 scope.launch {
@@ -259,9 +256,24 @@ internal fun TablesScreen3(
                     modifier = Modifier.fillMaxSize().padding(16.dp),
                     state = gameListState
                 ) {
-                    items(state.data) { game ->
+                    items(state.data.filter { it.isVisible }) { game ->
                         GameCard(onDelete = {
-                            viewModel.deleteGame(game.idGame)
+                            snackbarHostState.currentSnackbarData?.dismiss()
+                            viewModel.prepareDeleteGame(game)
+                            scope.launch {
+                                val result = snackbarHostState.showSnackbar(
+                                    message = "Game deleted", actionLabel = "Undo"
+                                )
+                                when (result) {
+                                    SnackbarResult.ActionPerformed -> {
+                                        viewModel.undoDeleteGame(game)
+                                    }
+
+                                    SnackbarResult.Dismissed -> {
+                                        viewModel.deleteGame(game.idGame)
+                                    }
+                                }
+                            }
                         }, onTap = {
                             val route = Match3Dest(idGame = game.idGame)
                             navController.navigate(route)
@@ -489,58 +501,58 @@ fun GameCard(
         offsetX.animateTo(0f, tween(300))
     }
 
-        Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
-            Box(
-                modifier = Modifier.matchParentSize().clip(shape = CardDefaults.shape)
-                    .background(Color.Red).padding(end = 16.dp), contentAlignment = Alignment.CenterEnd
-            ) {
-                Image(
-                    painter = painterResource(Res.drawable.ic_delete_white),
-                    contentDescription = null,
-                    modifier = modifier.width(44.dp)
-                )
-            }
+    Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
+        Box(
+            modifier = Modifier.matchParentSize().clip(shape = CardDefaults.shape)
+                .background(Color.Red).padding(end = 16.dp), contentAlignment = Alignment.CenterEnd
+        ) {
+            Image(
+                painter = painterResource(Res.drawable.ic_delete_white),
+                contentDescription = null,
+                modifier = modifier.width(44.dp)
+            )
+        }
 
-            Card(modifier = modifier.offset { IntOffset(offsetX.value.toInt(), 0) }.pointerInput(Unit) {
-                detectHorizontalDragGestures(onDragEnd = {
-                    if (offsetX.value <= swipeThreshold) {
-                        showDialog = true
-                    } else {
-                        scope.launch {
-                            offsetX.animateTo(0f, animationSpec = tween(300))
-                        }
-                    }
-                }) { change, dragAmount ->
-                    change.consume()
-                    val newOffset = offsetX.value + dragAmount
+        Card(modifier = modifier.offset { IntOffset(offsetX.value.toInt(), 0) }.pointerInput(Unit) {
+            detectHorizontalDragGestures(onDragEnd = {
+                if (offsetX.value <= swipeThreshold) {
+                    showDialog = true
+                } else {
                     scope.launch {
-                        offsetX.snapTo(newOffset.coerceIn(-300f, 0f))
+                        offsetX.animateTo(0f, animationSpec = tween(300))
                     }
                 }
-            }.pointerInput(Unit) {
-                detectTapGestures(onTap = {
-                    onTap()
-                })
-            }) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(if (isTable) 16.dp else 0.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    content()
+            }) { change, dragAmount ->
+                change.consume()
+                val newOffset = offsetX.value + dragAmount
+                scope.launch {
+                    offsetX.snapTo(newOffset.coerceIn(-300f, 0f))
                 }
             }
+        }.pointerInput(Unit) {
+            detectTapGestures(onTap = {
+                onTap()
+            })
+        }) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(if (isTable) 16.dp else 0.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                content()
+            }
         }
+    }
 
-        if (showDialog) {
-            ConfirmDeleteDialog(onConfirm = {
-                onDelete()
-                showDialog = false
-                scope.launch { offsetX.snapTo(0f) }
-            }, onDismiss = {
-                showDialog = false
-                scope.launch { offsetX.snapTo(0f) }
-            }, isTable = isTable)
-        }
+    if (showDialog) {
+        ConfirmDeleteDialog(onConfirm = {
+            onDelete()
+            showDialog = false
+            scope.launch { offsetX.snapTo(0f) }
+        }, onDismiss = {
+            showDialog = false
+            scope.launch { offsetX.snapTo(0f) }
+        }, isTable = isTable)
+    }
 
 }
 

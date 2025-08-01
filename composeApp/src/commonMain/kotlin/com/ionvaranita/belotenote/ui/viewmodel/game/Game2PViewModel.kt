@@ -33,11 +33,6 @@ class Game2PViewModel(private val getGamesUseCase: GetGames2PUseCase, private va
         return insertGameUseCase.execute(game)
     }
 
-    fun prepareDeleteGame(game: Game2PUi, dispatcher: CoroutineDispatcher = Dispatchers.IO) {
-        game.isVisible = false
-        gameToDelete = game
-    }
-
     fun prepareDeleteGame(game: Game2PUi) {
         val currentList = _uiState.value as? Games2PUiState.Success ?: return
         val updatedList = currentList.data.map {
