@@ -252,7 +252,7 @@ fun App(appDatabase: AppDatabase) {
                                 )
                             }
                             TablesScreen4(
-                                game4PViewModel = game4PViewModel, winningPointsViewModel,
+                                viewModel = game4PViewModel, winningPointsViewModel,
                             )
                         }
                         composable<GamesGroupsDest> {

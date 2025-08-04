@@ -32,4 +32,6 @@
     <string name="sure_delete_row">Jeste li sigurni da želite izbrisati ovaj red?</string>
     <string name="yes">Da</string>
     <string name="no">Ne</string>
+    <string name="game_deleted">Igra je izbrisana</string>
+    <string name="undo">Poništi</string>
 </resources>

@@ -23,7 +23,7 @@ class Game2PViewModel(private val getGamesUseCase: GetGames2PUseCase, private va
     val uiState: StateFlow<Games2PUiState> = _uiState
     private fun getGames() = viewModelScope.launch(Dispatchers.IO) {
         getGamesUseCase.execute(Unit).collect { gameList ->
-            _uiState.value = Games2PUiState.Success(gameList)
+            _uiState.value = Games2PUiState.Success(gameList.map { value -> if (value.idGame == gameToDelete?.idGame ) value.copy(isVisible = false) else value})
         }
     }
 
@@ -63,8 +63,6 @@ class Game2PViewModel(private val getGamesUseCase: GetGames2PUseCase, private va
                     _uiState.value = Games2PUiState.Success(it)
                 }
                 this.gameToDelete = null
-            } else {
-                deleteGame((gameToDelete.idGame))
             }
         }
     }

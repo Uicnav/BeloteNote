@@ -32,4 +32,6 @@
     <string name="sure_delete_row">Ești sigur că vrei să ștergi acest rând?</string>
     <string name="yes">Da</string>
     <string name="no">Nu</string>
+    <string name="game_deleted">Joc șters</string>
+    <string name="undo">Anulează</string>
 </resources>

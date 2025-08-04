@@ -80,12 +80,14 @@ import belotenote.composeapp.generated.resources.confirm_delete
 import belotenote.composeapp.generated.resources.dialog_fragment_insert_manually_winner_points
 import belotenote.composeapp.generated.resources.dialog_fragment_insert_match
 import belotenote.composeapp.generated.resources.dialog_fragment_insert_table
+import belotenote.composeapp.generated.resources.game_deleted
 import belotenote.composeapp.generated.resources.ic_delete_white
 import belotenote.composeapp.generated.resources.me
 import belotenote.composeapp.generated.resources.no
 import belotenote.composeapp.generated.resources.p
 import belotenote.composeapp.generated.resources.sure_delete_row
 import belotenote.composeapp.generated.resources.sure_delete_table
+import belotenote.composeapp.generated.resources.undo
 import belotenote.composeapp.generated.resources.we
 import belotenote.composeapp.generated.resources.you_p
 import belotenote.composeapp.generated.resources.you_s
@@ -115,101 +117,112 @@ import com.ionvaranita.belotenote.ui.viewmodel.game.Games4PUiState
 import com.ionvaranita.belotenote.utils.capitalizeName
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 
 @Composable
 internal fun TablesScreen2(
-    viewModel: Game2PViewModel, winningPointsViewModel: WinningPointsViewModel
+    viewModel: Game2PViewModel,
+    winningPointsViewModel: WinningPointsViewModel
 ) {
     val snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
     val navController = LocalNavHostController.current
-    val gamesUiState = viewModel.uiState.collectAsState()
-    var shouDialog by remember { mutableStateOf(false) }
+    val gamesUiState by viewModel.uiState.collectAsState()
     val gameListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
-    var isEmptyList by remember { mutableStateOf(false) }
-    var isLoading by remember { mutableStateOf(false) }
-    TablesBase(onInsertGameClick = {
-        shouDialog = true
-    }, isEmptyList = isEmptyList, isLoading = isLoading) { paddingValues ->
-        if (shouDialog) {
-            InsertGame2(onClick = {
-                scope.launch {
-                    val idGame = viewModel.insertGame(game = it)
-                    val route = Match2Dest(idGame = idGame)
-                    navController.navigate(route)
-                }
+    var showDialog by remember { mutableStateOf(false) }
 
-            }, onDismissRequest = {
-                shouDialog = false
-            }, viewModel = winningPointsViewModel)
+    val isLoading = gamesUiState is Games2PUiState.Loading
+    val isEmptyList = (gamesUiState as? Games2PUiState.Success)?.data?.none { it.isVisible } == true
+
+    TablesBase(
+        onInsertGameClick = { showDialog = true },
+        isEmptyList = isEmptyList,
+        isLoading = isLoading
+    ) { paddingValues ->
+
+        if (showDialog) {
+            InsertGame2(
+                onClick = {
+                    scope.launch {
+                        val idGame = viewModel.insertGame(it)
+                        navController.navigate(Match2Dest(idGame))
+                    }
+                },
+                onDismissRequest = { showDialog = false },
+                viewModel = winningPointsViewModel
+            )
         }
 
-        when (val state = gamesUiState.value) {
+        when (val state = gamesUiState) {
             is Games2PUiState.Success -> {
+                val visibleGames = state.data.filter { it.isVisible }
+
+                LaunchedEffect(state.data.size) {
+                    if (state.data.isNotEmpty()) {
+                        gameListState.animateScrollToItem(state.data.size - 1)
+                    }
+                }
+
                 DisposableEffect(Unit) {
                     onDispose {
                         viewModel.deleteGameToDelete()
                     }
                 }
-                isLoading = false
-                isEmptyList = state.data.isEmpty()
-                scope.launch {
-                    gameListState.animateScrollToItem(state.data.size)
-                }
+
                 LazyColumn(
                     contentPadding = paddingValues,
-                    modifier = Modifier.fillMaxSize().padding(16.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
                     state = gameListState
                 ) {
-                    items(state.data.filter { it.isVisible }) { game ->
-                        GameCard(onDelete = {
-                            snackbarHostState.currentSnackbarData?.dismiss()
-                            viewModel.prepareDeleteGame(game)
-                            scope.launch {
-                                val result = snackbarHostState.showSnackbar(
-                                    message = "Game deleted", actionLabel = "Undo"
-                                )
-                                when (result) {
-                                    SnackbarResult.ActionPerformed -> {
+                    items(visibleGames) { game ->
+                        GameCard(
+                            onDelete = {
+                                scope.launch {
+                                    snackbarHostState.currentSnackbarData?.dismiss()
+                                    viewModel.prepareDeleteGame(game)
+                                    val result = snackbarHostState.showSnackbar(
+                                        message = getString(Res.string.game_deleted),
+                                        actionLabel = getString(Res.string.undo)
+                                    )
+                                    if (result == SnackbarResult.ActionPerformed) {
                                         viewModel.undoDeleteGame(game)
-                                    }
-
-                                    SnackbarResult.Dismissed -> {
+                                    } else {
                                         viewModel.deleteGame(game.idGame)
                                     }
                                 }
-                            }
-                        }, onTap = {
-                            val route = Match2Dest(idGame = game.idGame)
-                            navController.navigate(route)
-                        }, isTable = true) {
-                            Column(modifier = Modifier.weight(1F)) {
+                            },
+                            onTap = {
+                                navController.navigate(Match2Dest(game.idGame))
+                            },
+                            isTable = true
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
                                 TableTextAtom(game.name1)
                                 TableTextAtom(game.name2)
                             }
                             Spacer(modifier = Modifier.width(16.dp))
-                            StatusImage(
-                                gameStatus = GameStatus.fromId(game.statusGame)
-                            )
+                            StatusImage(gameStatus = GameStatus.fromId(game.statusGame))
                         }
                     }
                 }
             }
 
-            is Games2PUiState.Error -> { // Handle error
-                isLoading = false
+            is Games2PUiState.Error -> {
+                // Show optional error message
             }
 
             Games2PUiState.Loading -> {
                 CenteredCircularProgressIndicator()
-                isLoading = true
             }
         }
     }
 }
+
 
 @Composable
 internal fun TablesScreen3(
@@ -262,7 +275,7 @@ internal fun TablesScreen3(
                             viewModel.prepareDeleteGame(game)
                             scope.launch {
                                 val result = snackbarHostState.showSnackbar(
-                                    message = "Game deleted", actionLabel = "Undo"
+                                    message = getString(Res.string.game_deleted), actionLabel = getString(Res.string.undo)
                                 )
                                 when (result) {
                                     SnackbarResult.ActionPerformed -> {
@@ -309,10 +322,11 @@ internal fun TablesScreen3(
 
 @Composable
 internal fun TablesScreen4(
-    game4PViewModel: Game4PViewModel, winningPointsViewModel: WinningPointsViewModel
+    viewModel: Game4PViewModel, winningPointsViewModel: WinningPointsViewModel
 ) {
+    val snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
     val navController = LocalNavHostController.current
-    val gamesUiState = game4PViewModel.uiState.collectAsState()
+    val gamesUiState = viewModel.uiState.collectAsState()
     var shouDialog by remember { mutableStateOf(false) }
     val gameListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
@@ -324,7 +338,7 @@ internal fun TablesScreen4(
         if (shouDialog) {
             InsertGame4(onClick = {
                 scope.launch {
-                    val idGame = game4PViewModel.insertGame(game = it)
+                    val idGame = viewModel.insertGame(game = it)
                     val route = Match4Dest(idGame = idGame)
                     navController.navigate(route)
                 }
@@ -335,6 +349,11 @@ internal fun TablesScreen4(
 
         when (val state = gamesUiState.value) {
             is Games4PUiState.Success -> {
+                DisposableEffect(Unit) {
+                    onDispose {
+                        viewModel.deleteGameToDelete()
+                    }
+                }
                 isLoading = false
                 isEmptyList = state.data.isEmpty()
                 LazyColumn(
@@ -345,9 +364,24 @@ internal fun TablesScreen4(
                     scope.launch {
                         gameListState.animateScrollToItem(state.data.size)
                     }
-                    items(state.data) { game ->
+                    items(state.data.filter { it.isVisible }) { game ->
                         GameCard(onDelete = {
-                            game4PViewModel.deleteGame(game.idGame)
+                            snackbarHostState.currentSnackbarData?.dismiss()
+                            viewModel.prepareDeleteGame(game)
+                            scope.launch {
+                                val result = snackbarHostState.showSnackbar(
+                                    message = getString(Res.string.game_deleted), actionLabel = getString(Res.string.undo)
+                                )
+                                when (result) {
+                                    SnackbarResult.ActionPerformed -> {
+                                        viewModel.undoDeleteGame(game)
+                                    }
+
+                                    SnackbarResult.Dismissed -> {
+                                        viewModel.deleteGame(game.idGame)
+                                    }
+                                }
+                            }
                         }, onTap = {
                             val route = Match4Dest(idGame = game.idGame)
                             navController.navigate(route)
@@ -393,6 +427,8 @@ internal fun TablesScreenGroups(
     val scope = rememberCoroutineScope()
     var isEmptyList by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
+    val snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
+
     TablesBase(onInsertGameClick = {
         shouDialog = true
     }, isEmptyList = isEmptyList, isLoading = isLoading) { paddingValues ->
@@ -411,6 +447,11 @@ internal fun TablesScreenGroups(
 
         when (val state = gamesUiState.value) {
             is Games2GroupsUiState.Success -> {
+                DisposableEffect(Unit) {
+                    onDispose {
+                        viewModel.deleteGameToDelete()
+                    }
+                }
                 isLoading = false
                 isEmptyList = state.data.isEmpty()
                 scope.launch {
@@ -421,9 +462,24 @@ internal fun TablesScreenGroups(
                     modifier = Modifier.fillMaxSize().padding(16.dp),
                     state = gameListState
                 ) {
-                    items(state.data) { game ->
+                    items(state.data.filter { it.isVisible }) { game ->
                         GameCard(onDelete = {
-                            viewModel.deleteGame(game.idGame)
+                            snackbarHostState.currentSnackbarData?.dismiss()
+                            viewModel.prepareDeleteGame(game)
+                            scope.launch {
+                                val result = snackbarHostState.showSnackbar(
+                                    message = getString(Res.string.game_deleted), actionLabel = getString(Res.string.undo)
+                                )
+                                when (result) {
+                                    SnackbarResult.ActionPerformed -> {
+                                        viewModel.undoDeleteGame(game)
+                                    }
+
+                                    SnackbarResult.Dismissed -> {
+                                        viewModel.deleteGame(game.idGame)
+                                    }
+                                }
+                            }
                         }, onTap = {
                             val route = MatchGroupsDest(idGame = game.idGame)
                             navController.navigate(route)

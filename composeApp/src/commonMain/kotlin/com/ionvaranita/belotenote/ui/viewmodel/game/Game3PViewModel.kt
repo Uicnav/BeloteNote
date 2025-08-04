@@ -2,6 +2,7 @@ package com.ionvaranita.belotenote.ui.viewmodel.game
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ionvaranita.belotenote.datalayer.database.entity.players2.Game2PEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players3.Game3PEntity
 import com.ionvaranita.belotenote.domain.model.Game2PUi
 import com.ionvaranita.belotenote.domain.model.Game3PUi
@@ -24,14 +25,15 @@ class Game3PViewModel(private val getGamesUseCase: GetGames3PUseCase, private va
     val uiState: StateFlow<Games3PUiState> = _uiState
     private fun getGames() = viewModelScope.launch(Dispatchers.IO) {
         getGamesUseCase.execute(Unit).collect { gameList ->
-            _uiState.value = Games3PUiState.Success(gameList)
+            _uiState.value = Games3PUiState.Success(gameList.map { value -> if (value.idGame == gameToDelete?.idGame ) value.copy(isVisible = false) else value})
         }
     }
+
+    private var gameToDelete: Game3PUi? = null
 
     suspend fun insertGame(game: Game3PEntity): Int {
         return insertGameUseCase.execute(game)
     }
-    private var gameToDelete: Game3PUi? = null
 
     fun prepareDeleteGame(game: Game3PUi) {
         val currentList = _uiState.value as? Games3PUiState.Success ?: return
@@ -63,8 +65,6 @@ class Game3PViewModel(private val getGamesUseCase: GetGames3PUseCase, private va
                     _uiState.value = Games3PUiState.Success(it)
                 }
                 this.gameToDelete = null
-            } else {
-                deleteGame((gameToDelete.idGame))
             }
         }
     }
@@ -75,6 +75,7 @@ class Game3PViewModel(private val getGamesUseCase: GetGames3PUseCase, private va
         }
         gameToDelete = null
     }
+
     fun deleteGame(idGame: Int, dispatcher: CoroutineDispatcher = Dispatchers.IO) = viewModelScope.launch(dispatcher) {
         deleteGameUseCase.execute(idGame)
     }

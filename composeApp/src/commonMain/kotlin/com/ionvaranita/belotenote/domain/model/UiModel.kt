@@ -72,7 +72,8 @@ data class Game4PUi(
     val scoreName1: Short = 0,
     val scoreName2: Short,
     val scoreName3: Short,
-    val scoreName4: Short
+    val scoreName4: Short,
+    var isVisible: Boolean = true
 ) {
     fun toDataClass(): Game4PEntity {
         return Game4PEntity(
@@ -94,7 +95,8 @@ data class Game2GroupsUi(
     val name1: String,
     val name2: String,
     val scoreName1: Short,
-    var scoreName2: Short
+    var scoreName2: Short,
+    var isVisible: Boolean = true
 ) {
     fun toDataClass(): Game2GroupsEntity {
         return Game2GroupsEntity(

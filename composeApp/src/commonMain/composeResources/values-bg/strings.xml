@@ -32,4 +32,7 @@
     <string name="sure_delete_row">Сигурни ли сте, че искате да изтриете този ред?</string>
     <string name="yes">Да</string>
     <string name="no">Не</string>
+
+    <string name="game_deleted">Играта е изтрита</string>
+    <string name="undo">Отмени</string>
 </resources>
