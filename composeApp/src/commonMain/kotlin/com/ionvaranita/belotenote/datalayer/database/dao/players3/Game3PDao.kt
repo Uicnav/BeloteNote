@@ -12,7 +12,7 @@ interface Game3PDao {
     @Insert
     suspend fun insert(game: Game3PEntity): Long
 
-    @Query("select * from Game3PEntity order by dateGame desc")
+    @Query("select * from Game3PEntity order by dateGame asc")
     fun getGames(): Flow<List<Game3PEntity>>
 
     @Query("select * from Game3PEntity where idGame = :idGame")

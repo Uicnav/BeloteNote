@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -201,7 +203,7 @@ internal fun TablesScreen2(
                                 navController.navigate(Match2Dest(game.idGame))
                             },
                             isTable = true,
-                            isSwipe = index == 0
+                            isSwipe = index == visibleGames.lastIndex
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
                                 TableTextAtom(game.name1)
@@ -256,6 +258,7 @@ internal fun TablesScreen3(
 
         when (val state = gamesUiState.value) {
             is Games3PUiState.Success -> {
+                val visibleGames = state.data.filter { it.isVisible }
                 DisposableEffect(Unit) {
                     onDispose {
                         viewModel.deleteGameToDelete()
@@ -271,7 +274,7 @@ internal fun TablesScreen3(
                     modifier = Modifier.fillMaxSize().padding(16.dp),
                     state = gameListState
                 ) {
-                    items(state.data.filter { it.isVisible }) { game ->
+                    itemsIndexed(visibleGames) { index, game ->
                         GameCard(onDelete = {
                             snackbarHostState.currentSnackbarData?.dismiss()
                             viewModel.prepareDeleteGame(game)
@@ -292,7 +295,7 @@ internal fun TablesScreen3(
                         }, onTap = {
                             val route = Match3Dest(idGame = game.idGame)
                             navController.navigate(route)
-                        }, isTable = true) {
+                        }, isTable = true,isSwipe = index == visibleGames.lastIndex) {
                             Column(modifier = Modifier.weight(1F)) {
                                 TableTextAtom(game.name1)
                                 TableTextAtom(game.name2)
@@ -351,6 +354,7 @@ internal fun TablesScreen4(
 
         when (val state = gamesUiState.value) {
             is Games4PUiState.Success -> {
+                val visibleGames = state.data.filter { it.isVisible }
                 DisposableEffect(Unit) {
                     onDispose {
                         viewModel.deleteGameToDelete()
@@ -366,7 +370,7 @@ internal fun TablesScreen4(
                     scope.launch {
                         gameListState.animateScrollToItem(state.data.size)
                     }
-                    items(state.data.filter { it.isVisible }) { game ->
+                    itemsIndexed(visibleGames) { index, game ->
                         GameCard(onDelete = {
                             snackbarHostState.currentSnackbarData?.dismiss()
                             viewModel.prepareDeleteGame(game)
@@ -387,7 +391,7 @@ internal fun TablesScreen4(
                         }, onTap = {
                             val route = Match4Dest(idGame = game.idGame)
                             navController.navigate(route)
-                        }, isTable = true) {
+                        }, isTable = true, isSwipe = index == visibleGames.lastIndex) {
                             Column(modifier = Modifier.weight(1F)) {
                                 TableTextAtom(game.name1)
                                 TableTextAtom(game.name2)
@@ -449,6 +453,7 @@ internal fun TablesScreenGroups(
 
         when (val state = gamesUiState.value) {
             is Games2GroupsUiState.Success -> {
+                val visibleGames = state.data.filter { it.isVisible }
                 DisposableEffect(Unit) {
                     onDispose {
                         viewModel.deleteGameToDelete()
@@ -464,7 +469,7 @@ internal fun TablesScreenGroups(
                     modifier = Modifier.fillMaxSize().padding(16.dp),
                     state = gameListState
                 ) {
-                    items(state.data.filter { it.isVisible }) { game ->
+                    itemsIndexed(visibleGames) { index, game ->
                         GameCard(onDelete = {
                             snackbarHostState.currentSnackbarData?.dismiss()
                             viewModel.prepareDeleteGame(game)
@@ -485,7 +490,7 @@ internal fun TablesScreenGroups(
                         }, onTap = {
                             val route = MatchGroupsDest(idGame = game.idGame)
                             navController.navigate(route)
-                        }, isTable = true) {
+                        }, isTable = true, isSwipe = index == visibleGames.lastIndex) {
                             Column(modifier = Modifier.weight(1f)) {
                                 TableTextAtom(text = game.name1)
                                 TableTextAtom(text = game.name2)
@@ -640,7 +645,13 @@ private fun TablesBase(
             onInsertGameClick()
         }, animate = isEmptyList, isLoading = isLoading, modifier = Modifier)
     }, containerColor = Color.Transparent) { paddingValues ->
-        content(paddingValues)
+        val customValues = PaddingValues(
+            start = paddingValues.calculateStartPadding(layoutDirection = androidx.compose.ui.unit.LayoutDirection.Ltr),
+            top = paddingValues.calculateTopPadding(),
+            end = paddingValues.calculateEndPadding(layoutDirection = androidx.compose.ui.unit.LayoutDirection.Ltr),
+            bottom = paddingValues.calculateBottomPadding() + 80.dp
+        )
+        content(customValues)
     }
 
 }
