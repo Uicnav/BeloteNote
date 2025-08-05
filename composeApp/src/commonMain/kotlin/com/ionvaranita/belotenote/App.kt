@@ -3,8 +3,11 @@ package com.ionvaranita.belotenote
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,7 +26,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -41,7 +43,6 @@ import belotenote.composeapp.generated.resources.tables_list
 import belotenote.composeapp.generated.resources.three_players
 import belotenote.composeapp.generated.resources.two_players
 import belotenote.composeapp.generated.resources.two_vs_two
-import com.ionvaranita.belotenote.constants.GLOBAL_ALPHA
 import com.ionvaranita.belotenote.datalayer.database.AppDatabase
 import com.ionvaranita.belotenote.datalayer.datasource.game.Game2GroupsDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.datasource.game.Game2PDataSourceImpl
@@ -51,6 +52,7 @@ import com.ionvaranita.belotenote.datalayer.datasource.match.Points2GroupsDataSo
 import com.ionvaranita.belotenote.datalayer.datasource.match.Points2PDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.datasource.match.Points3PDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.datasource.match.Points4PDataSourceImpl
+import com.ionvaranita.belotenote.datalayer.datasource.winningpoints.WinningPointsDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.repo.game.Games2GroupsRepositoryImpl
 import com.ionvaranita.belotenote.datalayer.repo.game.Games2PRepositoryImpl
 import com.ionvaranita.belotenote.datalayer.repo.game.Games3PRepositoryImpl
@@ -59,7 +61,6 @@ import com.ionvaranita.belotenote.datalayer.repo.match.Points2GroupsRepositoryIm
 import com.ionvaranita.belotenote.datalayer.repo.match.Points2PRepositoryImpl
 import com.ionvaranita.belotenote.datalayer.repo.match.Points3PRepositoryImpl
 import com.ionvaranita.belotenote.datalayer.repo.match.Points4PRepositoryImpl
-import com.ionvaranita.belotenote.datalayer.datasource.winningpoints.WinningPointsDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.repo.winningpoints.WinningPointsRepositoryImpl
 import com.ionvaranita.belotenote.domain.usecase.game.delete.DeleteGame2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.delete.DeleteGame2PUseCase
@@ -138,317 +139,332 @@ import com.ionvaranita.belotenote.utils.BeloteTheme
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-@Preview
 fun App(appDatabase: AppDatabase) {
-
     BeloteTheme {
         val snackbarHostState = remember { SnackbarHostState() }
+        val navController = rememberNavController()
+
         CompositionLocalProvider(
-            LocalNavHostController provides rememberNavController(),
+            LocalNavHostController provides navController,
             LocalSnackbarHostState provides snackbarHostState
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
                 Image(
-                    painter = if (isSystemInDarkTheme()) painterResource(Res.drawable.image_background_dark) else painterResource(
-                        Res.drawable.image_background_light
-                    ),
-                    contentDescription = "",
+                    painter = if (isSystemInDarkTheme()) painterResource(Res.drawable.image_background_dark)
+                    else painterResource(Res.drawable.image_background_light),
+                    contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.FillBounds
+                    contentScale = ContentScale.Crop
                 )
-                val navController = LocalNavHostController.current
-                var canNavigateBack by remember {
-                    mutableStateOf(navController.previousBackStackEntry != null)
-                }
-                var currentRoute by remember {
-                    mutableStateOf(navController.currentDestination?.route)
-                }
-                LaunchedEffect(navController) {
-                    navController.addOnDestinationChangedListener { _, _, _ ->
-                        canNavigateBack = navController.previousBackStackEntry != null
-                        currentRoute = navController.currentDestination?.route
-                    }
-                }
 
-                val winningPointsRepository =
-                    WinningPointsRepositoryImpl(WinningPointsDataSourceImpl(appDatabase.winningPointsDao()))
-                val getWinningPointsUseCase =
-                    GetWinningPointsUseCase(winningPointsRepository)
-                val insertWinningPointsUseCase =
-                    InsertWinningPointsUseCase(winningPointsRepository)
-                val winningPointsViewModel = viewModel {
-                    WinningPointsViewModel(
-                        getWinningPointsUseCase = getWinningPointsUseCase,
-                        insertWinningPointsUseCase = insertWinningPointsUseCase
+                Box(
+                    modifier = Modifier.fillMaxSize()
+                        .padding(WindowInsets.systemBars.asPaddingValues())
+                ) {
+                    val winningPointsRepository = WinningPointsRepositoryImpl(
+                        WinningPointsDataSourceImpl(appDatabase.winningPointsDao())
                     )
-                }
+                    val getWinningPointsUseCase = GetWinningPointsUseCase(winningPointsRepository)
+                    val insertWinningPointsUseCase =
+                        InsertWinningPointsUseCase(winningPointsRepository)
+                    val winningPointsViewModel = viewModel {
+                        WinningPointsViewModel(
+                            getWinningPointsUseCase = getWinningPointsUseCase,
+                            insertWinningPointsUseCase = insertWinningPointsUseCase
+                        )
+                    }
 
-                Scaffold(
-                    snackbarHost = { SnackbarHost(snackbarHostState) },
-                    containerColor = Color.Transparent,
-                    modifier = Modifier.alpha(GLOBAL_ALPHA),
-                    topBar = {
-                        BeloteAppBar(
-                            currentRoute = currentRoute,
-                            canNavigateBack = canNavigateBack,
-                            navigateUp = { navController.navigateUp() })
-                    }) { innerPadding ->
-                    NavHost(
-                        navController = navController,
-                        startDestination = HomeDest,
-                        modifier = Modifier.fillMaxSize().padding(innerPadding)
-                    ) {
+                    var canNavigateBack by remember {
+                        mutableStateOf(navController.previousBackStackEntry != null)
+                    }
+                    var currentRoute by remember {
+                        mutableStateOf(navController.currentDestination?.route)
+                    }
 
-
-                        composable<HomeDest> {
-                            HomeScreen(onClick = {
-                                navController.navigate(it)
-                            })
+                    LaunchedEffect(navController) {
+                        navController.addOnDestinationChangedListener { _, _, _ ->
+                            canNavigateBack = navController.previousBackStackEntry != null
+                            currentRoute = navController.currentDestination?.route
                         }
-                        composable<Games2Dest> {
-                            val repositoryGame =
-                                Games2PRepositoryImpl(Game2PDataSourceImpl(appDatabase.game2PDao()))
-                            val getGamesUseCase = GetGames2PUseCase(repositoryGame)
-                            val insertGameUseCase = InsertGame2PUseCase(repositoryGame)
-                            val deleteGameUseCase = DeleteGame2PUseCase(repositoryGame)
-                            val game2PViewModel = viewModel {
-                                Game2PViewModel(
-                                    getGamesUseCase, insertGameUseCase, deleteGameUseCase
+                    }
+
+                    Scaffold(
+                        snackbarHost = { SnackbarHost(snackbarHostState) },
+                        containerColor = Color.Transparent,
+                        topBar = {
+                            BeloteAppBar(
+                                currentRoute = currentRoute,
+                                canNavigateBack = canNavigateBack,
+                                navigateUp = { navController.navigateUp() })
+                        }) { innerPadding ->
+                        NavHost(
+                            navController = navController,
+                            startDestination = HomeDest,
+                            modifier = Modifier.fillMaxSize().padding(innerPadding)
+                        ) {
+
+
+                            composable<HomeDest> {
+                                HomeScreen(onClick = {
+                                    navController.navigate(it)
+                                })
+                            }
+                            composable<Games2Dest> {
+                                val repositoryGame =
+                                    Games2PRepositoryImpl(Game2PDataSourceImpl(appDatabase.game2PDao()))
+                                val getGamesUseCase = GetGames2PUseCase(repositoryGame)
+                                val insertGameUseCase = InsertGame2PUseCase(repositoryGame)
+                                val deleteGameUseCase = DeleteGame2PUseCase(repositoryGame)
+                                val game2PViewModel = viewModel {
+                                    Game2PViewModel(
+                                        getGamesUseCase, insertGameUseCase, deleteGameUseCase
+                                    )
+                                }
+
+                                TablesScreen2(
+                                    viewModel = game2PViewModel,
+                                    winningPointsViewModel = winningPointsViewModel,
                                 )
                             }
-
-                            TablesScreen2(
-                                viewModel = game2PViewModel,
-                                winningPointsViewModel = winningPointsViewModel,
-                            )
-                        }
-                        composable<Games3Dest> {
-                            val repository =
-                                Games3PRepositoryImpl(Game3PDataSourceImpl(appDatabase.game3PDao()))
-                            val getGamesUseCase: GetGames3PUseCase = GetGames3PUseCase(repository)
-                            val insertGameUseCase: InsertGame3PUseCase =
-                                InsertGame3PUseCase(repository)
-                            val deleteGameUseCase: DeleteGame3PUseCase =
-                                DeleteGame3PUseCase(repository)
-                            val game3PViewModel = viewModel {
-                                Game3PViewModel(
-                                    getGamesUseCase, insertGameUseCase, deleteGameUseCase
+                            composable<Games3Dest> {
+                                val repository =
+                                    Games3PRepositoryImpl(Game3PDataSourceImpl(appDatabase.game3PDao()))
+                                val getGamesUseCase: GetGames3PUseCase =
+                                    GetGames3PUseCase(repository)
+                                val insertGameUseCase: InsertGame3PUseCase =
+                                    InsertGame3PUseCase(repository)
+                                val deleteGameUseCase: DeleteGame3PUseCase =
+                                    DeleteGame3PUseCase(repository)
+                                val game3PViewModel = viewModel {
+                                    Game3PViewModel(
+                                        getGamesUseCase, insertGameUseCase, deleteGameUseCase
+                                    )
+                                }
+                                TablesScreen3(game3PViewModel, winningPointsViewModel)
+                            }
+                            composable<Games4Dest> {
+                                val repository =
+                                    Games4PRepositoryImpl(Game4PDataSourceImpl(appDatabase.game4PDao()))
+                                val getGamesUseCase = GetGames4PUseCase(repository)
+                                val insertGameUseCase = InsertGame4PUseCase(repository)
+                                val deleteGameUseCase = DeleteGame4PUseCase(repository)
+                                val game4PViewModel = viewModel {
+                                    Game4PViewModel(
+                                        getGamesUseCase, insertGameUseCase, deleteGameUseCase
+                                    )
+                                }
+                                TablesScreen4(
+                                    viewModel = game4PViewModel, winningPointsViewModel,
                                 )
                             }
-                            TablesScreen3(game3PViewModel, winningPointsViewModel)
-                        }
-                        composable<Games4Dest> {
-                            val repository =
-                                Games4PRepositoryImpl(Game4PDataSourceImpl(appDatabase.game4PDao()))
-                            val getGamesUseCase = GetGames4PUseCase(repository)
-                            val insertGameUseCase = InsertGame4PUseCase(repository)
-                            val deleteGameUseCase = DeleteGame4PUseCase(repository)
-                            val game4PViewModel = viewModel {
-                                Game4PViewModel(
-                                    getGamesUseCase, insertGameUseCase, deleteGameUseCase
+                            composable<GamesGroupsDest> {
+                                val repository =
+                                    Games2GroupsRepositoryImpl(Game2GroupsDataSourceImpl(appDatabase.game2GroupsDao()))
+                                val getGamesUseCase: GetGames2GroupsUseCase =
+                                    GetGames2GroupsUseCase(repository)
+                                val insertGameUseCase: InsertGame2GroupsUseCase =
+                                    InsertGame2GroupsUseCase(repository)
+                                val deleteGameUseCase: DeleteGame2GroupsUseCase =
+                                    DeleteGame2GroupsUseCase(repository)
+                                val game2GroupsViewModel = viewModel {
+                                    Game2GroupsViewModel(
+                                        getGamesUseCase, insertGameUseCase, deleteGameUseCase
+                                    )
+                                }
+                                TablesScreenGroups(game2GroupsViewModel, winningPointsViewModel)
+                            }
+                            composable<Match2Dest> {
+                                val idGame = it.toRoute<Match2Dest>().idGame
+                                val repositoryGame =
+                                    Games2PRepositoryImpl(Game2PDataSourceImpl(appDatabase.game2PDao()))
+                                val getGameUseCase = GetGame2PUseCase(repositoryGame)
+                                val repositoryPoints =
+                                    Points2PRepositoryImpl(Points2PDataSourceImpl(appDatabase.points2PDao()))
+
+                                val getPointsUseCase = GetPoints2PUseCase(repositoryPoints)
+                                val insertPointsUseCase = InsertPoints2PUseCase(repositoryPoints)
+                                val deleteLastRowUseCase =
+                                    DeleteLastRowPoints2PUseCase(repositoryPoints)
+
+                                val updateStatusScoreName1UseCase =
+                                    UpdateStatusScoreName1Game2PUseCase(repositoryGame)
+                                val updateStatusScoreName2UseCase =
+                                    UpdateStatusScoreName2Game2PUseCase(repositoryGame)
+
+                                val updateStatusWinningPointsUseCase =
+                                    UpdateStatusWinningPointsGame2PUseCase(repositoryGame)
+                                val updateOnlyStatusUseCase =
+                                    UpdateOnlyStatusGame2PUseCase(repositoryGame)
+                                val deleteAllPointsUseCase =
+                                    DeleteAllPoints2PUseCase(repositoryPoints)
+                                val viewModel = viewModel {
+                                    Match2PPViewModel(
+                                        idGame,
+                                        getGameUseCase,
+                                        getPointsUseCase,
+                                        insertPointsUseCase,
+                                        deleteLastRowUseCase,
+                                        updateStatusScoreName1UseCase,
+                                        updateStatusScoreName2UseCase,
+                                        updateStatusWinningPointsUseCase,
+                                        updateOnlyStatusUseCase,
+                                        deleteAllPointsUseCase
+                                    )
+                                }
+                                MatchScreen2(viewModel, winningPointsViewModel)
+                            }
+                            composable<Match3Dest> {
+                                val idGame = it.toRoute<Match3Dest>().idGame
+
+                                val repositoryGame =
+                                    Games3PRepositoryImpl(Game3PDataSourceImpl(appDatabase.game3PDao()))
+                                val repositoryPoints =
+                                    Points3PRepositoryImpl(Points3PDataSourceImpl(appDatabase.points3PDao()))
+                                val getGameUseCase = GetGame3PUseCase(repositoryGame)
+                                val getPointsUseCase = GetPoints3PUseCase(repositoryPoints)
+                                val insertPointsUseCase = InsertPoints3PUseCase(repositoryPoints)
+                                val deleteLastRowUseCase =
+                                    DeleteLastRowPoints3PUseCase(repositoryPoints)
+
+                                val updateStatusScoreName1UseCase =
+                                    UpdateStatusScoreName1Game3PUseCase(repositoryGame)
+                                val updateStatusScoreName2UseCase =
+                                    UpdateStatusScoreName2Game3PUseCase(repositoryGame)
+
+                                val updateStatusScoreName3UseCase =
+                                    UpdateStatusScoreName3Game3PUseCase(repositoryGame)
+
+                                val updateStatusWinningPointsUseCase =
+                                    UpdateStatusWinningPointsGame3PUseCase(repositoryGame)
+                                val updateOnlyStatusUseCase =
+                                    UpdateOnlyStatusGame3PUseCase(repositoryGame)
+                                val deleteAllPointsUseCase =
+                                    DeleteAllPoints3PUseCase(repositoryPoints)
+
+                                val match3PPViewModel = viewModel {
+                                    Match3PPViewModel(
+                                        idGame,
+                                        getGameUseCase,
+                                        getPointsUseCase,
+                                        insertPointsUseCase,
+                                        deleteLastRowUseCase,
+                                        updateStatusScoreName1UseCase,
+                                        updateStatusScoreName2UseCase,
+                                        updateStatusScoreName3UseCase,
+                                        updateStatusWinningPointsUseCase,
+                                        updateOnlyStatusUseCase,
+                                        deleteAllPointsUseCase
+                                    )
+                                }
+
+                                MatchScreen3(viewModel = match3PPViewModel, winningPointsViewModel)
+                            }
+                            composable<Match4Dest> {
+                                val idGame = it.toRoute<Match3Dest>().idGame
+
+                                val repositoryGame =
+                                    Games4PRepositoryImpl(Game4PDataSourceImpl(appDatabase.game4PDao()))
+                                val repositoryPoints =
+                                    Points4PRepositoryImpl(Points4PDataSourceImpl(appDatabase.points4PDao()))
+                                val getGameUseCase = GetGame4PUseCase(repositoryGame)
+                                val getPointsUseCase = GetPoints4PUseCase(repositoryPoints)
+                                val insertPointsUseCase = InsertPoints4PUseCase(repositoryPoints)
+                                val deleteLastRowUseCase =
+                                    DeleteLastRowPoints4PUseCase(repositoryPoints)
+
+                                val updateStatusScoreName1UseCase =
+                                    UpdateStatusScoreName1Game4PUseCase(repositoryGame)
+                                val updateStatusScoreName2UseCase =
+                                    UpdateStatusScoreName2Game4PUseCase(repositoryGame)
+
+                                val updateStatusScoreName3UseCase =
+                                    UpdateStatusScoreName3Game4PUseCase(repositoryGame)
+
+                                val updateStatusScoreName4UseCase =
+                                    UpdateStatusScoreName4Game4PUseCase(repositoryGame)
+
+                                val updateStatusWinningPointsUseCase =
+                                    UpdateStatusWinningPointsGame4PUseCase(repositoryGame)
+                                val updateOnlyStatusUseCase =
+                                    UpdateOnlyStatusGame4PUseCase(repositoryGame)
+                                val deleteAllPointsUseCase =
+                                    DeleteAllPoints4PUseCase(repositoryPoints)
+
+                                val match4PPViewModel = viewModel {
+                                    Match4PPViewModel(
+                                        idGame,
+                                        getGameUseCase,
+                                        getPointsUseCase,
+                                        insertPointsUseCase,
+                                        deleteLastRowUseCase,
+                                        updateStatusScoreName1UseCase,
+                                        updateStatusScoreName2UseCase,
+                                        updateStatusScoreName3UseCase,
+                                        updateStatusScoreName4UseCase,
+                                        updateStatusWinningPointsUseCase,
+                                        updateOnlyStatusUseCase,
+                                        deleteAllPointsUseCase
+                                    )
+                                }
+                                MatchScreen4(
+                                    viewModel = match4PPViewModel,
+                                    winningPointsViewModel = winningPointsViewModel
                                 )
                             }
-                            TablesScreen4(
-                                viewModel = game4PViewModel, winningPointsViewModel,
-                            )
-                        }
-                        composable<GamesGroupsDest> {
-                            val repository =
-                                Games2GroupsRepositoryImpl(Game2GroupsDataSourceImpl(appDatabase.game2GroupsDao()))
-                            val getGamesUseCase: GetGames2GroupsUseCase =
-                                GetGames2GroupsUseCase(repository)
-                            val insertGameUseCase: InsertGame2GroupsUseCase =
-                                InsertGame2GroupsUseCase(repository)
-                            val deleteGameUseCase: DeleteGame2GroupsUseCase =
-                                DeleteGame2GroupsUseCase(repository)
-                            val game2GroupsViewModel = viewModel {
-                                Game2GroupsViewModel(
-                                    getGamesUseCase, insertGameUseCase, deleteGameUseCase
+                            composable<MatchGroupsDest> {
+                                val idGame = it.toRoute<MatchGroupsDest>().idGame
+                                val repositoryGame =
+                                    Games2GroupsRepositoryImpl(Game2GroupsDataSourceImpl(appDatabase.game2GroupsDao()))
+                                val repositoryPoints = Points2GroupsRepositoryImpl(
+                                    Points2GroupsDataSourceImpl(appDatabase.points2GroupsDao())
+                                )
+                                val getGameUseCase = GetGame2GroupsUseCase(repositoryGame)
+                                val getPointsUseCase = GetPoints2GroupsUseCase(repositoryPoints)
+                                val insertPointsUseCase =
+                                    InsertPoints2GroupsUseCase(repositoryPoints)
+                                val deleteLastRowPointsUseCase =
+                                    DeleteLastRowPoints2GroupsUseCase(repositoryPoints)
+                                val updateStatusScoreName1UseCase =
+                                    UpdateStatusScoreGame2GroupsName1UseCase(repositoryGame)
+                                val updateStatusScoreName2UseCase =
+                                    UpdateStatusScoreGame2GroupsName2UseCase(repositoryGame)
+
+                                val updateStatusWinningPointsUseCase =
+                                    UpdateStatusWinningPointsGame2GroupsUseCase(repositoryGame)
+                                val updateOnlyStatusGameUseCase =
+                                    UpdateOnlyStatusGame2GroupsUseCase(repositoryGame)
+                                val deleteAllPointsUseCase =
+                                    DeleteAllPoints2GroupsUseCase(repositoryPoints)
+
+                                val match2GroupsViewModel = viewModel {
+                                    Match2GroupsViewModel(
+                                        idGame,
+                                        getGameUseCase,
+                                        getPointsUseCase,
+                                        insertPointsUseCase,
+                                        deleteLastRowPointsUseCase,
+                                        updateStatusScoreName1UseCase,
+                                        updateStatusScoreName2UseCase,
+                                        updateStatusWinningPointsUseCase,
+                                        updateOnlyStatusGameUseCase,
+                                        deleteAllPointsUseCase
+                                    )
+                                }
+                                MatchScreen2Groups(
+                                    viewModel = match2GroupsViewModel,
+                                    winningPointsViewModel = winningPointsViewModel
                                 )
                             }
-                            TablesScreenGroups(game2GroupsViewModel, winningPointsViewModel)
-                        }
-                        composable<Match2Dest> {
-                            val idGame = it.toRoute<Match2Dest>().idGame
-                            val repositoryGame =
-                                Games2PRepositoryImpl(Game2PDataSourceImpl(appDatabase.game2PDao()))
-                            val getGameUseCase = GetGame2PUseCase(repositoryGame)
-                            val repositoryPoints =
-                                Points2PRepositoryImpl(Points2PDataSourceImpl(appDatabase.points2PDao()))
-
-                            val getPointsUseCase = GetPoints2PUseCase(repositoryPoints)
-                            val insertPointsUseCase = InsertPoints2PUseCase(repositoryPoints)
-                            val deleteLastRowUseCase =
-                                DeleteLastRowPoints2PUseCase(repositoryPoints)
-
-                            val updateStatusScoreName1UseCase =
-                                UpdateStatusScoreName1Game2PUseCase(repositoryGame)
-                            val updateStatusScoreName2UseCase =
-                                UpdateStatusScoreName2Game2PUseCase(repositoryGame)
-
-                            val updateStatusWinningPointsUseCase =
-                                UpdateStatusWinningPointsGame2PUseCase(repositoryGame)
-                            val updateOnlyStatusUseCase =
-                                UpdateOnlyStatusGame2PUseCase(repositoryGame)
-                            val deleteAllPointsUseCase = DeleteAllPoints2PUseCase(repositoryPoints)
-                            val viewModel = viewModel {
-                                Match2PPViewModel(
-                                    idGame,
-                                    getGameUseCase,
-                                    getPointsUseCase,
-                                    insertPointsUseCase,
-                                    deleteLastRowUseCase,
-                                    updateStatusScoreName1UseCase,
-                                    updateStatusScoreName2UseCase,
-                                    updateStatusWinningPointsUseCase,
-                                    updateOnlyStatusUseCase,
-                                    deleteAllPointsUseCase
-                                )
-                            }
-                            MatchScreen2(viewModel,winningPointsViewModel)
-                        }
-                        composable<Match3Dest> {
-                            val idGame = it.toRoute<Match3Dest>().idGame
-
-                            val repositoryGame =
-                                Games3PRepositoryImpl(Game3PDataSourceImpl(appDatabase.game3PDao()))
-                            val repositoryPoints =
-                                Points3PRepositoryImpl(Points3PDataSourceImpl(appDatabase.points3PDao()))
-                            val getGameUseCase = GetGame3PUseCase(repositoryGame)
-                            val getPointsUseCase = GetPoints3PUseCase(repositoryPoints)
-                            val insertPointsUseCase = InsertPoints3PUseCase(repositoryPoints)
-                            val deleteLastRowUseCase =
-                                DeleteLastRowPoints3PUseCase(repositoryPoints)
-
-                            val updateStatusScoreName1UseCase =
-                                UpdateStatusScoreName1Game3PUseCase(repositoryGame)
-                            val updateStatusScoreName2UseCase =
-                                UpdateStatusScoreName2Game3PUseCase(repositoryGame)
-
-                            val updateStatusScoreName3UseCase =
-                                UpdateStatusScoreName3Game3PUseCase(repositoryGame)
-
-                            val updateStatusWinningPointsUseCase =
-                                UpdateStatusWinningPointsGame3PUseCase(repositoryGame)
-                            val updateOnlyStatusUseCase =
-                                UpdateOnlyStatusGame3PUseCase(repositoryGame)
-                            val deleteAllPointsUseCase = DeleteAllPoints3PUseCase(repositoryPoints)
-
-                            val match3PPViewModel = viewModel {
-                                Match3PPViewModel(
-                                    idGame,
-                                    getGameUseCase,
-                                    getPointsUseCase,
-                                    insertPointsUseCase,
-                                    deleteLastRowUseCase,
-                                    updateStatusScoreName1UseCase,
-                                    updateStatusScoreName2UseCase,
-                                    updateStatusScoreName3UseCase,
-                                    updateStatusWinningPointsUseCase,
-                                    updateOnlyStatusUseCase,
-                                    deleteAllPointsUseCase
-                                )
-                            }
-
-                            MatchScreen3(viewModel = match3PPViewModel,winningPointsViewModel)
-                        }
-                        composable<Match4Dest> {
-                            val idGame = it.toRoute<Match3Dest>().idGame
-
-                            val repositoryGame =
-                                Games4PRepositoryImpl(Game4PDataSourceImpl(appDatabase.game4PDao()))
-                            val repositoryPoints =
-                                Points4PRepositoryImpl(Points4PDataSourceImpl(appDatabase.points4PDao()))
-                            val getGameUseCase = GetGame4PUseCase(repositoryGame)
-                            val getPointsUseCase = GetPoints4PUseCase(repositoryPoints)
-                            val insertPointsUseCase = InsertPoints4PUseCase(repositoryPoints)
-                            val deleteLastRowUseCase =
-                                DeleteLastRowPoints4PUseCase(repositoryPoints)
-
-                            val updateStatusScoreName1UseCase =
-                                UpdateStatusScoreName1Game4PUseCase(repositoryGame)
-                            val updateStatusScoreName2UseCase =
-                                UpdateStatusScoreName2Game4PUseCase(repositoryGame)
-
-                            val updateStatusScoreName3UseCase =
-                                UpdateStatusScoreName3Game4PUseCase(repositoryGame)
-
-                            val updateStatusScoreName4UseCase =
-                                UpdateStatusScoreName4Game4PUseCase(repositoryGame)
-
-                            val updateStatusWinningPointsUseCase =
-                                UpdateStatusWinningPointsGame4PUseCase(repositoryGame)
-                            val updateOnlyStatusUseCase =
-                                UpdateOnlyStatusGame4PUseCase(repositoryGame)
-                            val deleteAllPointsUseCase = DeleteAllPoints4PUseCase(repositoryPoints)
-
-                            val match4PPViewModel = viewModel {
-                                Match4PPViewModel(
-                                    idGame,
-                                    getGameUseCase,
-                                    getPointsUseCase,
-                                    insertPointsUseCase,
-                                    deleteLastRowUseCase,
-                                    updateStatusScoreName1UseCase,
-                                    updateStatusScoreName2UseCase,
-                                    updateStatusScoreName3UseCase,
-                                    updateStatusScoreName4UseCase,
-                                    updateStatusWinningPointsUseCase,
-                                    updateOnlyStatusUseCase,
-                                    deleteAllPointsUseCase
-                                )
-                            }
-                            MatchScreen4(viewModel = match4PPViewModel, winningPointsViewModel = winningPointsViewModel)
-                        }
-                        composable<MatchGroupsDest> {
-                            val idGame = it.toRoute<MatchGroupsDest>().idGame
-                            val repositoryGame =
-                                Games2GroupsRepositoryImpl(Game2GroupsDataSourceImpl(appDatabase.game2GroupsDao()))
-                            val repositoryPoints =
-                                Points2GroupsRepositoryImpl(Points2GroupsDataSourceImpl(appDatabase.points2GroupsDao()))
-                            val getGameUseCase = GetGame2GroupsUseCase(repositoryGame)
-                            val getPointsUseCase = GetPoints2GroupsUseCase(repositoryPoints)
-                            val insertPointsUseCase = InsertPoints2GroupsUseCase(repositoryPoints)
-                            val deleteLastRowPointsUseCase =
-                                DeleteLastRowPoints2GroupsUseCase(repositoryPoints)
-                            val updateStatusScoreName1UseCase =
-                                UpdateStatusScoreGame2GroupsName1UseCase(repositoryGame)
-                            val updateStatusScoreName2UseCase =
-                                UpdateStatusScoreGame2GroupsName2UseCase(repositoryGame)
-
-                            val updateStatusWinningPointsUseCase =
-                                UpdateStatusWinningPointsGame2GroupsUseCase(repositoryGame)
-                            val updateOnlyStatusGameUseCase =
-                                UpdateOnlyStatusGame2GroupsUseCase(repositoryGame)
-                            val deleteAllPointsUseCase =
-                                DeleteAllPoints2GroupsUseCase(repositoryPoints)
-
-                            val match2GroupsViewModel = viewModel {
-                                Match2GroupsViewModel(
-                                    idGame,
-                                    getGameUseCase,
-                                    getPointsUseCase,
-                                    insertPointsUseCase,
-                                    deleteLastRowPointsUseCase,
-                                    updateStatusScoreName1UseCase,
-                                    updateStatusScoreName2UseCase,
-                                    updateStatusWinningPointsUseCase,
-                                    updateOnlyStatusGameUseCase,
-                                    deleteAllPointsUseCase
-                                )
-                            }
-                            MatchScreen2Groups(viewModel = match2GroupsViewModel, winningPointsViewModel = winningPointsViewModel)
                         }
                     }
                 }
             }
         }
     }
-
 }
+
 
 /**
  * Composable that displays the topBar and displays back button if back navigation is possible.
