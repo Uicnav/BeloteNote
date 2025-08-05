@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -179,7 +180,7 @@ internal fun TablesScreen2(
                         .padding(16.dp),
                     state = gameListState
                 ) {
-                    items(visibleGames) { game ->
+                    itemsIndexed(visibleGames) { index, game ->
                         GameCard(
                             onDelete = {
                                 scope.launch {
@@ -199,7 +200,8 @@ internal fun TablesScreen2(
                             onTap = {
                                 navController.navigate(Match2Dest(game.idGame))
                             },
-                            isTable = true
+                            isTable = true,
+                            isSwipe = index == 0
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
                                 TableTextAtom(game.name1)
@@ -543,6 +545,7 @@ fun GameCard(
     onDelete: () -> Unit,
     onTap: () -> Unit = {},
     isTable: Boolean = false,
+    isSwipe: Boolean = true,
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit,
 ) {
@@ -551,10 +554,12 @@ fun GameCard(
     val scope = rememberCoroutineScope()
     val swipeThreshold = -150f
     LaunchedEffect(Unit) {
-        delay(1000L)
-        offsetX.animateTo(-140f, tween(300))
-        delay(500L)
-        offsetX.animateTo(0f, tween(300))
+        if (isSwipe) {
+            delay(1000L)
+            offsetX.animateTo(-140f, tween(300))
+            delay(500L)
+            offsetX.animateTo(0f, tween(300))
+        }
     }
 
     Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
