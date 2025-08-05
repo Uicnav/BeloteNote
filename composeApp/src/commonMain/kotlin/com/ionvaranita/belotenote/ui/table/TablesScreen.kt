@@ -519,7 +519,7 @@ internal fun TablesScreenGroups(
 @Composable
 fun CenteredCircularProgressIndicator(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier.background(MaterialTheme.colorScheme.background).fillMaxSize(),
+        modifier = modifier.background(Color.Transparent).fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator()
