@@ -163,7 +163,6 @@ fun App(appDatabase: AppDatabase) {
 
                 Box(
                     modifier = Modifier.fillMaxSize()
-                        .padding(WindowInsets.systemBars.asPaddingValues())
                 ) {
                     val winningPointsRepository = WinningPointsRepositoryImpl(
                         WinningPointsDataSourceImpl(appDatabase.winningPointsDao())
