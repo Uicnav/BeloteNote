@@ -14,35 +14,34 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-val DarkGreen = Color(0xFF1B4332)      // Fundal principal
-val LightIvory = Color(0xFFFFFAF0)     // Text principal pe fundal închis
-val Mustard = Color(0xFFFFC107)        // Butoane & accente
-val CardSurface = Color(0xFF2D6A4F)    // Dialoguri/Carduri
-val ButtonBlue = Color(0xFF00B4D8)     // Accente secundare
-val CleanWhite = Color(0xFFFFFFFF)     // Text pe butoane
-val CleanBlack = Color(0xFF1C1C1C)     // Text pe fundal deschis
-val LightGray = Color(0xFFF2F2F2)      // Fundal general pentru dark mode
+val PrimaryBlue = Color(0xFF1565C0)      // Modern deep blue
+val AccentOrange = Color(0xFFFF9800)     // Vibrant orange accent
+val SurfaceGray = Color(0xFFF5F7FA)      // Soft off-white for surfaces
+val DarkSurface = Color(0xFF232946)      // Deep blue-gray for dark mode
+val TextOnPrimary = Color(0xFFFFFFFF)    // White text on primary
+val TextOnBackground = Color(0xFF232946) // Dark text on light bg
+val TextOnDark = Color(0xFFF5F7FA)       // Light text on dark bg
 
 private val BeloteLightColors = lightColorScheme(
-    primary = Mustard,
-    onPrimary = CleanBlack,
-    secondary = ButtonBlue,
-    onSecondary = CleanBlack,
-    background = Color(0xFFE8F5E9),      // Pale green
-    onBackground = CleanBlack,
-    surface = CleanWhite,
-    onSurface = CleanBlack
+    primary = PrimaryBlue,
+    onPrimary = TextOnPrimary,
+    secondary = AccentOrange,
+    onSecondary = TextOnPrimary,
+    background = SurfaceGray,
+    onBackground = TextOnBackground,
+    surface = Color.White,
+    onSurface = TextOnBackground
 )
 
 private val BeloteDarkColors = darkColorScheme(
-    primary = Mustard,
-    onPrimary = CleanBlack,
-    secondary = ButtonBlue,
-    onSecondary = CleanWhite,
-    background = DarkGreen,
-    onBackground = LightIvory,
-    surface = CardSurface,
-    onSurface = LightIvory
+    primary = PrimaryBlue,
+    onPrimary = TextOnPrimary,
+    secondary = AccentOrange,
+    onSecondary = TextOnPrimary,
+    background = DarkSurface,
+    onBackground = TextOnDark,
+    surface = Color(0xFF1A1A2E),
+    onSurface = TextOnDark
 )
 
 val BeloteTypography = Typography(

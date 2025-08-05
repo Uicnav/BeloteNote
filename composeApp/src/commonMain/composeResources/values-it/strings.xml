@@ -32,4 +32,6 @@
     <string name="sure_delete_row">Sei sicuro di voler eliminare questa riga?</string>
     <string name="yes">Sì</string>
     <string name="no">No</string>
+    <string name="game_deleted">Partita eliminata</string>
+    <string name="undo">Annulla</string>
 </resources>

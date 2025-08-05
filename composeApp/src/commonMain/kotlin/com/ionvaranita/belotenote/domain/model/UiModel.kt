@@ -8,6 +8,7 @@ import com.ionvaranita.belotenote.datalayer.database.entity.players3.Game3PEntit
 import com.ionvaranita.belotenote.datalayer.database.entity.players3.Points3PEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players4.Game4PEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players4.Points4PEntity
+import com.ionvaranita.belotenote.datalayer.database.entity.winningpoints.WinningPointsEntity
 import com.ionvaranita.belotenote.ui.match.BOLT
 import com.ionvaranita.belotenote.ui.match.MINUS_10
 import kotlinx.serialization.Serializable
@@ -20,7 +21,8 @@ data class Game2PUi(
     val name1: String,
     val name2: String,
     val scoreName1: Short,
-    val scoreName2: Short
+    val scoreName2: Short,
+    var isVisible: Boolean = true
 ) {
     fun toDataClass(): Game2PEntity {
         return Game2PEntity(
@@ -44,7 +46,8 @@ data class Game3PUi(
     val name3: String,
     val scoreName1: Short,
     val scoreName2: Short,
-    val scoreName3: Short
+    val scoreName3: Short,
+    var isVisible: Boolean = true
 ) {
     fun toDataClass(): Game3PEntity {
         return Game3PEntity(
@@ -69,7 +72,8 @@ data class Game4PUi(
     val scoreName1: Short = 0,
     val scoreName2: Short,
     val scoreName3: Short,
-    val scoreName4: Short
+    val scoreName4: Short,
+    var isVisible: Boolean = true
 ) {
     fun toDataClass(): Game4PEntity {
         return Game4PEntity(
@@ -91,7 +95,8 @@ data class Game2GroupsUi(
     val name1: String,
     val name2: String,
     val scoreName1: Short,
-    var scoreName2: Short
+    var scoreName2: Short,
+    var isVisible: Boolean = true
 ) {
     fun toDataClass(): Game2GroupsEntity {
         return Game2GroupsEntity(
@@ -238,6 +243,16 @@ fun String.toShortCustom(): Short {
     return if (this.isEmpty() || this.contains(BOLT)) {
         0
     } else this.toShort()
+}
+
+data class WinningPointsUi(
+    val winningPoints: Short
+) {
+    fun toDataClass(): WinningPointsEntity {
+        return WinningPointsEntity(
+            winningPoints = this.winningPoints
+        )
+    }
 }
 
 fun String.toShortCustomCalculated(): Short {

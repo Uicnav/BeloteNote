@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
  */
 @Dao
 interface Game2GroupsDao {
-    @Query("select * from Game2GroupsEntity order by dateGame desc")
+    @Query("select * from Game2GroupsEntity order by dateGame asc")
     fun getGames(): Flow<List<Game2GroupsEntity>>
 
     @Query("select * from Game2GroupsEntity where idGame = :idGame")

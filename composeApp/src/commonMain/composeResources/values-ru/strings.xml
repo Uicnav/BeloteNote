@@ -32,4 +32,6 @@
     <string name="sure_delete_row">Вы уверены, что хотите удалить эту строку?</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
+    <string name="game_deleted">Игра удалена</string>
+    <string name="undo">Отменить</string>
 </resources>
