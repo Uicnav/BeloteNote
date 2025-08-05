@@ -1,6 +1,7 @@
 package com.ionvaranita.belotenote
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
@@ -18,6 +19,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -478,12 +480,10 @@ fun BeloteAppBar(
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
-        title = { ScreenTitle(currentRoute) }, modifier = modifier,
+        title = { ScreenTitle(currentRoute) },
         navigationIcon = {
             if (canNavigateBack) {
-                IconButton({
-                    navigateUp()
-                }) {
+                IconButton(onClick = navigateUp) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "menu items"
@@ -491,6 +491,11 @@ fun BeloteAppBar(
                 }
             }
         },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.Transparent,
+            scrolledContainerColor = Color.Transparent
+        ),
+        modifier = modifier
     )
 }
 
