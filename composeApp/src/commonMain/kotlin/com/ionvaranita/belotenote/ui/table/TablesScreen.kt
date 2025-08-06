@@ -21,8 +21,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -50,6 +48,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Switch
@@ -181,15 +180,12 @@ internal fun TablesScreen2(
                             scope.launch {
                                 snackbarHostState.currentSnackbarData?.dismiss()
                                 viewModel.prepareDeleteGame(game)
-                                val result = snackbarHostState.showSnackbar(
-                                    message = getString(Res.string.game_deleted),
-                                    actionLabel = getString(Res.string.undo)
-                                )
-                                if (result == SnackbarResult.ActionPerformed) {
+                                snackbarHostState.UndoDeleteGameSnackbar(onActionPerformed = {
                                     viewModel.undoDeleteGame(game)
-                                } else {
+                                }, onDismissed = {
                                     viewModel.deleteGame(game.idGame)
-                                }
+
+                                })
                             }
                         }, onTap = {
                             navController.navigate(Match2Dest(game.idGame))
@@ -217,6 +213,20 @@ internal fun TablesScreen2(
     }
 }
 
+suspend fun SnackbarHostState.UndoDeleteGameSnackbar(
+    onActionPerformed: () -> Unit, onDismissed: () -> Unit
+) {
+    val result = this.showSnackbar(
+        message = getString(Res.string.game_deleted),
+        actionLabel = getString(Res.string.undo),
+        withDismissAction = true
+    )
+    if (result == SnackbarResult.ActionPerformed) {
+        onActionPerformed()
+    } else {
+        onDismissed()
+    }
+}
 
 @Composable
 internal fun TablesScreen3(
@@ -269,19 +279,11 @@ internal fun TablesScreen3(
                             snackbarHostState.currentSnackbarData?.dismiss()
                             viewModel.prepareDeleteGame(game)
                             scope.launch {
-                                val result = snackbarHostState.showSnackbar(
-                                    message = getString(Res.string.game_deleted),
-                                    actionLabel = getString(Res.string.undo)
-                                )
-                                when (result) {
-                                    SnackbarResult.ActionPerformed -> {
-                                        viewModel.undoDeleteGame(game)
-                                    }
-
-                                    SnackbarResult.Dismissed -> {
-                                        viewModel.deleteGame(game.idGame)
-                                    }
-                                }
+                                snackbarHostState.UndoDeleteGameSnackbar(onActionPerformed = {
+                                    viewModel.undoDeleteGame(game)
+                                }, onDismissed = {
+                                    viewModel.deleteGame(game.idGame)
+                                })
                             }
                         }, onTap = {
                             val route = Match3Dest(idGame = game.idGame)
@@ -366,19 +368,13 @@ internal fun TablesScreen4(
                             snackbarHostState.currentSnackbarData?.dismiss()
                             viewModel.prepareDeleteGame(game)
                             scope.launch {
-                                val result = snackbarHostState.showSnackbar(
-                                    message = getString(Res.string.game_deleted),
-                                    actionLabel = getString(Res.string.undo)
-                                )
-                                when (result) {
-                                    SnackbarResult.ActionPerformed -> {
-                                        viewModel.undoDeleteGame(game)
-                                    }
+                                snackbarHostState.UndoDeleteGameSnackbar(onActionPerformed = {
+                                    viewModel.undoDeleteGame(game)
 
-                                    SnackbarResult.Dismissed -> {
-                                        viewModel.deleteGame(game.idGame)
-                                    }
-                                }
+                                }, onDismissed = {
+                                    viewModel.deleteGame(game.idGame)
+
+                                })
                             }
                         }, onTap = {
                             val route = Match4Dest(idGame = game.idGame)
@@ -466,19 +462,12 @@ internal fun TablesScreenGroups(
                             snackbarHostState.currentSnackbarData?.dismiss()
                             viewModel.prepareDeleteGame(game)
                             scope.launch {
-                                val result = snackbarHostState.showSnackbar(
-                                    message = getString(Res.string.game_deleted),
-                                    actionLabel = getString(Res.string.undo)
-                                )
-                                when (result) {
-                                    SnackbarResult.ActionPerformed -> {
-                                        viewModel.undoDeleteGame(game)
-                                    }
+                                snackbarHostState.UndoDeleteGameSnackbar(onActionPerformed = {
+                                    viewModel.undoDeleteGame(game)
 
-                                    SnackbarResult.Dismissed -> {
-                                        viewModel.deleteGame(game.idGame)
-                                    }
-                                }
+                                }, onDismissed = {
+                                    viewModel.deleteGame(game.idGame)
+                                })
                             }
                         }, onTap = {
                             val route = MatchGroupsDest(idGame = game.idGame)
@@ -646,9 +635,7 @@ private fun TablesBase(
         contentWindowInsets = WindowInsets(0, 0, 0, 0)  // Remove default window insets
     ) { paddingValues ->
         val customValues = PaddingValues(
-            start = 8.dp,
-            end = 8.dp,
-            bottom = paddingValues.calculateBottomPadding() + 80.dp
+            start = 8.dp, end = 8.dp, bottom = paddingValues.calculateBottomPadding() + 80.dp
         )
         content(customValues)
     }
