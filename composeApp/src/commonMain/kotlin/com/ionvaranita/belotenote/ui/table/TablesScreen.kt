@@ -20,8 +20,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -29,7 +28,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -50,6 +48,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Switch
@@ -127,8 +126,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TablesScreen2(
-    viewModel: Game2PViewModel,
-    winningPointsViewModel: WinningPointsViewModel
+    viewModel: Game2PViewModel, winningPointsViewModel: WinningPointsViewModel
 ) {
     val snackbarHostState: SnackbarHostState = LocalSnackbarHostState.current
     val navController = LocalNavHostController.current
@@ -141,21 +139,17 @@ internal fun TablesScreen2(
     val isEmptyList = (gamesUiState as? Games2PUiState.Success)?.data?.none { it.isVisible } == true
 
     TablesBase(
-        onInsertGameClick = { showDialog = true },
-        isEmptyList = isEmptyList,
-        isLoading = isLoading
+        onInsertGameClick = { showDialog = true }, isEmptyList = isEmptyList, isLoading = isLoading
     ) { paddingValues ->
 
         if (showDialog) {
             InsertGame2(
                 onClick = {
-                    scope.launch {
-                        val idGame = viewModel.insertGame(it)
-                        navController.navigate(Match2Dest(idGame))
-                    }
-                },
-                onDismissRequest = { showDialog = false },
-                viewModel = winningPointsViewModel
+                scope.launch {
+                    val idGame = viewModel.insertGame(it)
+                    navController.navigate(Match2Dest(idGame))
+                }
+            }, onDismissRequest = { showDialog = false }, viewModel = winningPointsViewModel
             )
         }
 
@@ -177,33 +171,25 @@ internal fun TablesScreen2(
 
                 LazyColumn(
                     contentPadding = paddingValues,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
+                    modifier = Modifier.fillMaxSize(),
                     state = gameListState
                 ) {
                     itemsIndexed(visibleGames) { index, game ->
                         GameCard(
                             onDelete = {
-                                scope.launch {
-                                    snackbarHostState.currentSnackbarData?.dismiss()
-                                    viewModel.prepareDeleteGame(game)
-                                    val result = snackbarHostState.showSnackbar(
-                                        message = getString(Res.string.game_deleted),
-                                        actionLabel = getString(Res.string.undo)
-                                    )
-                                    if (result == SnackbarResult.ActionPerformed) {
-                                        viewModel.undoDeleteGame(game)
-                                    } else {
-                                        viewModel.deleteGame(game.idGame)
-                                    }
-                                }
-                            },
-                            onTap = {
-                                navController.navigate(Match2Dest(game.idGame))
-                            },
-                            isTable = true,
-                            isSwipe = index == visibleGames.lastIndex
+                            scope.launch {
+                                snackbarHostState.currentSnackbarData?.dismiss()
+                                viewModel.prepareDeleteGame(game)
+                                snackbarHostState.UndoDeleteGameSnackbar(onActionPerformed = {
+                                    viewModel.undoDeleteGame(game)
+                                }, onDismissed = {
+                                    viewModel.deleteGame(game.idGame)
+
+                                })
+                            }
+                        }, onTap = {
+                            navController.navigate(Match2Dest(game.idGame))
+                        }, isTable = true, isSwipe = index == visibleGames.lastIndex
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
                                 TableTextAtom(game.name1)
@@ -227,6 +213,20 @@ internal fun TablesScreen2(
     }
 }
 
+suspend fun SnackbarHostState.UndoDeleteGameSnackbar(
+    onActionPerformed: () -> Unit, onDismissed: () -> Unit
+) {
+    val result = this.showSnackbar(
+        message = getString(Res.string.game_deleted),
+        actionLabel = getString(Res.string.undo),
+        withDismissAction = true
+    )
+    if (result == SnackbarResult.ActionPerformed) {
+        onActionPerformed()
+    } else {
+        onDismissed()
+    }
+}
 
 @Composable
 internal fun TablesScreen3(
@@ -271,7 +271,7 @@ internal fun TablesScreen3(
                 }
                 LazyColumn(
                     contentPadding = paddingValues,
-                    modifier = Modifier.fillMaxSize().padding(16.dp),
+                    modifier = Modifier.fillMaxSize(),
                     state = gameListState
                 ) {
                     itemsIndexed(visibleGames) { index, game ->
@@ -279,23 +279,16 @@ internal fun TablesScreen3(
                             snackbarHostState.currentSnackbarData?.dismiss()
                             viewModel.prepareDeleteGame(game)
                             scope.launch {
-                                val result = snackbarHostState.showSnackbar(
-                                    message = getString(Res.string.game_deleted), actionLabel = getString(Res.string.undo)
-                                )
-                                when (result) {
-                                    SnackbarResult.ActionPerformed -> {
-                                        viewModel.undoDeleteGame(game)
-                                    }
-
-                                    SnackbarResult.Dismissed -> {
-                                        viewModel.deleteGame(game.idGame)
-                                    }
-                                }
+                                snackbarHostState.UndoDeleteGameSnackbar(onActionPerformed = {
+                                    viewModel.undoDeleteGame(game)
+                                }, onDismissed = {
+                                    viewModel.deleteGame(game.idGame)
+                                })
                             }
                         }, onTap = {
                             val route = Match3Dest(idGame = game.idGame)
                             navController.navigate(route)
-                        }, isTable = true,isSwipe = index == visibleGames.lastIndex) {
+                        }, isTable = true, isSwipe = index == visibleGames.lastIndex) {
                             Column(modifier = Modifier.weight(1F)) {
                                 TableTextAtom(game.name1)
                                 TableTextAtom(game.name2)
@@ -364,7 +357,7 @@ internal fun TablesScreen4(
                 isEmptyList = state.data.isEmpty()
                 LazyColumn(
                     contentPadding = paddingValues,
-                    modifier = Modifier.fillMaxSize().padding(16.dp),
+                    modifier = Modifier.fillMaxSize(),
                     state = gameListState
                 ) {
                     scope.launch {
@@ -375,18 +368,13 @@ internal fun TablesScreen4(
                             snackbarHostState.currentSnackbarData?.dismiss()
                             viewModel.prepareDeleteGame(game)
                             scope.launch {
-                                val result = snackbarHostState.showSnackbar(
-                                    message = getString(Res.string.game_deleted), actionLabel = getString(Res.string.undo)
-                                )
-                                when (result) {
-                                    SnackbarResult.ActionPerformed -> {
-                                        viewModel.undoDeleteGame(game)
-                                    }
+                                snackbarHostState.UndoDeleteGameSnackbar(onActionPerformed = {
+                                    viewModel.undoDeleteGame(game)
 
-                                    SnackbarResult.Dismissed -> {
-                                        viewModel.deleteGame(game.idGame)
-                                    }
-                                }
+                                }, onDismissed = {
+                                    viewModel.deleteGame(game.idGame)
+
+                                })
                             }
                         }, onTap = {
                             val route = Match4Dest(idGame = game.idGame)
@@ -466,7 +454,7 @@ internal fun TablesScreenGroups(
                 }
                 LazyColumn(
                     contentPadding = paddingValues,
-                    modifier = Modifier.fillMaxSize().padding(16.dp),
+                    modifier = Modifier.fillMaxSize(),
                     state = gameListState
                 ) {
                     itemsIndexed(visibleGames) { index, game ->
@@ -474,18 +462,12 @@ internal fun TablesScreenGroups(
                             snackbarHostState.currentSnackbarData?.dismiss()
                             viewModel.prepareDeleteGame(game)
                             scope.launch {
-                                val result = snackbarHostState.showSnackbar(
-                                    message = getString(Res.string.game_deleted), actionLabel = getString(Res.string.undo)
-                                )
-                                when (result) {
-                                    SnackbarResult.ActionPerformed -> {
-                                        viewModel.undoDeleteGame(game)
-                                    }
+                                snackbarHostState.UndoDeleteGameSnackbar(onActionPerformed = {
+                                    viewModel.undoDeleteGame(game)
 
-                                    SnackbarResult.Dismissed -> {
-                                        viewModel.deleteGame(game.idGame)
-                                    }
-                                }
+                                }, onDismissed = {
+                                    viewModel.deleteGame(game.idGame)
+                                })
                             }
                         }, onTap = {
                             val route = MatchGroupsDest(idGame = game.idGame)
@@ -640,16 +622,20 @@ private fun TablesBase(
     isLoading: Boolean,
     content: @Composable (PaddingValues) -> Unit
 ) {
-    Scaffold(floatingActionButton = {
-        InsertFloatingActionButton(onClick = {
-            onInsertGameClick()
-        }, animate = isEmptyList, isLoading = isLoading, modifier = Modifier)
-    }, containerColor = Color.Transparent) { paddingValues ->
+    Scaffold(
+        floatingActionButton = {
+            InsertFloatingActionButton(
+                onClick = { onInsertGameClick() },
+                animate = isEmptyList,
+                isLoading = isLoading,
+                modifier = Modifier
+            )
+        },
+        containerColor = Color.Transparent,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)  // Remove default window insets
+    ) { paddingValues ->
         val customValues = PaddingValues(
-            start = paddingValues.calculateStartPadding(layoutDirection = androidx.compose.ui.unit.LayoutDirection.Ltr),
-            top = paddingValues.calculateTopPadding(),
-            end = paddingValues.calculateEndPadding(layoutDirection = androidx.compose.ui.unit.LayoutDirection.Ltr),
-            bottom = paddingValues.calculateBottomPadding() + 80.dp
+            start = 8.dp, end = 8.dp, bottom = paddingValues.calculateBottomPadding() + 80.dp
         )
         content(customValues)
     }
@@ -1039,5 +1025,3 @@ fun ShakerTextFieldAtom(
         },
     )
 }
-
-
