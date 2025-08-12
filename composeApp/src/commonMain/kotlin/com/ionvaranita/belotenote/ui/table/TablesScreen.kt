@@ -33,7 +33,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -195,6 +198,7 @@ internal fun TablesScreen2(
                                 TableTextAtom(game.name1)
                                 TableTextAtom(game.name2)
                             }
+                            TableDateTextAtom(text = game.dateGame)
                             Spacer(modifier = Modifier.width(16.dp))
                             StatusImage(gameStatus = GameStatus.fromId(game.statusGame))
                         }
@@ -296,6 +300,7 @@ internal fun TablesScreen3(
                             Column(modifier = Modifier.weight(1F)) {
                                 TableTextAtom(game.name3)
                             }
+                            TableDateTextAtom(text = game.dateGame)
                             Spacer(modifier = Modifier.width(16.dp))
                             StatusImage(
                                 gameStatus = GameStatus.fromId(game.statusGame)
@@ -388,6 +393,7 @@ internal fun TablesScreen4(
                                 TableTextAtom(game.name3)
                                 TableTextAtom(game.name4)
                             }
+                            TableDateTextAtom(text = game.dateGame)
                             Spacer(modifier = Modifier.width(16.dp))
                             StatusImage(
                                 gameStatus = GameStatus.fromId(game.statusGame)
@@ -478,6 +484,7 @@ internal fun TablesScreenGroups(
                                 TableTextAtom(text = game.name2)
                             }
                             Spacer(modifier = Modifier.width(16.dp))
+                            TableDateTextAtom(text = game.dateGame)
                             StatusImage(
                                 gameStatus = GameStatus.fromId(game.statusGame)
                             )
@@ -587,6 +594,7 @@ fun GameCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 content()
+                Icon(imageVector = Icons.Filled.PlayArrow, contentDescription = null)
             }
         }
     }
@@ -612,6 +620,17 @@ private fun TableTextAtom(text: String, modifier: Modifier = Modifier) {
         maxLines = 1,
         textAlign = TextAlign.Center,
         modifier = modifier.fillMaxWidth()
+    )
+}
+
+@Composable
+private fun TableDateTextAtom(text: String, modifier: Modifier = Modifier) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodySmall,
+        maxLines = 1,
+        textAlign = TextAlign.Center,
+        modifier = modifier.wrapContentSize()
     )
 }
 
