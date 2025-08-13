@@ -5,6 +5,7 @@ import androidx.room.PrimaryKey
 import com.ionvaranita.belotenote.constants.GameStatus
 import com.ionvaranita.belotenote.domain.model.Game2PUi
 import com.ionvaranita.belotenote.utils.getCurrentTime
+import com.ionvaranita.belotenote.utils.getFormattedDate
 
 @Entity
 data class Game2PEntity(
@@ -25,7 +26,8 @@ data class Game2PEntity(
             name1 = this.name1,
             name2 = this.name2,
             scoreName1 = this.scoreName1,
-            scoreName2 = this.scoreName2
+            scoreName2 = this.scoreName2,
+            dateGame = this.dateGame.getFormattedDate()
         )
     }
 }

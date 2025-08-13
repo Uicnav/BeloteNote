@@ -11,11 +11,13 @@ import com.ionvaranita.belotenote.datalayer.database.entity.players4.Points4PEnt
 import com.ionvaranita.belotenote.datalayer.database.entity.winningpoints.WinningPointsEntity
 import com.ionvaranita.belotenote.ui.match.BOLT
 import com.ionvaranita.belotenote.ui.match.MINUS_10
+import com.ionvaranita.belotenote.utils.getCurrentTime
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class Game2PUi(
     val idGame: Int,
+    val dateGame: String,
     val statusGame: Byte,
     val winningPoints: Short,
     val name1: String,
@@ -39,6 +41,7 @@ data class Game2PUi(
 
 data class Game3PUi(
     val idGame: Int,
+    val dateGame: String,
     val statusGame: Byte,
     val winningPoints: Short,
     val name1: String,
@@ -63,6 +66,7 @@ data class Game3PUi(
 
 data class Game4PUi(
     val idGame: Int,
+    val dateGame: String,
     val statusGame: Byte,
     val winningPoints: Short,
     val name1: String,
@@ -90,6 +94,7 @@ data class Game4PUi(
 
 data class Game2GroupsUi(
     val idGame: Int,
+    val dateGame: String,
     val statusGame: Byte,
     val winningPoints: Short,
     val name1: String,

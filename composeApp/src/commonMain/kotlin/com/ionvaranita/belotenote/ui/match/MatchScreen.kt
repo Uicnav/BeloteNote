@@ -1853,18 +1853,21 @@ private fun ExtendedDialog(
                         Res.string.dialog_fragment_greater_than, maxPoints
                     ), shaker = shakerWinningPoints, isOnlyDigit = true
                 )
+                val textColor = if (isSystemInDarkTheme()) Color.White else Color.Black
                 if (winnerText != null) {
                     Text(
                         text = stringResource(Res.string.dialog_fragment_extend_match_info),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
+                        color = textColor,
                         textAlign = TextAlign.Center
                     )
                     Text(
                         text = stringResource(Res.string.dialog_fragment_extend_match_q),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.ExtraBold,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        color = textColor
 
                     )
                 } else {
@@ -1872,12 +1875,14 @@ private fun ExtendedDialog(
                         text = stringResource(Res.string.dialog_fragment_mandatory_extend_match_info1),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        color = textColor
                     )
                     Text(
                         text = stringResource(Res.string.dialog_fragment_mandatory_extend_match_info2),
                         fontWeight = FontWeight.ExtraBold,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        color = textColor
                     )
                 }
 
@@ -1896,9 +1901,9 @@ private fun ExtendedDialog(
                         Text(
                             fontSize = 10.sp,
                             text = stringResource(Res.string.dialog_fragment_extend_match),
-                            color = Color.Black,
                             fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
+                            color = Color.Black
                         )
                     }
                     winnerText?.let {
