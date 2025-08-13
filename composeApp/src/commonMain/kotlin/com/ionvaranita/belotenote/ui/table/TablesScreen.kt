@@ -594,7 +594,9 @@ fun GameCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 content()
-                Icon(imageVector = Icons.Filled.PlayArrow, contentDescription = null)
+                if (isTable) {
+                    Icon(imageVector = Icons.Filled.PlayArrow, contentDescription = null)
+                }
             }
         }
     }
