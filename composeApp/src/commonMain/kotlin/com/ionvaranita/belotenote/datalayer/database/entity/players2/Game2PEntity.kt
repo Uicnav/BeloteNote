@@ -4,8 +4,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.ionvaranita.belotenote.constants.GameStatus
 import com.ionvaranita.belotenote.domain.model.Game2PUi
+import com.ionvaranita.belotenote.getFormattedDate
 import com.ionvaranita.belotenote.utils.getCurrentTime
-import com.ionvaranita.belotenote.utils.getFormattedDate
 
 @Entity
 data class Game2PEntity(

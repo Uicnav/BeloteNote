@@ -197,7 +197,7 @@ internal fun TablesScreen2(
                                 TableTextAtom(game.name2)
                             }
                             TableDateTextAtom(text = game.dateGame)
-                            Spacer(modifier = Modifier.width(16.dp))
+                            //Spacer(modifier = Modifier.width(spacingBetweenStatusAndDate))
                             StatusImage(gameStatus = GameStatus.fromId(game.statusGame))
                         }
                     }
@@ -214,6 +214,8 @@ internal fun TablesScreen2(
         }
     }
 }
+
+private val spacingBetweenStatusAndDate = 8.dp
 
 suspend fun SnackbarHostState.UndoDeleteGameSnackbar(
     onActionPerformed: () -> Unit, onDismissed: () -> Unit
@@ -299,7 +301,7 @@ internal fun TablesScreen3(
                                 TableTextAtom(game.name3)
                             }
                             TableDateTextAtom(text = game.dateGame)
-                            Spacer(modifier = Modifier.width(16.dp))
+                            //Spacer(modifier = Modifier.width(spacingBetweenStatusAndDate))
                             StatusImage(
                                 gameStatus = GameStatus.fromId(game.statusGame)
                             )
@@ -392,7 +394,7 @@ internal fun TablesScreen4(
                                 TableTextAtom(game.name4)
                             }
                             TableDateTextAtom(text = game.dateGame)
-                            Spacer(modifier = Modifier.width(16.dp))
+                            //Spacer(modifier = Modifier.width(spacingBetweenStatusAndDate))
                             StatusImage(
                                 gameStatus = GameStatus.fromId(game.statusGame)
                             )
@@ -481,8 +483,8 @@ internal fun TablesScreenGroups(
                                 TableTextAtom(text = game.name1)
                                 TableTextAtom(text = game.name2)
                             }
-                            Spacer(modifier = Modifier.width(16.dp))
                             TableDateTextAtom(text = game.dateGame)
+                            //Spacer(modifier = Modifier.width(spacingBetweenStatusAndDate))
                             StatusImage(
                                 gameStatus = GameStatus.fromId(game.statusGame)
                             )
