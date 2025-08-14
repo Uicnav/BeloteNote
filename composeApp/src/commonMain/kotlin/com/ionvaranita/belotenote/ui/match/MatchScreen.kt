@@ -173,7 +173,7 @@ internal fun MatchScreen2(
             showExtended = false
         }, onWin = {
             winnerData?.let {
-                viewModel.updateStatusScoreName(it)
+                viewModel.updateStatusScoreName(idWinner = it.id, gameStatus = GameStatus.FINISHED)
             }
             showExtended = false
         }, onExtend = { winningPoints ->
@@ -259,7 +259,7 @@ internal fun MatchScreen2(
                     itemsIndexed(points) { index: Int, item: Points2PUi ->
                         val isLast = index == points.lastIndex
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (isLast && viewModel.statusGame.value == GameStatus.CONTINUE) {
+                            if (isLast) {
                                 GameCard(onDelete = {
                                     scope.launch {
                                         viewModel.deleteLastPoints()
@@ -382,7 +382,7 @@ internal fun MatchScreen2(
                     var shouDialog by remember { mutableStateOf(false) }
                     InsertFloatingActionButton(onClick = {
                         if (viewModel.statusGame.value == GameStatus.EXTENDED || viewModel.statusGame.value == GameStatus.EXTENDED_MANDATORY) {
-                            viewModel.checkIsExtended()
+                            viewModel.checkStatusAndScore()
                         } else {
                             shouDialog = true
                         }
@@ -468,7 +468,7 @@ internal fun MatchScreen3(
             showExtended = false
         }, onWin = {
             winnerData?.let {
-                viewModel.updateStatusScoreName(it)
+                viewModel.updateStatusScoreName(it.id, GameStatus.FINISHED)
             }
             showExtended = false
         }, onExtend = { winningPoints ->
@@ -556,7 +556,7 @@ internal fun MatchScreen3(
                     itemsIndexed(points) { index: Int, item: Points3PUi ->
                         val isLast = index == points.lastIndex
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (isLast && viewModel.statusGame.value == GameStatus.CONTINUE) {
+                            if (isLast) {
                                 GameCard(onDelete = {
                                     scope.launch {
                                         viewModel.deleteLastPoints()
@@ -717,7 +717,7 @@ internal fun MatchScreen3(
                     var shouDialog by remember { mutableStateOf(false) }
                     InsertFloatingActionButton(onClick = {
                         if (viewModel.statusGame.value == GameStatus.EXTENDED || viewModel.statusGame.value == GameStatus.EXTENDED_MANDATORY) {
-                            viewModel.checkIsExtended()
+                            viewModel.checkStatusAndScore()
                         } else {
                             shouDialog = true
                         }
@@ -801,7 +801,7 @@ internal fun MatchScreen4(
             showExtended = false
         }, onWin = {
             winnerData?.let {
-                viewModel.updateStatusScoreName(it)
+                viewModel.updateStatusScoreName(idWinner = it.id, gameStatus = GameStatus.FINISHED)
             }
             showExtended = false
         }, onExtend = { winningPoints ->
@@ -884,7 +884,7 @@ internal fun MatchScreen4(
                     itemsIndexed(points) { index: Int, item: Points4PUi ->
                         val isLast = index == points.lastIndex
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (isLast && viewModel.statusGame.value == GameStatus.CONTINUE) {
+                            if (isLast) {
                                 GameCard(onDelete = {
                                     scope.launch {
                                         viewModel.deleteLastPoints()
@@ -1141,7 +1141,7 @@ internal fun MatchScreen4(
                     var shouDialog by remember { mutableStateOf(false) }
                     InsertFloatingActionButton(onClick = {
                         if (viewModel.statusGame.value == GameStatus.EXTENDED || viewModel.statusGame.value == GameStatus.EXTENDED_MANDATORY) {
-                            viewModel.checkIsExtended()
+                            viewModel.checkStatusAndScore()
                         } else {
                             shouDialog = true
                         }
@@ -1225,7 +1225,7 @@ internal fun MatchScreen2Groups(
             showExtended = false
         }, onWin = {
             winnerData?.let {
-                viewModel.updateStatusScoreName(it)
+                viewModel.updateStatusScoreName(idWinner = it.id, gameStatus = GameStatus.FINISHED)
             }
             showExtended = false
         }, onExtend = { winningPoints ->
@@ -1301,7 +1301,7 @@ internal fun MatchScreen2Groups(
                     itemsIndexed(points) { index: Int, item: Points2GroupsUi ->
                         val isLast = index == points.lastIndex
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (isLast && viewModel.statusGame.value == GameStatus.CONTINUE) {
+                            if (isLast) {
                                 GameCard(onDelete = {
                                     scope.launch {
                                         viewModel.deleteLastPoints()
@@ -1432,7 +1432,7 @@ internal fun MatchScreen2Groups(
                     var shouDialog by remember { mutableStateOf(false) }
                     InsertFloatingActionButton(onClick = {
                         if (viewModel.statusGame.value == GameStatus.EXTENDED || viewModel.statusGame.value == GameStatus.EXTENDED_MANDATORY) {
-                            viewModel.checkIsExtended()
+                            viewModel.checkStatusAndScore()
                         } else {
                             shouDialog = true
                         }

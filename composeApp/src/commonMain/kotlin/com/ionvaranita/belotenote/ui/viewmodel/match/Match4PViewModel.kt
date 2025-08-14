@@ -1,5 +1,7 @@
 package com.ionvaranita.belotenote.ui.viewmodel.match
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.viewModelScope
 import com.ionvaranita.belotenote.constants.GameStatus
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.UpdateOnlyStatusGameParams
@@ -18,6 +20,7 @@ import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteAllPoints4PU
 import com.ionvaranita.belotenote.domain.usecase.match.delete.DeleteLastRowPoints4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.get.GetPoints4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.match.insert.InsertPoints4PUseCase
+import com.ionvaranita.belotenote.ui.GamePath
 import com.ionvaranita.belotenote.ui.match.BOLT
 import com.ionvaranita.belotenote.utils.IdsPlayer.ID_PERSON_1
 import com.ionvaranita.belotenote.utils.IdsPlayer.ID_PERSON_2
@@ -30,18 +33,20 @@ import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
 
 class Match4PPViewModel(
-    private val idGame: Int,
     private val getGameUseCase: GetGame4PUseCase,
     private val getPointsUseCase: GetPoints4PUseCase,
     private val insertPointsUseCase: InsertPoints4PUseCase,
-    private val deleteLastRowUseCase: DeleteLastRowPoints4PUseCase,
+    private val deleteLastPointsUseCase: DeleteLastRowPoints4PUseCase,
     private val updateStatusScoreName1UseCase: UpdateStatusScoreName1Game4PUseCase,
     private val updateStatusScoreName2UseCase: UpdateStatusScoreName2Game4PUseCase,
     private val updateStatusScoreName3UseCase: UpdateStatusScoreName3Game4PUseCase,
     private val updateStatusScoreName4UseCase: UpdateStatusScoreName4Game4PUseCase,
     private val updateStatusWinningPointsUseCase: UpdateStatusWinningPointsGame4PUseCase,
     private val updateOnlyStatusUseCase: UpdateOnlyStatusGame4PUseCase,
-    private val deleteAllPointsUseCase: DeleteAllPoints4PUseCase
+    private val deleteAllPointsUseCase: DeleteAllPoints4PUseCase,
+    override val prefs: DataStore<Preferences>,
+    override val idGame: Int,
+    override val gamePath: GamePath = GamePath.FOUR
 ) : ViewModelBase() {
 
     init {
@@ -192,7 +197,7 @@ class Match4PPViewModel(
         }
     }
 
-    override fun checkIsExtended(
+    override fun checkStatusAndScore(
         dispatcher: CoroutineDispatcher
     ) {
         viewModelScope.launch(dispatcher) {
@@ -200,39 +205,45 @@ class Match4PPViewModel(
         }
     }
 
-    override fun updateStatusScoreName(winner: Winner, dispatcher: CoroutineDispatcher) {
+    override fun updateStatusScoreName(
+        idWinner: Int,
+        gameStatus: GameStatus,
+        isScoreToIncrease: Boolean,
+        dispatcher: CoroutineDispatcher
+    )  {
         viewModelScope.launch(dispatcher) {
-            if (winner.id == ID_PERSON_1) {
+            if (idWinner == ID_PERSON_1) {
                 updateStatusScoreName1UseCase.execute(
                     params = UpdateStatusAndScoreGameParams(
                         idGame = idGame,
-                        statusGame = GameStatus.FINISHED.id,
-                        score = scoreName1.plus(1).toShort()
+                        statusGame = gameStatus.id,
+                        score = if (isScoreToIncrease)scoreName1.plus(1).toShort() else scoreName1.minus(1).toShort()
                     )
                 )
 
-            } else if (winner.id == ID_PERSON_2) {
+            } else if (idWinner == ID_PERSON_2) {
                 updateStatusScoreName2UseCase.execute(
                     params = UpdateStatusAndScoreGameParams(
                         idGame = idGame,
-                        statusGame = GameStatus.FINISHED.id,
-                        score = scoreName2.plus(1).toShort()
+                        statusGame = gameStatus.id,
+                        score = if (isScoreToIncrease)scoreName2.plus(1).toShort() else scoreName2.minus(1).toShort()
+
                     )
                 )
-            } else if (winner.id == ID_PERSON_3) {
+            } else if (idWinner == ID_PERSON_3) {
                 updateStatusScoreName3UseCase.execute(
                     params = UpdateStatusAndScoreGameParams(
                         idGame = idGame,
-                        statusGame = GameStatus.FINISHED.id,
-                        score = scoreName3.plus(1).toShort()
+                        statusGame = gameStatus.id,
+                        score = if (isScoreToIncrease)scoreName3.plus(1).toShort() else scoreName3.minus(1).toShort()
                     )
                 )
-            } else if (winner.id == ID_PERSON_4) {
+            } else if (idWinner == ID_PERSON_4) {
                 updateStatusScoreName4UseCase.execute(
                     params = UpdateStatusAndScoreGameParams(
                         idGame = idGame,
-                        statusGame = GameStatus.FINISHED.id,
-                        score = scoreName4.plus(1).toShort()
+                        statusGame = gameStatus.id,
+                        score = if (isScoreToIncrease)scoreName4.plus(1).toShort() else scoreName4.minus(1).toShort()
                     )
                 )
             }
@@ -241,7 +252,15 @@ class Match4PPViewModel(
 
     override fun deleteLastPoints(dispatcher: CoroutineDispatcher) {
         viewModelScope.launch(dispatcher) {
-            deleteLastRowUseCase.execute(lastPoints.toDataClass())
+            deleteLastPointsUseCase.execute(lastPoints.toDataClass())
+            if (statusGame.value != GameStatus.CONTINUE) {
+                if (statusGame.value == GameStatus.FINISHED) {
+                    val lastWinner = getLastWinner()
+                    updateStatusScoreName(idWinner = lastWinner, gameStatus = GameStatus.CONTINUE, isScoreToIncrease = false)
+                } else {
+                    updateOnlyStatus(GameStatus.CONTINUE)
+                }
+            }
         }
 
     }
@@ -317,6 +336,7 @@ class Match4PPViewModel(
             }
 
             is WinnerResult.ToFinish -> {
+                saveLastWinner( result.idWinner)
                 if (result.idWinner == ID_PERSON_1) {
                     updateStatusScoreName1UseCase.execute(
                         UpdateStatusAndScoreGameParams(

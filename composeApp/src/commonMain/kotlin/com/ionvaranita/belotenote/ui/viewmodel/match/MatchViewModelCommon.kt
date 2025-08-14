@@ -2,8 +2,13 @@ package com.ionvaranita.belotenote.ui.viewmodel.match
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.lifecycle.ViewModel
 import com.ionvaranita.belotenote.constants.GameStatus
+import com.ionvaranita.belotenote.ui.GamePath
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -11,6 +16,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlin.properties.Delegates
 
 sealed interface SideEffect {
@@ -35,6 +42,15 @@ sealed interface MatchUiState {
 }
 
 abstract class ViewModelBase : ViewModel() {
+    protected abstract val gamePath: GamePath
+    protected abstract val idGame: Int
+
+    private val winnerKey by lazy {
+
+        intPreferencesKey(gamePath.name + idGame)
+    }
+
+    protected abstract val prefs: DataStore<Preferences>
 
     var winningPoints by Delegates.notNull<Short>()
 
@@ -50,11 +66,20 @@ abstract class ViewModelBase : ViewModel() {
     protected abstract fun getMatchData(dispatcher: CoroutineDispatcher = Dispatchers.IO)
 
     abstract fun deleteLastPoints(dispatcher: CoroutineDispatcher = Dispatchers.IO)
-    abstract fun checkIsExtended(dispatcher: CoroutineDispatcher = Dispatchers.IO)
-    abstract fun updateStatusScoreName(winner: Winner, dispatcher: CoroutineDispatcher = Dispatchers.IO)
+    abstract fun checkStatusAndScore(dispatcher: CoroutineDispatcher = Dispatchers.IO)
+    abstract fun updateStatusScoreName(
+        idWinner: Int,
+        gameStatus: GameStatus,
+        isScoreToIncrease: Boolean = true,
+        dispatcher: CoroutineDispatcher = Dispatchers.IO
+    )
+
     abstract fun resetGame(winningPoints: Short, dispatcher: CoroutineDispatcher = Dispatchers.IO)
     abstract fun extentGame(winningPoints: Short, dispatcher: CoroutineDispatcher = Dispatchers.IO)
-    abstract fun updateOnlyStatus(statusGame: GameStatus, dispatcher: CoroutineDispatcher = Dispatchers.IO)
+    abstract fun updateOnlyStatus(
+        statusGame: GameStatus, dispatcher: CoroutineDispatcher = Dispatchers.IO
+    )
+
     abstract fun <T> insertPoints(model: T, dispatcher: CoroutineDispatcher = Dispatchers.IO)
 
     protected fun getWinner(mapPoints: Map<Int, Short>, winningPoints: Short): WinnerResult {
@@ -68,5 +93,19 @@ abstract class ViewModelBase : ViewModel() {
             else -> WinnerResult.ToExtendMandatory(max)
         }
     }
+
+    protected suspend fun saveLastWinner(idWinner: Int) {
+        prefs.edit { dataStore ->
+            dataStore[winnerKey] = idWinner
+        }
+    }
+
+    protected suspend fun getLastWinner(): Int {
+        return prefs.data.map { preferences ->
+            preferences[winnerKey] ?: NO_WINNER_FOUND_ERROR_CODE
+        }.first()
+    }
+
+    protected val NO_WINNER_FOUND_ERROR_CODE = -1
 
 }

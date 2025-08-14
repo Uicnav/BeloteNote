@@ -51,6 +51,8 @@ kotlin {
             implementation(libs.room.runtime)
             implementation(libs.sqlite.bundled)
             implementation(libs.kotlinx.datetime)
+            api(libs.datastore.preferences)
+            api(libs.datastore)
         }
     }
 }

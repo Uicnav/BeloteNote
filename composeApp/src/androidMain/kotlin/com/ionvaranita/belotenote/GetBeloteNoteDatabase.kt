@@ -1,4 +1,4 @@
-package com.ionvaranita.belotenote.room_cmp.database
+package com.ionvaranita.belotenote
 
 import android.content.Context
 import androidx.room.Room
