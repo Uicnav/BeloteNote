@@ -255,7 +255,7 @@ class Match4PPViewModel(
             deleteLastPointsUseCase.execute(lastPoints.toDataClass())
             if (statusGame.value != GameStatus.CONTINUE) {
                 if (statusGame.value == GameStatus.FINISHED) {
-                    val lastWinner = getLastWinner()
+                    val lastWinner = getLastWinnerAndRemove()
                     updateStatusScoreName(idWinner = lastWinner, gameStatus = GameStatus.CONTINUE, isScoreToIncrease = false)
                 } else {
                     updateOnlyStatus(GameStatus.CONTINUE)

@@ -100,10 +100,16 @@ abstract class ViewModelBase : ViewModel() {
         }
     }
 
-    protected suspend fun getLastWinner(): Int {
-        return prefs.data.map { preferences ->
+    protected suspend fun getLastWinnerAndRemove(): Int {
+        val lastWinner = prefs.data.map { preferences ->
             preferences[winnerKey] ?: NO_WINNER_FOUND_ERROR_CODE
         }.first()
+
+        prefs.edit { dataStore ->
+            dataStore.remove(winnerKey)
+        }
+
+        return lastWinner
     }
 
     protected val NO_WINNER_FOUND_ERROR_CODE = -1
