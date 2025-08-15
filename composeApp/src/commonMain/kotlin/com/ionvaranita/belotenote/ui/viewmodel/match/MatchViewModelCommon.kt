@@ -8,7 +8,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.lifecycle.ViewModel
 import com.ionvaranita.belotenote.constants.GameStatus
-import com.ionvaranita.belotenote.constants.LAST_WINNER
 import com.ionvaranita.belotenote.ui.GamePath
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -47,7 +46,7 @@ abstract class ViewModelBase : ViewModel() {
     protected abstract val idGame: Int
 
     private val lastWinnerKey by lazy {
-        intPreferencesKey(LAST_WINNER + gamePath.name + idGame)
+        intPreferencesKey(gamePath.getLastWinnerKey(idGame))
     }
 
     protected abstract val namesMap: Map<Int, String>

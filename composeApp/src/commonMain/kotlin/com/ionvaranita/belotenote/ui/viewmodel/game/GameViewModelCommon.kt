@@ -14,7 +14,7 @@ abstract class GameViewModelCommon : ViewModel() {
 
     protected suspend fun deleteLastWinnerByIdGame(idGame: Int) {
         prefs.edit { dataStore ->
-            val winnerKey = intPreferencesKey(gamePath.name + idGame)
+            val winnerKey = intPreferencesKey(gamePath.getLastWinnerKey(idGame))
             dataStore.remove(winnerKey)
         }
     }

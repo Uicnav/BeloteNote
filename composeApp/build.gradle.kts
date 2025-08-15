@@ -69,8 +69,8 @@ android {
         applicationId = "com.ionvaranita.belotenote"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 135
-        versionName = "1.3.5"
+        versionCode = 138
+        versionName = "1.3.8"
     }
     packaging {
         resources {
