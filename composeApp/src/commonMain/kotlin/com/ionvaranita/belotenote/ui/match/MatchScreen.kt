@@ -1533,8 +1533,7 @@ private fun MatchWrapper(
 
     Column(
         modifier = modifier.alpha(GLOBAL_ALPHA).padding(8.dp).wrapContentSize()
-            .clip(shape = RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainerHighest),
+            .background(color = MaterialTheme.colorScheme.surfaceContainerHighest, shape = MaterialTheme.shapes.large),
     ) {
         content()
     }
@@ -1644,7 +1643,7 @@ private fun Keyboard(
     val keyAlpha = if (!isPressedGames) 1f else 0f
     Column(
         modifier = modifier.fillMaxWidth().padding(top = 4.dp).background(
-            color = MaterialTheme.colorScheme.background, shape = MaterialTheme.shapes.large
+            color = MaterialTheme.colorScheme.surfaceContainerHighest, shape = MaterialTheme.shapes.large
         )
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
