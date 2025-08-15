@@ -49,7 +49,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Switch
@@ -66,6 +65,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
@@ -99,6 +99,7 @@ import com.ionvaranita.belotenote.Match3Dest
 import com.ionvaranita.belotenote.Match4Dest
 import com.ionvaranita.belotenote.MatchGroupsDest
 import com.ionvaranita.belotenote.StatusImage
+import com.ionvaranita.belotenote.constants.GLOBAL_ALPHA
 import com.ionvaranita.belotenote.constants.GameStatus
 import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Game2GroupsEntity
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.Game2PEntity
@@ -556,7 +557,7 @@ fun GameCard(
         }
     }
 
-    Box(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
+    Box(modifier = modifier.fillMaxWidth().padding(top = 8.dp).alpha(GLOBAL_ALPHA)) {
         Box(
             modifier = Modifier.matchParentSize().clip(shape = CardDefaults.shape)
                 .background(Color.Red).padding(end = 16.dp), contentAlignment = Alignment.CenterEnd
@@ -564,11 +565,11 @@ fun GameCard(
             Image(
                 painter = painterResource(Res.drawable.ic_delete_white),
                 contentDescription = null,
-                modifier = modifier.width(44.dp)
+                modifier = Modifier.width(44.dp)
             )
         }
 
-        Card(modifier = modifier.offset { IntOffset(offsetX.value.toInt(), 0) }.pointerInput(Unit) {
+        Card(modifier = Modifier.offset { IntOffset(offsetX.value.toInt(), 0) }.pointerInput(Unit) {
             detectHorizontalDragGestures(onDragEnd = {
                 if (offsetX.value <= swipeThreshold) {
                     showDialog = true

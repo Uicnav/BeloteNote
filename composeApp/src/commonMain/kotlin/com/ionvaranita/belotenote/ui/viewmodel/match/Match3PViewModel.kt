@@ -43,11 +43,18 @@ class Match3PPViewModel(
     private val deleteAllPointsUseCase: DeleteAllPoints3PUseCase,
     override val prefs: DataStore<Preferences>,
     override val idGame: Int,
-    override val gamePath: GamePath = GamePath.THREE
 ) : ViewModelBase() {
 
     init {
         getMatchData()
+    }
+    override val gamePath: GamePath = GamePath.THREE
+    override val namesMap: Map<Int, String> by lazy {
+        mutableMapOf<Int, String>().apply {
+            this[ID_PERSON_1] = name1
+            this[ID_PERSON_2] = name2
+            this[ID_PERSON_3] = name3
+        }
     }
 
     private var countBoltP1 = 0
@@ -187,21 +194,25 @@ class Match3PPViewModel(
         dispatcher: CoroutineDispatcher
     ) {
         viewModelScope.launch(dispatcher) {
+            saveLastWinner(idWinner)
             if (idWinner == ID_PERSON_1) {
                 updateStatusScoreName1UseCase.execute(
                     params = UpdateStatusAndScoreGameParams(
                         idGame = idGame,
                         statusGame = gameStatus.id,
-                        score = if (isScoreToIncrease)scoreName1.plus(1).toShort() else scoreName1.minus(1).toShort()
+                        score = if (isScoreToIncrease) scoreName1.plus(1)
+                            .toShort() else scoreName1.minus(1).toShort()
                     )
                 )
+
 
             } else if (idWinner == ID_PERSON_2) {
                 updateStatusScoreName2UseCase.execute(
                     params = UpdateStatusAndScoreGameParams(
                         idGame = idGame,
                         statusGame = gameStatus.id,
-                        score = if (isScoreToIncrease)scoreName2.plus(1).toShort() else scoreName2.minus(1).toShort()
+                        score = if (isScoreToIncrease) scoreName2.plus(1)
+                            .toShort() else scoreName2.minus(1).toShort()
                     )
                 )
             } else if (idWinner == ID_PERSON_3) {
@@ -209,10 +220,14 @@ class Match3PPViewModel(
                     params = UpdateStatusAndScoreGameParams(
                         idGame = idGame,
                         statusGame = gameStatus.id,
-                        score = if (isScoreToIncrease)scoreName3.plus(1).toShort() else scoreName3.minus(1).toShort()
+                        score = if (isScoreToIncrease) scoreName3.plus(1)
+                            .toShort() else scoreName3.minus(1).toShort()
 
                     )
                 )
+            }
+            if (gameStatus == GameStatus.FINISHED) {
+                _oneTimeEvent.emit(SideEffect.ShowWinner(winnerName = namesMap[idWinner]!!))
             }
         }
     }
@@ -224,7 +239,11 @@ class Match3PPViewModel(
             if (statusGame.value != GameStatus.CONTINUE) {
                 if (statusGame.value == GameStatus.FINISHED) {
                     val lastWinner = getLastWinnerAndRemove()
-                    updateStatusScoreName(idWinner = lastWinner, gameStatus = GameStatus.CONTINUE, isScoreToIncrease = false)
+                    updateStatusScoreName(
+                        idWinner = lastWinner,
+                        gameStatus = GameStatus.CONTINUE,
+                        isScoreToIncrease = false
+                    )
                 } else {
                     updateOnlyStatus(GameStatus.CONTINUE)
                 }
@@ -286,8 +305,8 @@ class Match3PPViewModel(
                 _oneTimeEvent.emit(
                     SideEffect.ShowExtended(
                         maxPoints = result.maxPoints.toString(), winner = Winner(
-                            result.idWinner,
-                            if (result.idWinner == ID_PERSON_1) name1 else if (result.idWinner == ID_PERSON_2) name2 else name3
+                            id=result.idWinner,
+                            name=namesMap[result.idWinner]!!
                         )
                     )
                 )
@@ -300,29 +319,7 @@ class Match3PPViewModel(
             }
 
             is WinnerResult.ToFinish -> {
-                saveLastWinner( result.idWinner)
-                if (result.idWinner == ID_PERSON_1) {
-                    updateStatusScoreName1UseCase.execute(
-                        UpdateStatusAndScoreGameParams(
-                            idGame = idGame, score = scoreName1.plus(1).toShort()
-                        )
-                    )
-                    _oneTimeEvent.emit(SideEffect.ShowWinner(winnerName = name1))
-                } else if (result.idWinner == ID_PERSON_2) {
-                    updateStatusScoreName2UseCase.execute(
-                        UpdateStatusAndScoreGameParams(
-                            idGame = idGame, score = scoreName2.plus(1).toShort()
-                        )
-                    )
-                    _oneTimeEvent.emit(SideEffect.ShowWinner(winnerName = name2))
-                } else if (result.idWinner == ID_PERSON_3) {
-                    updateStatusScoreName3UseCase.execute(
-                        UpdateStatusAndScoreGameParams(
-                            idGame = idGame, score = scoreName3.plus(1).toShort()
-                        )
-                    )
-                    _oneTimeEvent.emit(SideEffect.ShowWinner(winnerName = name3))
-                }
+                updateStatusScoreName(idWinner = result.idWinner, gameStatus = GameStatus.FINISHED)
             }
         }
         return isExtended

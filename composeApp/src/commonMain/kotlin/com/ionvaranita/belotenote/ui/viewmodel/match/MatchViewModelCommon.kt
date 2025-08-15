@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.lifecycle.ViewModel
 import com.ionvaranita.belotenote.constants.GameStatus
+import com.ionvaranita.belotenote.constants.LAST_WINNER
 import com.ionvaranita.belotenote.ui.GamePath
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -45,10 +46,11 @@ abstract class ViewModelBase : ViewModel() {
     protected abstract val gamePath: GamePath
     protected abstract val idGame: Int
 
-    private val winnerKey by lazy {
-
-        intPreferencesKey(gamePath.name + idGame)
+    private val lastWinnerKey by lazy {
+        intPreferencesKey(LAST_WINNER + gamePath.name + idGame)
     }
+
+    protected abstract val namesMap: Map<Int, String>
 
     protected abstract val prefs: DataStore<Preferences>
 
@@ -96,22 +98,24 @@ abstract class ViewModelBase : ViewModel() {
 
     protected suspend fun saveLastWinner(idWinner: Int) {
         prefs.edit { dataStore ->
-            dataStore[winnerKey] = idWinner
+            dataStore[lastWinnerKey] = idWinner
         }
     }
 
     protected suspend fun getLastWinnerAndRemove(): Int {
         val lastWinner = prefs.data.map { preferences ->
-            preferences[winnerKey] ?: NO_WINNER_FOUND_ERROR_CODE
+            preferences[lastWinnerKey] ?: NO_DATA_FOUND_ERROR_CODE
         }.first()
 
         prefs.edit { dataStore ->
-            dataStore.remove(winnerKey)
+            dataStore.remove(lastWinnerKey)
         }
 
         return lastWinner
     }
 
-    protected val NO_WINNER_FOUND_ERROR_CODE = -1
+    protected val NO_DATA_FOUND_ERROR_CODE = -1
 
 }
+
+data class LastWinnerInfo(val idWinner: Int, val winningPoints: Short)

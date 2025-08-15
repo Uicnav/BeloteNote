@@ -46,9 +46,16 @@ class Match4PPViewModel(
     private val deleteAllPointsUseCase: DeleteAllPoints4PUseCase,
     override val prefs: DataStore<Preferences>,
     override val idGame: Int,
-    override val gamePath: GamePath = GamePath.FOUR
 ) : ViewModelBase() {
-
+    override val namesMap: Map<Int, String> by lazy {
+        mutableMapOf<Int, String>().apply {
+            this[ID_PERSON_1] = name1
+            this[ID_PERSON_2] = name2
+            this[ID_PERSON_3] = name3
+            this[ID_PERSON_4] = name4
+        }
+    }
+    override val gamePath: GamePath = GamePath.FOUR
     init {
         getMatchData()
     }
@@ -212,40 +219,50 @@ class Match4PPViewModel(
         dispatcher: CoroutineDispatcher
     )  {
         viewModelScope.launch(dispatcher) {
-            if (idWinner == ID_PERSON_1) {
-                updateStatusScoreName1UseCase.execute(
-                    params = UpdateStatusAndScoreGameParams(
-                        idGame = idGame,
-                        statusGame = gameStatus.id,
-                        score = if (isScoreToIncrease)scoreName1.plus(1).toShort() else scoreName1.minus(1).toShort()
-                    )
-                )
+            saveLastWinner(idWinner)
 
-            } else if (idWinner == ID_PERSON_2) {
-                updateStatusScoreName2UseCase.execute(
-                    params = UpdateStatusAndScoreGameParams(
-                        idGame = idGame,
-                        statusGame = gameStatus.id,
-                        score = if (isScoreToIncrease)scoreName2.plus(1).toShort() else scoreName2.minus(1).toShort()
+            when (idWinner) {
+                ID_PERSON_1 -> {
+                    updateStatusScoreName1UseCase.execute(
+                        params = UpdateStatusAndScoreGameParams(
+                            idGame = idGame,
+                            statusGame = gameStatus.id,
+                            score = if (isScoreToIncrease)scoreName1.plus(1).toShort() else scoreName1.minus(1).toShort()
+                        )
+                    )
 
+                }
+                ID_PERSON_2 -> {
+                    updateStatusScoreName2UseCase.execute(
+                        params = UpdateStatusAndScoreGameParams(
+                            idGame = idGame,
+                            statusGame = gameStatus.id,
+                            score = if (isScoreToIncrease)scoreName2.plus(1).toShort() else scoreName2.minus(1).toShort()
+
+                        )
                     )
-                )
-            } else if (idWinner == ID_PERSON_3) {
-                updateStatusScoreName3UseCase.execute(
-                    params = UpdateStatusAndScoreGameParams(
-                        idGame = idGame,
-                        statusGame = gameStatus.id,
-                        score = if (isScoreToIncrease)scoreName3.plus(1).toShort() else scoreName3.minus(1).toShort()
+                }
+                ID_PERSON_3 -> {
+                    updateStatusScoreName3UseCase.execute(
+                        params = UpdateStatusAndScoreGameParams(
+                            idGame = idGame,
+                            statusGame = gameStatus.id,
+                            score = if (isScoreToIncrease)scoreName3.plus(1).toShort() else scoreName3.minus(1).toShort()
+                        )
                     )
-                )
-            } else if (idWinner == ID_PERSON_4) {
-                updateStatusScoreName4UseCase.execute(
-                    params = UpdateStatusAndScoreGameParams(
-                        idGame = idGame,
-                        statusGame = gameStatus.id,
-                        score = if (isScoreToIncrease)scoreName4.plus(1).toShort() else scoreName4.minus(1).toShort()
+                }
+                ID_PERSON_4 -> {
+                    updateStatusScoreName4UseCase.execute(
+                        params = UpdateStatusAndScoreGameParams(
+                            idGame = idGame,
+                            statusGame = gameStatus.id,
+                            score = if (isScoreToIncrease)scoreName4.plus(1).toShort() else scoreName4.minus(1).toShort()
+                        )
                     )
-                )
+                }
+            }
+            if (gameStatus == GameStatus.FINISHED) {
+                _oneTimeEvent.emit(SideEffect.ShowWinner(winnerName = namesMap[idWinner]!!))
             }
         }
     }
@@ -322,8 +339,7 @@ class Match4PPViewModel(
                 _oneTimeEvent.emit(
                     SideEffect.ShowExtended(
                         maxPoints = result.maxPoints.toString(), winner = Winner(
-                            result.idWinner,
-                            if (result.idWinner == ID_PERSON_1) name1 else if (result.idWinner == ID_PERSON_2) name2 else if (result.idWinner == ID_PERSON_3) name3 else name4
+                            id=result.idWinner, name=namesMap[result.idWinner]!!
                         )
                     )
                 )
@@ -336,36 +352,7 @@ class Match4PPViewModel(
             }
 
             is WinnerResult.ToFinish -> {
-                saveLastWinner( result.idWinner)
-                if (result.idWinner == ID_PERSON_1) {
-                    updateStatusScoreName1UseCase.execute(
-                        UpdateStatusAndScoreGameParams(
-                            idGame = idGame, score = scoreName1.plus(1).toShort()
-                        )
-                    )
-                    _oneTimeEvent.emit(SideEffect.ShowWinner(winnerName = name1))
-                } else if (result.idWinner == ID_PERSON_2) {
-                    updateStatusScoreName2UseCase.execute(
-                        UpdateStatusAndScoreGameParams(
-                            idGame = idGame, score = scoreName2.plus(1).toShort()
-                        )
-                    )
-                    _oneTimeEvent.emit(SideEffect.ShowWinner(winnerName = name2))
-                } else if (result.idWinner == ID_PERSON_3) {
-                    updateStatusScoreName3UseCase.execute(
-                        UpdateStatusAndScoreGameParams(
-                            idGame = idGame, score = scoreName3.plus(1).toShort()
-                        )
-                    )
-                    _oneTimeEvent.emit(SideEffect.ShowWinner(winnerName = name3))
-                } else if (result.idWinner == ID_PERSON_4) {
-                    updateStatusScoreName4UseCase.execute(
-                        UpdateStatusAndScoreGameParams(
-                            idGame = idGame, score = scoreName4.plus(1).toShort()
-                        )
-                    )
-                    _oneTimeEvent.emit(SideEffect.ShowWinner(winnerName = name4))
-                }
+                updateStatusScoreName(result.idWinner, gameStatus = GameStatus.FINISHED)
             }
         }
         return isExtended

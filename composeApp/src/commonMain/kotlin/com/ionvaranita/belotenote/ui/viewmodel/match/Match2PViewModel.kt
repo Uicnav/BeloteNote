@@ -38,10 +38,16 @@ class Match2PPViewModel(
     private val updateStatusWinningPointsUseCase: UpdateStatusWinningPointsGame2PUseCase,
     private val updateOnlyStatusUseCase: UpdateOnlyStatusGame2PUseCase,
     private val deleteAllPointsUseCase: DeleteAllPoints2PUseCase,
-    override val gamePath: GamePath = GamePath.TWO,
     override val prefs: DataStore<Preferences>,
     override val idGame: Int
 ) : ViewModelBase() {
+    override val gamePath: GamePath = GamePath.TWO
+    override val namesMap: Map<Int, String> by lazy {
+        mutableMapOf<Int, String>().apply {
+            this[ID_PERSON_1] = name1
+            this[ID_PERSON_2] = name2
+        }
+    }
     private var scoreName1 by Delegates.notNull<Short>()
     private var scoreName2 by Delegates.notNull<Short>()
     private var name1 by Delegates.notNull<String>()
@@ -138,14 +144,14 @@ class Match2PPViewModel(
             if (isToExtend) {
                 updateOnlyStatusUseCase.execute(
                     params = UpdateOnlyStatusGameParams(
-                        idGame = idGame,
-                        statusGame = GameStatus.EXTENDED.id
+                        idGame = idGame, statusGame = GameStatus.EXTENDED.id
                     )
                 )
             }
             insertPointsUseCase.execute(updatedModel)
         }
     }
+
 
     override fun checkStatusAndScore(
         dispatcher: CoroutineDispatcher
@@ -155,25 +161,37 @@ class Match2PPViewModel(
         }
     }
 
-    override fun updateStatusScoreName(idWinner: Int, gameStatus: GameStatus, isScoreToIncrease: Boolean, dispatcher: CoroutineDispatcher) {
+    override fun updateStatusScoreName(
+        idWinner: Int,
+        gameStatus: GameStatus,
+        isScoreToIncrease: Boolean,
+        dispatcher: CoroutineDispatcher
+    ) {
         viewModelScope.launch(dispatcher) {
+            saveLastWinner(idWinner = idWinner)
             if (idWinner == ID_PERSON_1) {
                 updateStatusScoreName1UseCase.execute(
                     params = UpdateStatusAndScoreGameParams(
                         idGame = idGame,
                         statusGame = gameStatus.id,
-                        score = if (isScoreToIncrease)scoreName1.plus(1).toShort() else scoreName1.minus(1).toShort()
+                        score = if (isScoreToIncrease) scoreName1.plus(1)
+                            .toShort() else scoreName1.minus(1).toShort()
                     )
                 )
+
 
             } else if (idWinner == ID_PERSON_2) {
                 updateStatusScoreName2UseCase.execute(
                     params = UpdateStatusAndScoreGameParams(
                         idGame = idGame,
                         statusGame = gameStatus.id,
-                        score = if (isScoreToIncrease)scoreName2.plus(1).toShort() else scoreName2.minus(1).toShort()
+                        score = if (isScoreToIncrease) scoreName2.plus(1)
+                            .toShort() else scoreName2.minus(1).toShort()
                     )
                 )
+            }
+            if (gameStatus == GameStatus.FINISHED) {
+                _oneTimeEvent.emit(SideEffect.ShowWinner(winnerName = namesMap[idWinner]!!))
             }
         }
     }
@@ -184,7 +202,11 @@ class Match2PPViewModel(
             if (statusGame.value != GameStatus.CONTINUE) {
                 if (statusGame.value == GameStatus.FINISHED) {
                     val lastWinner = getLastWinnerAndRemove()
-                    updateStatusScoreName(idWinner = lastWinner, gameStatus = GameStatus.CONTINUE, isScoreToIncrease = false)
+                    updateStatusScoreName(
+                        idWinner = lastWinner,
+                        gameStatus = GameStatus.CONTINUE,
+                        isScoreToIncrease = false
+                    )
                 } else {
                     updateOnlyStatus(GameStatus.CONTINUE)
                 }
@@ -245,7 +267,7 @@ class Match2PPViewModel(
                 _oneTimeEvent.emit(
                     SideEffect.ShowExtended(
                         maxPoints = result.maxPoints.toString(), winner = Winner(
-                            result.idWinner, if (result.idWinner == ID_PERSON_1) name1 else name2
+                            id=result.idWinner, name = namesMap[result.idWinner]!!
                         )
                     )
                 )
@@ -258,22 +280,7 @@ class Match2PPViewModel(
             }
 
             is WinnerResult.ToFinish -> {
-                saveLastWinner( result.idWinner)
-                if (result.idWinner == ID_PERSON_1) {
-                    updateStatusScoreName1UseCase.execute(
-                        UpdateStatusAndScoreGameParams(
-                            idGame = idGame, score = scoreName1.plus(1).toShort()
-                        )
-                    )
-                    _oneTimeEvent.emit(SideEffect.ShowWinner(winnerName = name1))
-                } else if (result.idWinner == ID_PERSON_2) {
-                    updateStatusScoreName2UseCase.execute(
-                        UpdateStatusAndScoreGameParams(
-                            idGame = idGame, score = scoreName2.plus(1).toShort()
-                        )
-                    )
-                    _oneTimeEvent.emit(SideEffect.ShowWinner(winnerName = name2))
-                }
+                updateStatusScoreName(idWinner = result.idWinner, gameStatus = GameStatus.FINISHED)
             }
         }
         return isExtended

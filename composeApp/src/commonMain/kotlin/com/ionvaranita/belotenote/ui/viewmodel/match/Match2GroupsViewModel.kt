@@ -40,10 +40,15 @@ class Match2GroupsViewModel(
     private val deleteAllPointsUseCase: DeleteAllPoints2GroupsUseCase,
     override val prefs: DataStore<Preferences>,
     override val idGame: Int,
-    override val gamePath: GamePath = GamePath.GROUP
 
 ) : ViewModelBase() {
-
+    override val gamePath: GamePath = GamePath.GROUP
+    override val namesMap: Map<Int, String> by lazy {
+        mutableMapOf<Int, String>().apply {
+            this[ID_PERSON_1] = name1
+            this[ID_PERSON_2] = name2
+        }
+    }
 
     private lateinit var lastPoints: Points2GroupsUi
 
@@ -168,6 +173,7 @@ class Match2GroupsViewModel(
 
     override fun updateStatusScoreName(idWinner: Int, gameStatus: GameStatus, isScoreToIncrease: Boolean, dispatcher: CoroutineDispatcher) {
         viewModelScope.launch(dispatcher) {
+            saveLastWinner(idWinner)
             if (idWinner == ID_PERSON_1) {
                 updateStatusScoreName1UseCase.execute(
                     params = UpdateStatusAndScoreGameParams(
@@ -185,6 +191,9 @@ class Match2GroupsViewModel(
                         score = if (isScoreToIncrease)scoreName2.plus(1).toShort() else scoreName2.minus(1).toShort()
                     )
                 )
+            }
+            if (gameStatus == GameStatus.FINISHED) {
+                _oneTimeEvent.emit(SideEffect.ShowWinner(winnerName = namesMap[idWinner]!!))
             }
         }
     }
@@ -206,7 +215,7 @@ class Match2GroupsViewModel(
                 _oneTimeEvent.emit(
                     SideEffect.ShowExtended(
                         maxPoints = result.maxPoints.toString(), winner = Winner(
-                            result.idWinner, if (result.idWinner == ID_PERSON_1) name1 else name2
+                            id=result.idWinner, name=namesMap[result.idWinner]!!
                         )
                     )
                 )
@@ -219,22 +228,7 @@ class Match2GroupsViewModel(
             }
 
             is WinnerResult.ToFinish -> {
-                saveLastWinner( result.idWinner)
-                if (result.idWinner == ID_PERSON_1) {
-                    updateStatusScoreName1UseCase.execute(
-                        UpdateStatusAndScoreGameParams(
-                            idGame = idGame, score = scoreName1.plus(1).toShort()
-                        )
-                    )
-                    _oneTimeEvent.emit(SideEffect.ShowWinner(winnerName = name1))
-                } else if (result.idWinner == ID_PERSON_2) {
-                    updateStatusScoreName2UseCase.execute(
-                        UpdateStatusAndScoreGameParams(
-                            idGame = idGame, score = scoreName2.plus(1).toShort()
-                        )
-                    )
-                    _oneTimeEvent.emit(SideEffect.ShowWinner(winnerName = name2))
-                }
+                updateStatusScoreName(idWinner = result.idWinner, gameStatus = GameStatus.FINISHED)
             }
         }
         return isExtended

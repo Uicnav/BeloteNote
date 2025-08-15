@@ -56,6 +56,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -88,6 +89,7 @@ import belotenote.composeapp.generated.resources.winner_is
 import belotenote.composeapp.generated.resources.yes
 import com.ionvaranita.belotenote.Circle
 import com.ionvaranita.belotenote.StatusImage
+import com.ionvaranita.belotenote.constants.GLOBAL_ALPHA
 import com.ionvaranita.belotenote.constants.GameStatus
 import com.ionvaranita.belotenote.domain.model.Points2GroupsUi
 import com.ionvaranita.belotenote.domain.model.Points2PUi
@@ -118,8 +120,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 internal fun MatchScreen2(
-    viewModel: ViewModelBase,
-    winningPointsViewModel: WinningPointsViewModel
+    viewModel: ViewModelBase, winningPointsViewModel: WinningPointsViewModel
 ) {
 
 
@@ -414,8 +415,7 @@ internal fun MatchScreen2(
 
 @Composable
 internal fun MatchScreen3(
-    viewModel: ViewModelBase,
-    winningPointsViewModel: WinningPointsViewModel
+    viewModel: ViewModelBase, winningPointsViewModel: WinningPointsViewModel
 ) {
 
     val matchUiState = viewModel.uiState.collectAsState()
@@ -748,8 +748,7 @@ internal fun MatchScreen3(
 
 @Composable
 internal fun MatchScreen4(
-    viewModel: ViewModelBase,
-    winningPointsViewModel: WinningPointsViewModel
+    viewModel: ViewModelBase, winningPointsViewModel: WinningPointsViewModel
 ) {
     val matchUiState = viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
@@ -1172,8 +1171,7 @@ internal fun MatchScreen4(
 
 @Composable
 internal fun MatchScreen2Groups(
-    viewModel: ViewModelBase,
-    winningPointsViewModel: WinningPointsViewModel
+    viewModel: ViewModelBase, winningPointsViewModel: WinningPointsViewModel
 ) {
     val matchUiState = viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
@@ -1534,7 +1532,8 @@ private fun MatchWrapper(
 ) {
 
     Column(
-        modifier = modifier.padding(8.dp).wrapContentSize().clip(shape = RoundedCornerShape(16.dp))
+        modifier = modifier.alpha(GLOBAL_ALPHA).padding(8.dp).wrapContentSize()
+            .clip(shape = RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.surfaceContainerHighest),
     ) {
         content()
@@ -1609,7 +1608,8 @@ fun RowScope.TouchableText(
             Text(
                 text = text.take(3),
                 style = MaterialTheme.typography.titleLarge,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = if (isSystemInDarkTheme()) Color.White else Color.Black
             )
             if (isPressed && text.isEmpty()) {
                 WritingPenIcon()
@@ -1644,8 +1644,7 @@ private fun Keyboard(
     val keyAlpha = if (!isPressedGames) 1f else 0f
     Column(
         modifier = modifier.fillMaxWidth().padding(top = 4.dp).background(
-            color = MaterialTheme.colorScheme.background,
-            shape = MaterialTheme.shapes.large
+            color = MaterialTheme.colorScheme.background, shape = MaterialTheme.shapes.large
         )
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
