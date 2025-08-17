@@ -259,7 +259,11 @@ internal fun MatchScreen2(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     state = pointsListState
                 ) {
-
+                    item {
+                        HorizontalDivider(
+                            thickness = 2.dp
+                        )
+                    }
                     itemsIndexed(points) { index: Int, item: Points2PUi ->
                         val isLast = index == points.lastIndex
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -373,8 +377,8 @@ internal fun MatchScreen2(
                                         inputText = pointsP1, inputKey = inputKey
                                     ) { text ->
                                         pointsP1 = text
-                                        if (inputKey == MINUS_10 || inputKey == BOLT) {
-                                            if (pointsP2 == MINUS_10 || pointsP2 == BOLT) {
+                                        if (inputKey == BOLT) {
+                                            if (pointsP2 == BOLT) {
                                                 pointsP2 = ""
                                             }
                                         }
@@ -385,8 +389,8 @@ internal fun MatchScreen2(
                                         inputText = pointsP2, inputKey = inputKey
                                     ) { text ->
                                         pointsP2 = text
-                                        if (inputKey == MINUS_10 || inputKey == BOLT) {
-                                            if (pointsP1 == MINUS_10 || pointsP1 == BOLT) {
+                                        if (inputKey == BOLT) {
+                                            if (pointsP1 == BOLT) {
                                                 pointsP1 = ""
                                             }
                                         }
@@ -573,7 +577,11 @@ internal fun MatchScreen3(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     state = pointsListState
                 ) {
-
+                    item {
+                        HorizontalDivider(
+                            thickness = 2.dp
+                        )
+                    }
                     itemsIndexed(points) { index: Int, item: Points3PUi ->
                         val isLast = index == points.lastIndex
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -704,11 +712,11 @@ internal fun MatchScreen3(
                                         inputText = pointsP1, inputKey = inputKey
                                     ) { text ->
                                         pointsP1 = text
-                                        if (inputKey == MINUS_10 || inputKey == BOLT) {
-                                            if (pointsP2 == MINUS_10 || pointsP2 == BOLT) {
+                                        if (inputKey == BOLT) {
+                                            if (pointsP2 == BOLT) {
                                                 pointsP2 = ""
                                             }
-                                            if (pointsP3 == MINUS_10 || pointsP3 == BOLT) {
+                                            if (pointsP3 == BOLT) {
                                                 pointsP3 = ""
                                             }
                                         }
@@ -719,11 +727,11 @@ internal fun MatchScreen3(
                                         inputText = pointsP2, inputKey = inputKey
                                     ) { text ->
                                         pointsP2 = text
-                                        if (inputKey == MINUS_10 || inputKey == BOLT) {
-                                            if (pointsP1 == MINUS_10 || pointsP1 == BOLT) {
+                                        if (inputKey == BOLT) {
+                                            if (pointsP1 == BOLT) {
                                                 pointsP1 = ""
                                             }
-                                            if (pointsP3 == MINUS_10 || pointsP3 == BOLT) {
+                                            if (pointsP3 == BOLT) {
                                                 pointsP3 = ""
                                             }
                                         }
@@ -735,11 +743,11 @@ internal fun MatchScreen3(
                                         inputText = pointsP3, inputKey = inputKey
                                     ) { text ->
                                         pointsP3 = text
-                                        if (inputKey == MINUS_10 || inputKey == BOLT) {
-                                            if (pointsP1 == MINUS_10 || pointsP1 == BOLT) {
+                                        if (inputKey == BOLT) {
+                                            if (pointsP1 == BOLT) {
                                                 pointsP1 = ""
                                             }
-                                            if (pointsP2 == MINUS_10 || pointsP2 == BOLT) {
+                                            if (pointsP2 == BOLT) {
                                                 pointsP2 = ""
                                             }
                                         }
@@ -932,7 +940,11 @@ internal fun MatchScreen4(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     state = pointsListState
                 ) {
-
+                    item {
+                        HorizontalDivider(
+                            thickness = 2.dp
+                        )
+                    }
                     itemsIndexed(points) { index: Int, item: Points4PUi ->
                         val isLast = index == points.lastIndex
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1082,17 +1094,7 @@ internal fun MatchScreen4(
                                         inputText = pointsP1, inputKey = inputKey
                                     ) { text ->
                                         pointsP1 = text
-                                        if (inputKey == MINUS_10) {
-                                            if (pointsP2 == MINUS_10) {
-                                                pointsP2 = ""
-                                            }
-                                            if (pointsP3 == MINUS_10) {
-                                                pointsP3 = ""
-                                            }
-                                            if (pointsP4 == MINUS_10) {
-                                                pointsP4 = ""
-                                            }
-                                        } else if (inputKey == BOLT) {
+                                        if (inputKey == BOLT) {
                                             if (pointsP2 == BOLT) {
                                                 pointsP2 = ""
                                             }
@@ -1110,17 +1112,7 @@ internal fun MatchScreen4(
                                         inputText = pointsP2, inputKey = inputKey
                                     ) { text ->
                                         pointsP2 = text
-                                        if (inputKey == MINUS_10) {
-                                            if (pointsP1 == MINUS_10) {
-                                                pointsP1 = ""
-                                            }
-                                            if (pointsP3 == MINUS_10) {
-                                                pointsP3 = ""
-                                            }
-                                            if (pointsP4 == MINUS_10) {
-                                                pointsP4 = ""
-                                            }
-                                        } else if (inputKey == BOLT) {
+                                        if (inputKey == BOLT) {
                                             if (pointsP1 == BOLT) {
                                                 pointsP1 = ""
                                             }
@@ -1139,17 +1131,7 @@ internal fun MatchScreen4(
                                         inputText = pointsP3, inputKey = inputKey
                                     ) { text ->
                                         pointsP3 = text
-                                        if (inputKey == MINUS_10) {
-                                            if (pointsP1 == MINUS_10) {
-                                                pointsP1 = ""
-                                            }
-                                            if (pointsP2 == MINUS_10) {
-                                                pointsP2 = ""
-                                            }
-                                            if (pointsP4 == MINUS_10) {
-                                                pointsP4 = ""
-                                            }
-                                        } else if (inputKey == BOLT) {
+                                        if (inputKey == BOLT) {
                                             if (pointsP1 == BOLT) {
                                                 pointsP1 = ""
                                             }
@@ -1168,17 +1150,7 @@ internal fun MatchScreen4(
                                         inputText = pointsP4, inputKey = inputKey
                                     ) { text ->
                                         pointsP4 = text
-                                        if (inputKey == MINUS_10) {
-                                            if (pointsP1 == MINUS_10) {
-                                                pointsP1 = ""
-                                            }
-                                            if (pointsP2 == MINUS_10) {
-                                                pointsP2 = ""
-                                            }
-                                            if (pointsP3 == MINUS_10) {
-                                                pointsP3 = ""
-                                            }
-                                        } else if (inputKey == BOLT) {
+                                        if (inputKey == BOLT) {
                                             if (pointsP1 == BOLT) {
                                                 pointsP1 = ""
                                             }
@@ -1292,7 +1264,17 @@ internal fun MatchScreen2Groups(
     }
     MatchWrapper {
         when (val matchState = matchUiState.value) {
+
             is MatchUiState.Success<*> -> {
+                var pointsGame by remember { mutableStateOf("") }
+                var pointsP1 by remember { mutableStateOf("") }
+                var pointsP2 by remember { mutableStateOf("") }
+                var isPressedPoints by remember { mutableStateOf(true) }
+                var isPressedP1 by remember { mutableStateOf(false) }
+                var isPressedP2 by remember { mutableStateOf(false) }
+                val shakerGame by remember { mutableStateOf(TextFieldShaker()) }
+                val shakerP1 by remember { mutableStateOf(TextFieldShaker()) }
+                val shakerP2 by remember { mutableStateOf(TextFieldShaker()) }
                 if (showInfoGameDialog) {
                     InfoGameDialog(
                         onDismiss = {
@@ -1353,7 +1335,11 @@ internal fun MatchScreen2Groups(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     state = pointsListState
                 ) {
-
+                    item {
+                        HorizontalDivider(
+                            thickness = 2.dp
+                        )
+                    }
 
                     itemsIndexed(points) { index: Int, item: Points2GroupsUi ->
                         val isLast = index == points.lastIndex
@@ -1376,51 +1362,57 @@ internal fun MatchScreen2Groups(
                         }
                         if ((index + 1) % 2 == 0) {
                             HorizontalDivider(
-                                thickness = 4.dp
+                                thickness = 4.dp, color = MaterialTheme.colorScheme.scrim
                             )
+                        } else {
+                            HorizontalDivider(
+                                thickness = 2.dp
+                            )
+                        }
+                    }
+                    if (viewModel.statusGame.value == GameStatus.CONTINUE) {
+                        item {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+                                    .wrapContentHeight()
+                            ) {
+                                TouchableText(
+                                    text = pointsGame,
+                                    shaker = shakerGame,
+                                    isPressed = isPressedPoints,
+                                    onClick = {
+
+                                        isPressedPoints = true
+                                        isPressedP1 = false
+                                        isPressedP2 = false
+
+                                    })
+
+                                TouchableText(
+                                    text = pointsP1,
+                                    shaker = shakerP1,
+                                    isPressed = isPressedP1,
+                                    onClick = {
+
+                                        isPressedPoints = false
+                                        isPressedP1 = true
+                                        isPressedP2 = false
+
+                                    })
+                                TouchableText(
+                                    text = pointsP2,
+                                    shaker = shakerP2,
+                                    isPressed = isPressedP2,
+                                    onClick = {
+                                        isPressedPoints = false
+                                        isPressedP1 = false
+                                        isPressedP2 = true
+                                    })
+                            }
                         }
                     }
                 }
                 if (viewModel.statusGame.value == GameStatus.CONTINUE) {
-                    var pointsGame by remember { mutableStateOf("") }
-                    var pointsP1 by remember { mutableStateOf("") }
-                    var pointsP2 by remember { mutableStateOf("") }
-                    var isPressedPoints by remember { mutableStateOf(true) }
-                    var isPressedP1 by remember { mutableStateOf(false) }
-                    var isPressedP2 by remember { mutableStateOf(false) }
-                    val shakerGame by remember { mutableStateOf(TextFieldShaker()) }
-                    val shakerP1 by remember { mutableStateOf(TextFieldShaker()) }
-                    val shakerP2 by remember { mutableStateOf(TextFieldShaker()) }
-                    Row(
-                        modifier = Modifier.fillMaxWidth().wrapContentHeight()
-                    ) {
-                        TouchableText(
-                            text = pointsGame,
-                            shaker = shakerGame,
-                            isPressed = isPressedPoints,
-                            onClick = {
-
-                                isPressedPoints = true
-                                isPressedP1 = false
-                                isPressedP2 = false
-
-                            })
-
-                        TouchableText(
-                            text = pointsP1, shaker = shakerP1, isPressed = isPressedP1, onClick = {
-
-                                isPressedPoints = false
-                                isPressedP1 = true
-                                isPressedP2 = false
-
-                            })
-                        TouchableText(
-                            text = pointsP2, shaker = shakerP2, isPressed = isPressedP2, onClick = {
-                                isPressedPoints = false
-                                isPressedP1 = false
-                                isPressedP2 = true
-                            })
-                    }
                     Keyboard(
                         isPressedGames = isPressedPoints,
                         modifier = Modifier.fillMaxWidth(),
@@ -1458,13 +1450,9 @@ internal fun MatchScreen2Groups(
                                         inputText = pointsP1, inputKey = inputKey
                                     ) { text ->
                                         pointsP1 = text
-                                        if (inputKey == MINUS_10 || inputKey == BOLT) {
-                                            if (pointsP2 == MINUS_10 || pointsP2.equals(
-                                                    BOLT
-                                                )
-                                            ) {
+                                        if (inputKey == BOLT) {
+                                            if (pointsP2 == BOLT) {
                                                 pointsP2 = ""
-
                                             }
                                         }
                                     }
@@ -1474,8 +1462,8 @@ internal fun MatchScreen2Groups(
                                         inputText = pointsP2, inputKey = inputKey
                                     ) { text ->
                                         pointsP2 = text
-                                        if (inputKey == MINUS_10 || inputKey == BOLT) {
-                                            if (pointsP1 == MINUS_10 || pointsP1 == BOLT) {
+                                        if (inputKey == BOLT) {
+                                            if (pointsP1 == BOLT) {
                                                 pointsP1 = ""
                                             }
                                         }
