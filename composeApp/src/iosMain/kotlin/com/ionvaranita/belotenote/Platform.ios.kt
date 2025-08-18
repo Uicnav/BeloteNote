@@ -14,6 +14,6 @@ actual fun Long.getFormattedDate(): String {
     val formatter = NSDateFormatter()
     formatter.locale = NSLocale.autoupdatingCurrentLocale
     formatter.timeZone = NSTimeZone.systemTimeZone
-    formatter.setLocalizedDateFormatFromTemplate("MM.dd.yyyy HH:mm")
+    formatter.setLocalizedDateFormatFromTemplate("dd.MM.yy HH:mm")
     return formatter.stringFromDate(date)
 }

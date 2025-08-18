@@ -1642,16 +1642,16 @@ fun RowScope.TouchableText(
     }
 
     Box(
-        modifier = modifier.focusRequester(focusRequester).offset(x = vibrationOffset.value.dp)
-            .weight(1f).clip(RoundedCornerShape(16.dp))
+        modifier = modifier.padding(1.dp).focusRequester(focusRequester).offset(x = vibrationOffset.value.dp)
+            .weight(1f)
             .background(if (isPressed) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.tertiary)
-            .clickable { onClick() }.padding(8.dp).height(32.dp),
+            .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.widthIn(64.dp, 120.dp).heightIn(16.dp, 32.dp)
+            modifier = Modifier
         ) {
             Text(
                 text = text.take(3),
@@ -1660,10 +1660,33 @@ fun RowScope.TouchableText(
                 color = if (isSystemInDarkTheme()) Color.White else Color.Black
             )
             if (isPressed && text.isEmpty()) {
-                WritingPenIcon()
+                BlinkingCursor()
             }
         }
     }
+}
+
+@Composable
+fun BlinkingCursor(
+    text: String = "|",
+    durationMillis: Int = 500
+) {
+    val infiniteTransition = rememberInfiniteTransition()
+    val alpha by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 0f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+
+    Text(
+        text = text,
+        modifier = Modifier.alpha(alpha),
+        style = MaterialTheme.typography.bodyLarge,
+        color = if (isSystemInDarkTheme()) Color.White else Color.Black
+    )
 }
 
 @Composable
