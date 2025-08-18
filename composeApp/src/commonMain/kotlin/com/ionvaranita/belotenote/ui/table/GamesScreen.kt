@@ -698,41 +698,33 @@ fun InsertGame2(
 ) {
     val p1Hint = stringResource(Res.string.me)
     val p2Hint = stringResource(Res.string.you_s)
-    var p1 by remember { mutableStateOf(p1Hint) }
-    var p2 by remember { mutableStateOf(p2Hint) }
-    val shaker1 = remember { TextFieldShaker() }
-    val shaker2 = remember { TextFieldShaker() }
+    var p1 by remember { mutableStateOf("") }
+    var p2 by remember { mutableStateOf("") }
 
     InsertGameDialogBase(onDismissRequest = onDismissRequest, onClick = { winningPoints ->
-        when {
-            p1.isEmpty() -> shaker1.shake()
-            p2.isEmpty() -> shaker2.shake()
-            else -> {
-                onClick(
-                    Game2PEntity(
-                        winningPoints = winningPoints,
-                        name1 = p1.capitalizeName(),
-                        name2 = p2.capitalizeName()
-                    )
-                )
-                onDismissRequest()
-            }
-        }
+        onClick(
+            Game2PEntity(
+                winningPoints = winningPoints,
+                name1 = if (p1.isEmpty()) p1Hint else p1.capitalizeName(),
+                name2 = if (p2.isEmpty()) p2Hint else p2.capitalizeName()
+            )
+        )
+        onDismissRequest()
     }, isNewGame = true, winningPointsViewModel = viewModel) {
         Row {
-            ShakerTextFieldAtom(
+            InsertNamesTextAtom(
                 value = p1,
                 onValueChange = { p1 = it },
-                shaker = shaker1,
                 modifier = Modifier.weight(1f),
-                charLength = 4
+                charLength = 4,
+                placeholder = p1Hint
             )
-            ShakerTextFieldAtom(
+            InsertNamesTextAtom(
                 value = p2,
                 onValueChange = { p2 = it },
-                shaker = shaker2,
                 modifier = Modifier.weight(1f),
-                charLength = 4
+                charLength = 4,
+                placeholder = p2Hint
             )
         }
     }
@@ -745,43 +737,32 @@ fun InsertGame3(
     val p1Hint = stringResource(Res.string.p) + 1
     val p2Hint = stringResource(Res.string.p) + 2
     val p3Hint = stringResource(Res.string.p) + 3
-    var p1 by remember { mutableStateOf(p1Hint) }
-    var p2 by remember { mutableStateOf(p2Hint) }
-    var p3 by remember { mutableStateOf(p3Hint) }
-    val shakerP1 by remember { mutableStateOf(TextFieldShaker()) }
-    val shakerP2 by remember { mutableStateOf(TextFieldShaker()) }
-    val shakerP3 by remember { mutableStateOf(TextFieldShaker()) }
+    var p1 by remember { mutableStateOf("") }
+    var p2 by remember { mutableStateOf("") }
+    var p3 by remember { mutableStateOf("") }
 
 
     InsertGameDialogBase(onDismissRequest = onDismissRequest, onClick = { winningPoints ->
-        if (p1.isEmpty()) {
-            shakerP1.shake()
-        } else if (p2.isEmpty()) {
-            shakerP2.shake()
-        } else if (p3.isEmpty()) {
-            shakerP3.shake()
-        } else {
-            onClick(
-                Game3PEntity(
-                    name1 = p1.capitalizeName(),
-                    name2 = p2.capitalizeName(),
-                    name3 = p3.capitalizeName(),
-                    winningPoints = winningPoints
-                )
+        onClick(
+            Game3PEntity(
+                name1 = if (p1.isEmpty()) p1Hint else p1.capitalizeName(),
+                name2 = if (p2.isEmpty()) p2Hint else p2.capitalizeName(),
+                name3 = if (p3.isEmpty()) p3Hint else p3.capitalizeName(),
+                winningPoints = winningPoints
             )
-            onDismissRequest()
-        }
+        )
+        onDismissRequest()
     }, isNewGame = true, winningPointsViewModel = viewModel) {
         Row {
-            ShakerTextFieldAtom(value = p1, onValueChange = {
+            InsertNamesTextAtom(value = p1, onValueChange = {
                 p1 = it
-            }, modifier = Modifier.weight(1F), shaker = shakerP1)
-            ShakerTextFieldAtom(value = p2, onValueChange = {
+            }, placeholder = p1Hint, modifier = Modifier.weight(1F))
+            InsertNamesTextAtom(value = p2, onValueChange = {
                 p2 = it
-            }, modifier = Modifier.weight(1F), shaker = shakerP2)
-            ShakerTextFieldAtom(value = p3, onValueChange = {
+            }, placeholder = p1Hint, modifier = Modifier.weight(1F))
+            InsertNamesTextAtom(value = p3, onValueChange = {
                 p3 = it
-            }, modifier = Modifier.weight(1F), shaker = shakerP3)
+            }, placeholder = p1Hint, modifier = Modifier.weight(1F))
         }
     }
 }
@@ -796,49 +777,35 @@ fun InsertGame4(
     val p2Hint = stringResource(Res.string.p) + 2
     val p3Hint = stringResource(Res.string.p) + 3
     val p4Hint = stringResource(Res.string.p) + 4
-    var p1 by remember { mutableStateOf(p1Hint) }
-    var p2 by remember { mutableStateOf(p2Hint) }
-    var p3 by remember { mutableStateOf(p3Hint) }
-    var p4 by remember { mutableStateOf(p4Hint) }
-    val shakerP1 by remember { mutableStateOf(TextFieldShaker()) }
-    val shakerP2 by remember { mutableStateOf(TextFieldShaker()) }
-    val shakerP3 by remember { mutableStateOf(TextFieldShaker()) }
-    val shakerP4 by remember { mutableStateOf(TextFieldShaker()) }
+    var p1 by remember { mutableStateOf("") }
+    var p2 by remember { mutableStateOf("") }
+    var p3 by remember { mutableStateOf("") }
+    var p4 by remember { mutableStateOf("") }
     InsertGameDialogBase(onDismissRequest = onDismissRequest, onClick = { winningPoints ->
-        if (p1.isEmpty()) {
-            shakerP1.shake()
-        } else if (p2.isEmpty()) {
-            shakerP2.shake()
-        } else if (p3.isEmpty()) {
-            shakerP3.shake()
-        } else if (p4.isEmpty()) {
-            shakerP4.shake()
-        } else {
-            onClick(
-                Game4PEntity(
-                    name1 = p1.capitalizeName(),
-                    name2 = p2.capitalizeName(),
-                    name3 = p3.capitalizeName(),
-                    name4 = p4.capitalizeName(),
-                    winningPoints = winningPoints
-                )
+        onClick(
+            Game4PEntity(
+                name1 = if (p1.isEmpty()) p1Hint else p1.capitalizeName(),
+                name2 = if (p2.isEmpty()) p2Hint else p2.capitalizeName(),
+                name3 = if (p3.isEmpty()) p3Hint else p3.capitalizeName(),
+                name4 = if (p4.isEmpty()) p4Hint else p4.capitalizeName(),
+                winningPoints = winningPoints
             )
-            onDismissRequest()
-        }
+        )
+        onDismissRequest()
     }, isNewGame = true, winningPointsViewModel = winningPointsViewModel) {
         Row {
-            ShakerTextFieldAtom(value = p1, onValueChange = {
+            InsertNamesTextAtom(value = p1, onValueChange = {
                 p1 = it
-            }, modifier = Modifier.weight(1F), shaker = shakerP1)
-            ShakerTextFieldAtom(value = p2, onValueChange = {
+            }, placeholder = p1Hint, modifier = Modifier.weight(1F))
+            InsertNamesTextAtom(value = p2, onValueChange = {
                 p2 = it
-            }, modifier = Modifier.weight(1F), shaker = shakerP2)
-            ShakerTextFieldAtom(value = p3, onValueChange = {
+            }, placeholder = p1Hint, modifier = Modifier.weight(1F))
+            InsertNamesTextAtom(value = p3, onValueChange = {
                 p3 = it
-            }, modifier = Modifier.weight(1F), shaker = shakerP3)
-            ShakerTextFieldAtom(value = p4, onValueChange = {
+            }, placeholder = p1Hint, modifier = Modifier.weight(1F))
+            InsertNamesTextAtom(value = p4, onValueChange = {
                 p4 = it
-            }, modifier = Modifier.weight(1F), shaker = shakerP4)
+            }, placeholder = p4Hint, modifier = Modifier.weight(1F))
         }
     }
 }
@@ -851,34 +818,33 @@ fun InsertGame2Groups(
 ) {
     val p1Hint = stringResource(Res.string.we)
     val p2Hint = stringResource(Res.string.you_p)
-    var p1 by remember { mutableStateOf(p1Hint) }
-    var p2 by remember { mutableStateOf(p2Hint) }
-    val shakerP1 by remember { mutableStateOf(TextFieldShaker()) }
-    val shakerP2 by remember { mutableStateOf(TextFieldShaker()) }
+    var p1 by remember { mutableStateOf("") }
+    var p2 by remember { mutableStateOf("") }
     InsertGameDialogBase(onDismissRequest = onDismissRequest, onClick = { winningPoints ->
-        if (p1.isEmpty()) {
-            shakerP1.shake()
-        } else if (p2.isEmpty()) {
-            shakerP2.shake()
-        } else {
-            onClick(
-                Game2GroupsEntity(
-                    name1 = p1.capitalizeName(),
-                    name2 = p2.capitalizeName(),
-                    winningPoints = winningPoints
-                )
+        onClick(
+            Game2GroupsEntity(
+                winningPoints = winningPoints,
+                name1 = if (p1.isEmpty()) p1Hint else p1.capitalizeName(),
+                name2 = if (p2.isEmpty()) p2Hint else p2.capitalizeName()
             )
-            onDismissRequest()
-
-        }
+        )
+        onDismissRequest()
     }, isNewGame = true, winningPointsViewModel = winningPointsViewModel) {
         Row {
-            ShakerTextFieldAtom(value = p1, onValueChange = {
-                p1 = it
-            }, modifier = Modifier.weight(1F), shaker = shakerP1, charLength = 4)
-            ShakerTextFieldAtom(value = p2, onValueChange = {
-                p2 = it
-            }, modifier = Modifier.weight(1F), shaker = shakerP2, charLength = 4)
+            InsertNamesTextAtom(
+                value = p1,
+                onValueChange = { p1 = it },
+                modifier = Modifier.weight(1f),
+                charLength = 4,
+                placeholder = p1Hint
+            )
+            InsertNamesTextAtom(
+                value = p2,
+                onValueChange = { p2 = it },
+                modifier = Modifier.weight(1f),
+                charLength = 4,
+                placeholder = p2Hint
+            )
         }
     }
 }
@@ -1043,6 +1009,42 @@ fun ShakerTextFieldAtom(
         placeholder = {
             Text(
                 text = placeholder, fontStyle = FontStyle.Italic
+            )
+        },
+    )
+}
+
+@Composable
+fun InsertNamesTextAtom(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    charLength: Int = 4,
+    isOnlyDigit: Boolean = false,
+    modifier: Modifier = Modifier
+) {
+    TextField(
+        value = value,
+        onValueChange = {
+            if (it.length <= charLength) {
+                val filtered =
+                    it.filter { char -> if (isOnlyDigit) char.isDigit() else char.isLetterOrDigit() }
+                onValueChange(filtered)
+            }
+        },
+        modifier = modifier.padding(4.dp),
+        textStyle = MaterialTheme.typography.bodySmall.copy(textAlign = TextAlign.Center),
+        singleLine = true,
+        maxLines = 1,
+        keyboardOptions = if (isOnlyDigit) KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number) else KeyboardOptions.Default.copy(
+            keyboardType = KeyboardType.Text
+        ),
+        placeholder = {
+            Text(
+                text = placeholder,
+                fontStyle = FontStyle.Italic,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
             )
         },
     )
