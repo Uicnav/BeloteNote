@@ -1,5 +1,7 @@
 package com.ionvaranita.belotenote.ui.viewmodel.game
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ionvaranita.belotenote.datalayer.database.entity.players4.Game4PEntity
@@ -7,6 +9,8 @@ import com.ionvaranita.belotenote.domain.model.Game4PUi
 import com.ionvaranita.belotenote.domain.usecase.game.delete.DeleteGame4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGames4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.insert.InsertGame4PUseCase
+import com.ionvaranita.belotenote.ui.GamePath
+import com.ionvaranita.belotenote.ui.table.GameCard
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -17,8 +21,10 @@ import kotlinx.coroutines.launch
 class Game4PViewModel(
     private val getGamesUseCase: GetGames4PUseCase,
     private val insertGameUseCase: InsertGame4PUseCase,
-    private val deleteGameUseCase: DeleteGame4PUseCase
-) : ViewModel() {
+    private val deleteGameUseCase: DeleteGame4PUseCase,
+    override val prefs: DataStore<Preferences>,
+    override val gamePath: GamePath = GamePath.FOUR
+) : GameViewModelCommon() {
 
 
     // Backing property to avoid state updates from other classes
@@ -85,6 +91,7 @@ class Game4PViewModel(
     fun deleteGame(idGame: Int, dispatcher: CoroutineDispatcher = Dispatchers.IO) =
         viewModelScope.launch(dispatcher) {
             deleteGameUseCase.execute(idGame)
+            deleteLastWinnerByIdGame(idGame)
         }
 
 

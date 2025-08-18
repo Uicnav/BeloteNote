@@ -1,23 +1,25 @@
 package com.ionvaranita.belotenote.ui.viewmodel.game
 
-import androidx.lifecycle.ViewModel
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.viewModelScope
 import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Game2GroupsEntity
-import com.ionvaranita.belotenote.datalayer.database.entity.players2.Game2PEntity
 import com.ionvaranita.belotenote.domain.model.Game2GroupsUi
-import com.ionvaranita.belotenote.domain.model.Game2PUi
 import com.ionvaranita.belotenote.domain.usecase.game.delete.DeleteGame2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGames2GroupsUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.insert.InsertGame2GroupsUseCase
+import com.ionvaranita.belotenote.ui.GamePath
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class Game2GroupsViewModel(private val getGamesUseCase: GetGames2GroupsUseCase ,private val insertGameUseCase: InsertGame2GroupsUseCase,private val deleteGameUseCase: DeleteGame2GroupsUseCase ) : ViewModel() {
+class Game2GroupsViewModel(private val getGamesUseCase: GetGames2GroupsUseCase, private val insertGameUseCase: InsertGame2GroupsUseCase, private val deleteGameUseCase: DeleteGame2GroupsUseCase,
+                           override val prefs: DataStore<Preferences>,
+                           override val gamePath: GamePath = GamePath.GROUP
+) : GameViewModelCommon() {
 
     // Backing property to avoid state updates from other classes
     private val _uiState = MutableStateFlow<Games2GroupsUiState>(Games2GroupsUiState.Loading)
@@ -79,6 +81,7 @@ class Game2GroupsViewModel(private val getGamesUseCase: GetGames2GroupsUseCase ,
 
     fun deleteGame(idGame: Int, dispatcher: CoroutineDispatcher = Dispatchers.IO) = viewModelScope.launch(dispatcher) {
         deleteGameUseCase.execute(idGame)
+        deleteLastWinnerByIdGame(idGame)
     }
     init {
         getGames()

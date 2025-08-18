@@ -1,5 +1,7 @@
 package com.ionvaranita.belotenote.ui.viewmodel.game
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ionvaranita.belotenote.datalayer.database.entity.players2.Game2PEntity
@@ -7,6 +9,7 @@ import com.ionvaranita.belotenote.domain.model.Game2PUi
 import com.ionvaranita.belotenote.domain.usecase.game.delete.DeleteGame2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.get.GetGames2PUseCase
 import com.ionvaranita.belotenote.domain.usecase.game.insert.InsertGame2PUseCase
+import com.ionvaranita.belotenote.ui.GamePath
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -14,7 +17,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class Game2PViewModel(private val getGamesUseCase: GetGames2PUseCase, private val insertGameUseCase: InsertGame2PUseCase, private val deleteGameUseCase: DeleteGame2PUseCase) : ViewModel() {
+class Game2PViewModel(private val getGamesUseCase: GetGames2PUseCase, private val insertGameUseCase: InsertGame2PUseCase, private val deleteGameUseCase: DeleteGame2PUseCase,
+                      override val prefs: DataStore<Preferences>,
+                      override val gamePath: GamePath = GamePath.TWO
+) : GameViewModelCommon() {
 
     // Backing property to avoid state updates from other classes
     private val _uiState = MutableStateFlow<Games2PUiState>(Games2PUiState.Loading)
@@ -76,6 +82,7 @@ class Game2PViewModel(private val getGamesUseCase: GetGames2PUseCase, private va
 
     fun deleteGame(idGame: Int, dispatcher: CoroutineDispatcher = Dispatchers.IO) = viewModelScope.launch(dispatcher) {
         deleteGameUseCase.execute(idGame)
+        deleteLastWinnerByIdGame(idGame)
     }
 
     init {

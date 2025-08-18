@@ -27,14 +27,17 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 @Composable
 fun HomeScreen(onClick: (Any) -> Unit) {
     Box(modifier = Modifier.fillMaxSize()) {
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxSize()) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier.fillMaxSize()
+        ) {
             MainButton(gamePath = GamePath.TWO, onClick = {
                 onClick(Games2Dest)
             })
-            MainButton(gamePath = GamePath.THREE, onClick ={
+            MainButton(gamePath = GamePath.THREE, onClick = {
                 onClick(Games3Dest)
             })
-            MainButton(gamePath = GamePath.FOUR, onClick ={
+            MainButton(gamePath = GamePath.FOUR, onClick = {
                 onClick(Games4Dest)
             })
             MainButton(gamePath = GamePath.GROUP, onClick = {
@@ -45,15 +48,25 @@ fun HomeScreen(onClick: (Any) -> Unit) {
 }
 
 @Composable
-private fun ColumnScope.MainButton(gamePath: GamePath,onClick: () -> Unit) {
-    Button(onClick = {
-        onClick()
-    }, modifier = Modifier.fillMaxWidth().weight(1F).padding(4.dp).alpha(GLOBAL_ALPHA), shape = RoundedCornerShape(20.dp)) {
+private fun ColumnScope.MainButton(gamePath: GamePath, onClick: () -> Unit) {
+    Button(
+        onClick = {
+            onClick()
+        },
+        modifier = Modifier.fillMaxWidth().weight(1F).padding(4.dp).alpha(GLOBAL_ALPHA),
+        shape = RoundedCornerShape(20.dp)
+    ) {
         Text(text = gamePath.title, fontSize = 64.sp, fontWeight = FontWeight.Bold)
     }
 }
 
 
-enum class GamePath(val title: String){
-    TWO("2"), THREE("3"), FOUR("4"), GROUP("2VS2")
+enum class GamePath(val title: String) {
+    TWO("2"), THREE("3"), FOUR("4"), GROUP("2VS2");
+
+    private val lastWinner = "LAST_WINNER"
+
+    fun getLastWinnerKey(idGame: Int): String {
+        return "${lastWinner}_${this.name}_$idGame"
+    }
 }

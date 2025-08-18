@@ -4,8 +4,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.ionvaranita.belotenote.constants.GameStatus
 import com.ionvaranita.belotenote.domain.model.Game4PUi
+import com.ionvaranita.belotenote.getFormattedDate
 import com.ionvaranita.belotenote.utils.getCurrentTime
-import com.ionvaranita.belotenote.utils.getFormattedDate
 
 /**
  * Created by ionvaranita on 2019-09-11;

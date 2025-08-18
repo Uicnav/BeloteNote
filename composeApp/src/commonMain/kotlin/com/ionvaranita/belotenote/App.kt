@@ -30,6 +30,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -143,7 +145,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun App(appDatabase: AppDatabase) {
+fun App(appDatabase: AppDatabase, prefs:DataStore<Preferences>) {
     BeloteTheme {
         val snackbarHostState = remember { SnackbarHostState() }
         val navController = rememberNavController()
@@ -220,7 +222,7 @@ fun App(appDatabase: AppDatabase) {
                                 val deleteGameUseCase = DeleteGame2PUseCase(repositoryGame)
                                 val game2PViewModel = viewModel {
                                     Game2PViewModel(
-                                        getGamesUseCase, insertGameUseCase, deleteGameUseCase
+                                        getGamesUseCase= getGamesUseCase, insertGameUseCase=insertGameUseCase, deleteGameUseCase=deleteGameUseCase, prefs = prefs
                                     )
                                 }
 
@@ -232,15 +234,15 @@ fun App(appDatabase: AppDatabase) {
                             composable<Games3Dest> {
                                 val repository =
                                     Games3PRepositoryImpl(Game3PDataSourceImpl(appDatabase.game3PDao()))
-                                val getGamesUseCase: GetGames3PUseCase =
+                                val getGamesUseCase =
                                     GetGames3PUseCase(repository)
-                                val insertGameUseCase: InsertGame3PUseCase =
+                                val insertGameUseCase =
                                     InsertGame3PUseCase(repository)
-                                val deleteGameUseCase: DeleteGame3PUseCase =
+                                val deleteGameUseCase =
                                     DeleteGame3PUseCase(repository)
                                 val game3PViewModel = viewModel {
                                     Game3PViewModel(
-                                        getGamesUseCase, insertGameUseCase, deleteGameUseCase
+                                        getGamesUseCase= getGamesUseCase, insertGameUseCase=insertGameUseCase, deleteGameUseCase=deleteGameUseCase, prefs = prefs
                                     )
                                 }
                                 TablesScreen3(game3PViewModel, winningPointsViewModel)
@@ -253,7 +255,7 @@ fun App(appDatabase: AppDatabase) {
                                 val deleteGameUseCase = DeleteGame4PUseCase(repository)
                                 val game4PViewModel = viewModel {
                                     Game4PViewModel(
-                                        getGamesUseCase, insertGameUseCase, deleteGameUseCase
+                                        getGamesUseCase= getGamesUseCase, insertGameUseCase=insertGameUseCase, deleteGameUseCase=deleteGameUseCase, prefs = prefs
                                     )
                                 }
                                 TablesScreen4(
@@ -263,15 +265,15 @@ fun App(appDatabase: AppDatabase) {
                             composable<GamesGroupsDest> {
                                 val repository =
                                     Games2GroupsRepositoryImpl(Game2GroupsDataSourceImpl(appDatabase.game2GroupsDao()))
-                                val getGamesUseCase: GetGames2GroupsUseCase =
+                                val getGamesUseCase =
                                     GetGames2GroupsUseCase(repository)
-                                val insertGameUseCase: InsertGame2GroupsUseCase =
+                                val insertGameUseCase =
                                     InsertGame2GroupsUseCase(repository)
-                                val deleteGameUseCase: DeleteGame2GroupsUseCase =
+                                val deleteGameUseCase =
                                     DeleteGame2GroupsUseCase(repository)
                                 val game2GroupsViewModel = viewModel {
                                     Game2GroupsViewModel(
-                                        getGamesUseCase, insertGameUseCase, deleteGameUseCase
+                                        getGamesUseCase= getGamesUseCase, insertGameUseCase=insertGameUseCase, deleteGameUseCase=deleteGameUseCase, prefs = prefs
                                     )
                                 }
                                 TablesScreenGroups(game2GroupsViewModel, winningPointsViewModel)
@@ -286,7 +288,7 @@ fun App(appDatabase: AppDatabase) {
 
                                 val getPointsUseCase = GetPoints2PUseCase(repositoryPoints)
                                 val insertPointsUseCase = InsertPoints2PUseCase(repositoryPoints)
-                                val deleteLastRowUseCase =
+                                val deleteLastPointsUseCase =
                                     DeleteLastRowPoints2PUseCase(repositoryPoints)
 
                                 val updateStatusScoreName1UseCase =
@@ -302,16 +304,17 @@ fun App(appDatabase: AppDatabase) {
                                     DeleteAllPoints2PUseCase(repositoryPoints)
                                 val viewModel = viewModel {
                                     Match2PPViewModel(
-                                        idGame,
-                                        getGameUseCase,
-                                        getPointsUseCase,
-                                        insertPointsUseCase,
-                                        deleteLastRowUseCase,
-                                        updateStatusScoreName1UseCase,
-                                        updateStatusScoreName2UseCase,
-                                        updateStatusWinningPointsUseCase,
-                                        updateOnlyStatusUseCase,
-                                        deleteAllPointsUseCase
+                                        idGame=idGame,
+                                        getGameUseCase=getGameUseCase,
+                                        getPointsUseCase=getPointsUseCase,
+                                        insertPointsUseCase=insertPointsUseCase,
+                                        deleteLastPointsUseCase=deleteLastPointsUseCase,
+                                        updateStatusScoreName1UseCase= updateStatusScoreName1UseCase,
+                                        updateStatusScoreName2UseCase=updateStatusScoreName2UseCase,
+                                        updateStatusWinningPointsUseCase=updateStatusWinningPointsUseCase,
+                                        updateOnlyStatusUseCase= updateOnlyStatusUseCase,
+                                        deleteAllPointsUseCase=deleteAllPointsUseCase,
+                                        prefs = prefs
                                     )
                                 }
                                 MatchScreen2(viewModel, winningPointsViewModel)
@@ -326,7 +329,7 @@ fun App(appDatabase: AppDatabase) {
                                 val getGameUseCase = GetGame3PUseCase(repositoryGame)
                                 val getPointsUseCase = GetPoints3PUseCase(repositoryPoints)
                                 val insertPointsUseCase = InsertPoints3PUseCase(repositoryPoints)
-                                val deleteLastRowUseCase =
+                                val deleteLastPointsUseCase =
                                     DeleteLastRowPoints3PUseCase(repositoryPoints)
 
                                 val updateStatusScoreName1UseCase =
@@ -346,17 +349,18 @@ fun App(appDatabase: AppDatabase) {
 
                                 val match3PPViewModel = viewModel {
                                     Match3PPViewModel(
-                                        idGame,
-                                        getGameUseCase,
-                                        getPointsUseCase,
-                                        insertPointsUseCase,
-                                        deleteLastRowUseCase,
-                                        updateStatusScoreName1UseCase,
-                                        updateStatusScoreName2UseCase,
-                                        updateStatusScoreName3UseCase,
-                                        updateStatusWinningPointsUseCase,
-                                        updateOnlyStatusUseCase,
-                                        deleteAllPointsUseCase
+                                        idGame=idGame,
+                                        getGameUseCase=getGameUseCase,
+                                        getPointsUseCase=getPointsUseCase,
+                                        insertPointsUseCase=insertPointsUseCase,
+                                        deleteLastPointsUseCase=deleteLastPointsUseCase,
+                                        updateStatusScoreName1UseCase= updateStatusScoreName1UseCase,
+                                        updateStatusScoreName2UseCase=updateStatusScoreName2UseCase,
+                                        updateStatusScoreName3UseCase=updateStatusScoreName3UseCase,
+                                        updateStatusWinningPointsUseCase=updateStatusWinningPointsUseCase,
+                                        updateOnlyStatusUseCase= updateOnlyStatusUseCase,
+                                        deleteAllPointsUseCase=deleteAllPointsUseCase,
+                                        prefs = prefs
                                     )
                                 }
 
@@ -372,7 +376,7 @@ fun App(appDatabase: AppDatabase) {
                                 val getGameUseCase = GetGame4PUseCase(repositoryGame)
                                 val getPointsUseCase = GetPoints4PUseCase(repositoryPoints)
                                 val insertPointsUseCase = InsertPoints4PUseCase(repositoryPoints)
-                                val deleteLastRowUseCase =
+                                val deleteLastPointsUseCase =
                                     DeleteLastRowPoints4PUseCase(repositoryPoints)
 
                                 val updateStatusScoreName1UseCase =
@@ -395,18 +399,19 @@ fun App(appDatabase: AppDatabase) {
 
                                 val match4PPViewModel = viewModel {
                                     Match4PPViewModel(
-                                        idGame,
-                                        getGameUseCase,
-                                        getPointsUseCase,
-                                        insertPointsUseCase,
-                                        deleteLastRowUseCase,
-                                        updateStatusScoreName1UseCase,
-                                        updateStatusScoreName2UseCase,
-                                        updateStatusScoreName3UseCase,
-                                        updateStatusScoreName4UseCase,
-                                        updateStatusWinningPointsUseCase,
-                                        updateOnlyStatusUseCase,
-                                        deleteAllPointsUseCase
+                                        idGame=idGame,
+                                        getGameUseCase=getGameUseCase,
+                                        getPointsUseCase=getPointsUseCase,
+                                        insertPointsUseCase=insertPointsUseCase,
+                                        deleteLastPointsUseCase=deleteLastPointsUseCase,
+                                        updateStatusScoreName1UseCase= updateStatusScoreName1UseCase,
+                                        updateStatusScoreName2UseCase=updateStatusScoreName2UseCase,
+                                        updateStatusScoreName3UseCase=updateStatusScoreName3UseCase,
+                                        updateStatusScoreName4UseCase=updateStatusScoreName4UseCase,
+                                        updateStatusWinningPointsUseCase=updateStatusWinningPointsUseCase,
+                                        updateOnlyStatusUseCase= updateOnlyStatusUseCase,
+                                        deleteAllPointsUseCase=deleteAllPointsUseCase,
+                                        prefs = prefs
                                     )
                                 }
                                 MatchScreen4(
@@ -425,7 +430,7 @@ fun App(appDatabase: AppDatabase) {
                                 val getPointsUseCase = GetPoints2GroupsUseCase(repositoryPoints)
                                 val insertPointsUseCase =
                                     InsertPoints2GroupsUseCase(repositoryPoints)
-                                val deleteLastRowPointsUseCase =
+                                val deleteLastPointsUseCase =
                                     DeleteLastRowPoints2GroupsUseCase(repositoryPoints)
                                 val updateStatusScoreName1UseCase =
                                     UpdateStatusScoreGame2GroupsName1UseCase(repositoryGame)
@@ -434,23 +439,24 @@ fun App(appDatabase: AppDatabase) {
 
                                 val updateStatusWinningPointsUseCase =
                                     UpdateStatusWinningPointsGame2GroupsUseCase(repositoryGame)
-                                val updateOnlyStatusGameUseCase =
+                                val updateOnlyStatusUseCase =
                                     UpdateOnlyStatusGame2GroupsUseCase(repositoryGame)
                                 val deleteAllPointsUseCase =
                                     DeleteAllPoints2GroupsUseCase(repositoryPoints)
 
                                 val match2GroupsViewModel = viewModel {
                                     Match2GroupsViewModel(
-                                        idGame,
-                                        getGameUseCase,
-                                        getPointsUseCase,
-                                        insertPointsUseCase,
-                                        deleteLastRowPointsUseCase,
-                                        updateStatusScoreName1UseCase,
-                                        updateStatusScoreName2UseCase,
-                                        updateStatusWinningPointsUseCase,
-                                        updateOnlyStatusGameUseCase,
-                                        deleteAllPointsUseCase
+                                        idGame=idGame,
+                                        getGameUseCase=getGameUseCase,
+                                        getPointsUseCase=getPointsUseCase,
+                                        insertPointsUseCase=insertPointsUseCase,
+                                        deleteLastPointsUseCase=deleteLastPointsUseCase,
+                                        updateStatusScoreName1UseCase= updateStatusScoreName1UseCase,
+                                        updateStatusScoreName2UseCase=updateStatusScoreName2UseCase,
+                                        updateStatusWinningPointsUseCase=updateStatusWinningPointsUseCase,
+                                        updateOnlyStatusUseCase= updateOnlyStatusUseCase,
+                                        deleteAllPointsUseCase=deleteAllPointsUseCase,
+                                        prefs = prefs
                                     )
                                 }
                                 MatchScreen2Groups(

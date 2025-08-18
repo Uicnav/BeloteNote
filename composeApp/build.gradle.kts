@@ -51,6 +51,8 @@ kotlin {
             implementation(libs.room.runtime)
             implementation(libs.sqlite.bundled)
             implementation(libs.kotlinx.datetime)
+            api(libs.datastore.preferences)
+            api(libs.datastore)
         }
     }
 }
@@ -67,8 +69,8 @@ android {
         applicationId = "com.ionvaranita.belotenote"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 134
-        versionName = "1.3.4"
+        versionCode = 139
+        versionName = "1.3.9"
     }
     packaging {
         resources {

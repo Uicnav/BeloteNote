@@ -56,6 +56,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -88,6 +89,7 @@ import belotenote.composeapp.generated.resources.winner_is
 import belotenote.composeapp.generated.resources.yes
 import com.ionvaranita.belotenote.Circle
 import com.ionvaranita.belotenote.StatusImage
+import com.ionvaranita.belotenote.constants.GLOBAL_ALPHA
 import com.ionvaranita.belotenote.constants.GameStatus
 import com.ionvaranita.belotenote.domain.model.Points2GroupsUi
 import com.ionvaranita.belotenote.domain.model.Points2PUi
@@ -118,8 +120,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 internal fun MatchScreen2(
-    viewModel: ViewModelBase,
-    winningPointsViewModel: WinningPointsViewModel
+    viewModel: ViewModelBase, winningPointsViewModel: WinningPointsViewModel
 ) {
 
 
@@ -173,7 +174,7 @@ internal fun MatchScreen2(
             showExtended = false
         }, onWin = {
             winnerData?.let {
-                viewModel.updateStatusScoreName(it)
+                viewModel.updateStatusScoreName(idWinner = it.id, gameStatus = GameStatus.FINISHED)
             }
             showExtended = false
         }, onExtend = { winningPoints ->
@@ -245,6 +246,9 @@ internal fun MatchScreen2(
                 var isPressedPoints by remember { mutableStateOf(true) }
                 var isPressedP1 by remember { mutableStateOf(false) }
                 var isPressedP2 by remember { mutableStateOf(false) }
+                val shakerGame by remember { mutableStateOf(TextFieldShaker()) }
+                val shakerP1 by remember { mutableStateOf(TextFieldShaker()) }
+                val shakerP2 by remember { mutableStateOf(TextFieldShaker()) }
                 val pointsListState = rememberLazyListState()
                 scope.launch {
                     pointsListState.animateScrollToItem(points.size)
@@ -255,11 +259,15 @@ internal fun MatchScreen2(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     state = pointsListState
                 ) {
-
+                    item {
+                        HorizontalDivider(
+                            thickness = 2.dp
+                        )
+                    }
                     itemsIndexed(points) { index: Int, item: Points2PUi ->
                         val isLast = index == points.lastIndex
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (isLast && viewModel.statusGame.value == GameStatus.CONTINUE) {
+                            if (isLast) {
                                 GameCard(onDelete = {
                                     scope.launch {
                                         viewModel.deleteLastPoints()
@@ -275,48 +283,62 @@ internal fun MatchScreen2(
                                 PointsTextAtom(text = item.pointsP2, isBody = true)
                             }
                         }
+
                         if ((index + 1) % 2 == 0) {
                             HorizontalDivider(
-                                thickness = 4.dp
+                                thickness = 4.dp, color = MaterialTheme.colorScheme.scrim
+                            )
+                        } else {
+                            HorizontalDivider(
+                                thickness = 2.dp
                             )
                         }
                     }
+                    if (viewModel.statusGame.value == GameStatus.CONTINUE) {
+                        item {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+                                    .wrapContentHeight()
+                            ) {
+                                TouchableText(
+                                    text = pointsGame,
+                                    shaker = shakerGame,
+                                    isPressed = isPressedPoints,
+                                    onClick = {
+
+                                        isPressedPoints = true
+                                        isPressedP1 = false
+                                        isPressedP2 = false
+
+                                    })
+
+                                TouchableText(
+                                    text = pointsP1,
+                                    shaker = shakerP1,
+                                    isPressed = isPressedP1,
+                                    onClick = {
+
+                                        isPressedPoints = false
+                                        isPressedP1 = true
+                                        isPressedP2 = false
+
+                                    })
+                                TouchableText(
+                                    text = pointsP2,
+                                    shaker = shakerP2,
+                                    isPressed = isPressedP2,
+                                    onClick = {
+                                        isPressedPoints = false
+                                        isPressedP1 = false
+                                        isPressedP2 = true
+                                    })
+                            }
+                        }
+                    }
+
                 }
 
                 if (viewModel.statusGame.value == GameStatus.CONTINUE) {
-                    val shakerGame by remember { mutableStateOf(TextFieldShaker()) }
-                    val shakerP1 by remember { mutableStateOf(TextFieldShaker()) }
-                    val shakerP2 by remember { mutableStateOf(TextFieldShaker()) }
-                    Row(
-                        modifier = Modifier.fillMaxWidth().wrapContentHeight()
-                    ) {
-                        TouchableText(
-                            text = pointsGame,
-                            shaker = shakerGame,
-                            isPressed = isPressedPoints,
-                            onClick = {
-
-                                isPressedPoints = true
-                                isPressedP1 = false
-                                isPressedP2 = false
-
-                            })
-
-                        TouchableText(
-                            text = pointsP1, shaker = shakerP1, isPressed = isPressedP1, onClick = {
-
-                                isPressedPoints = false
-                                isPressedP1 = true
-                                isPressedP2 = false
-
-                            })
-                        TouchableText(
-                            text = pointsP2, shaker = shakerP2, isPressed = isPressedP2, onClick = {
-                                isPressedPoints = false
-                                isPressedP1 = false
-                                isPressedP2 = true
-                            })
-                    }
                     Keyboard(
                         isPressedGames = isPressedPoints,
                         modifier = Modifier.fillMaxWidth(),
@@ -355,8 +377,8 @@ internal fun MatchScreen2(
                                         inputText = pointsP1, inputKey = inputKey
                                     ) { text ->
                                         pointsP1 = text
-                                        if (inputKey == MINUS_10 || inputKey == BOLT) {
-                                            if (pointsP2 == MINUS_10 || pointsP2 == BOLT) {
+                                        if (inputKey == BOLT) {
+                                            if (pointsP2 == BOLT) {
                                                 pointsP2 = ""
                                             }
                                         }
@@ -367,8 +389,8 @@ internal fun MatchScreen2(
                                         inputText = pointsP2, inputKey = inputKey
                                     ) { text ->
                                         pointsP2 = text
-                                        if (inputKey == MINUS_10 || inputKey == BOLT) {
-                                            if (pointsP1 == MINUS_10 || pointsP1 == BOLT) {
+                                        if (inputKey == BOLT) {
+                                            if (pointsP1 == BOLT) {
                                                 pointsP1 = ""
                                             }
                                         }
@@ -382,7 +404,7 @@ internal fun MatchScreen2(
                     var shouDialog by remember { mutableStateOf(false) }
                     InsertFloatingActionButton(onClick = {
                         if (viewModel.statusGame.value == GameStatus.EXTENDED || viewModel.statusGame.value == GameStatus.EXTENDED_MANDATORY) {
-                            viewModel.checkIsExtended()
+                            viewModel.checkStatusAndScore()
                         } else {
                             shouDialog = true
                         }
@@ -414,8 +436,7 @@ internal fun MatchScreen2(
 
 @Composable
 internal fun MatchScreen3(
-    viewModel: ViewModelBase,
-    winningPointsViewModel: WinningPointsViewModel
+    viewModel: ViewModelBase, winningPointsViewModel: WinningPointsViewModel
 ) {
 
     val matchUiState = viewModel.uiState.collectAsState()
@@ -468,7 +489,7 @@ internal fun MatchScreen3(
             showExtended = false
         }, onWin = {
             winnerData?.let {
-                viewModel.updateStatusScoreName(it)
+                viewModel.updateStatusScoreName(it.id, GameStatus.FINISHED)
             }
             showExtended = false
         }, onExtend = { winningPoints ->
@@ -542,6 +563,10 @@ internal fun MatchScreen3(
                 var isPressedP1 by remember { mutableStateOf(false) }
                 var isPressedP2 by remember { mutableStateOf(false) }
                 var isPressedP3 by remember { mutableStateOf(false) }
+                val shakerGame by remember { mutableStateOf(TextFieldShaker()) }
+                val shakerP1 by remember { mutableStateOf(TextFieldShaker()) }
+                val shakerP2 by remember { mutableStateOf(TextFieldShaker()) }
+                val shakerP3 by remember { mutableStateOf(TextFieldShaker()) }
                 val pointsListState = rememberLazyListState()
                 scope.launch {
                     pointsListState.animateScrollToItem(points.size)
@@ -552,11 +577,15 @@ internal fun MatchScreen3(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     state = pointsListState
                 ) {
-
+                    item {
+                        HorizontalDivider(
+                            thickness = 2.dp
+                        )
+                    }
                     itemsIndexed(points) { index: Int, item: Points3PUi ->
                         val isLast = index == points.lastIndex
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (isLast && viewModel.statusGame.value == GameStatus.CONTINUE) {
+                            if (isLast) {
                                 GameCard(onDelete = {
                                     scope.launch {
                                         viewModel.deleteLastPoints()
@@ -576,56 +605,71 @@ internal fun MatchScreen3(
                         }
                         if ((index + 1) % 3 == 0) {
                             HorizontalDivider(
-                                thickness = 4.dp
+                                thickness = 4.dp, color = MaterialTheme.colorScheme.scrim
+                            )
+                        } else {
+                            HorizontalDivider(
+                                thickness = 2.dp
                             )
                         }
                     }
+                    if (viewModel.statusGame.value == GameStatus.CONTINUE) {
+                        item {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+                                    .wrapContentHeight()
+                            ) {
+                                TouchableText(
+                                    text = pointsGame,
+                                    shaker = shakerGame,
+                                    isPressed = isPressedPoints,
+                                    onClick = {
+
+                                        isPressedPoints = true
+                                        isPressedP1 = false
+                                        isPressedP2 = false
+                                        isPressedP3 = false
+
+                                    })
+
+                                TouchableText(
+                                    text = pointsP1,
+                                    shaker = shakerP1,
+                                    isPressed = isPressedP1,
+                                    onClick = {
+
+                                        isPressedPoints = false
+                                        isPressedP1 = true
+                                        isPressedP2 = false
+                                        isPressedP3 = false
+
+                                    })
+                                TouchableText(
+                                    text = pointsP2,
+                                    shaker = shakerP2,
+                                    isPressed = isPressedP2,
+                                    onClick = {
+                                        isPressedPoints = false
+                                        isPressedP1 = false
+                                        isPressedP2 = true
+                                        isPressedP3 = false
+                                    })
+                                TouchableText(
+                                    text = pointsP3,
+                                    shaker = shakerP3,
+                                    isPressed = isPressedP3,
+                                    onClick = {
+                                        isPressedPoints = false
+                                        isPressedP1 = false
+                                        isPressedP2 = false
+                                        isPressedP3 = true
+                                    })
+                            }
+                        }
+
+                    }
                 }
                 if (viewModel.statusGame.value == GameStatus.CONTINUE) {
-                    val shakerGame by remember { mutableStateOf(TextFieldShaker()) }
-                    val shakerP1 by remember { mutableStateOf(TextFieldShaker()) }
-                    val shakerP2 by remember { mutableStateOf(TextFieldShaker()) }
-                    val shakerP3 by remember { mutableStateOf(TextFieldShaker()) }
-                    Row(
-                        modifier = Modifier.fillMaxWidth().wrapContentHeight()
-                    ) {
-                        TouchableText(
-                            text = pointsGame,
-                            shaker = shakerGame,
-                            isPressed = isPressedPoints,
-                            onClick = {
-
-                                isPressedPoints = true
-                                isPressedP1 = false
-                                isPressedP2 = false
-                                isPressedP3 = false
-
-                            })
-
-                        TouchableText(
-                            text = pointsP1, shaker = shakerP1, isPressed = isPressedP1, onClick = {
-
-                                isPressedPoints = false
-                                isPressedP1 = true
-                                isPressedP2 = false
-                                isPressedP3 = false
-
-                            })
-                        TouchableText(
-                            text = pointsP2, shaker = shakerP2, isPressed = isPressedP2, onClick = {
-                                isPressedPoints = false
-                                isPressedP1 = false
-                                isPressedP2 = true
-                                isPressedP3 = false
-                            })
-                        TouchableText(
-                            text = pointsP3, shaker = shakerP3, isPressed = isPressedP3, onClick = {
-                                isPressedPoints = false
-                                isPressedP1 = false
-                                isPressedP2 = false
-                                isPressedP3 = true
-                            })
-                    }
                     Keyboard(
                         isPressedGames = isPressedPoints,
                         modifier = Modifier.fillMaxWidth(),
@@ -668,11 +712,11 @@ internal fun MatchScreen3(
                                         inputText = pointsP1, inputKey = inputKey
                                     ) { text ->
                                         pointsP1 = text
-                                        if (inputKey == MINUS_10 || inputKey == BOLT) {
-                                            if (pointsP2 == MINUS_10 || pointsP2 == BOLT) {
+                                        if (inputKey == BOLT) {
+                                            if (pointsP2 == BOLT) {
                                                 pointsP2 = ""
                                             }
-                                            if (pointsP3 == MINUS_10 || pointsP3 == BOLT) {
+                                            if (pointsP3 == BOLT) {
                                                 pointsP3 = ""
                                             }
                                         }
@@ -683,11 +727,11 @@ internal fun MatchScreen3(
                                         inputText = pointsP2, inputKey = inputKey
                                     ) { text ->
                                         pointsP2 = text
-                                        if (inputKey == MINUS_10 || inputKey == BOLT) {
-                                            if (pointsP1 == MINUS_10 || pointsP1 == BOLT) {
+                                        if (inputKey == BOLT) {
+                                            if (pointsP1 == BOLT) {
                                                 pointsP1 = ""
                                             }
-                                            if (pointsP3 == MINUS_10 || pointsP3 == BOLT) {
+                                            if (pointsP3 == BOLT) {
                                                 pointsP3 = ""
                                             }
                                         }
@@ -699,11 +743,11 @@ internal fun MatchScreen3(
                                         inputText = pointsP3, inputKey = inputKey
                                     ) { text ->
                                         pointsP3 = text
-                                        if (inputKey == MINUS_10 || inputKey == BOLT) {
-                                            if (pointsP1 == MINUS_10 || pointsP1 == BOLT) {
+                                        if (inputKey == BOLT) {
+                                            if (pointsP1 == BOLT) {
                                                 pointsP1 = ""
                                             }
-                                            if (pointsP2 == MINUS_10 || pointsP2 == BOLT) {
+                                            if (pointsP2 == BOLT) {
                                                 pointsP2 = ""
                                             }
                                         }
@@ -717,7 +761,7 @@ internal fun MatchScreen3(
                     var shouDialog by remember { mutableStateOf(false) }
                     InsertFloatingActionButton(onClick = {
                         if (viewModel.statusGame.value == GameStatus.EXTENDED || viewModel.statusGame.value == GameStatus.EXTENDED_MANDATORY) {
-                            viewModel.checkIsExtended()
+                            viewModel.checkStatusAndScore()
                         } else {
                             shouDialog = true
                         }
@@ -748,8 +792,7 @@ internal fun MatchScreen3(
 
 @Composable
 internal fun MatchScreen4(
-    viewModel: ViewModelBase,
-    winningPointsViewModel: WinningPointsViewModel
+    viewModel: ViewModelBase, winningPointsViewModel: WinningPointsViewModel
 ) {
     val matchUiState = viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
@@ -801,7 +844,7 @@ internal fun MatchScreen4(
             showExtended = false
         }, onWin = {
             winnerData?.let {
-                viewModel.updateStatusScoreName(it)
+                viewModel.updateStatusScoreName(idWinner = it.id, gameStatus = GameStatus.FINISHED)
             }
             showExtended = false
         }, onExtend = { winningPoints ->
@@ -870,7 +913,24 @@ internal fun MatchScreen4(
 
 
                 val points = matchData.points
+                var pointsGame by remember { mutableStateOf("") }
+                var pointsP1 by remember { mutableStateOf("") }
+                var pointsP2 by remember { mutableStateOf("") }
+                var pointsP3 by remember { mutableStateOf("") }
+                var pointsP4 by remember { mutableStateOf("") }
+                var isPressedPoints by remember { mutableStateOf(true) }
+                var isPressedP1 by remember { mutableStateOf(false) }
+                var isPressedP2 by remember { mutableStateOf(false) }
+                var isPressedP3 by remember { mutableStateOf(false) }
+                var isPressedP4 by remember { mutableStateOf(false) }
+                val shakerGame by remember { mutableStateOf(TextFieldShaker()) }
+                val shakerP1 by remember { mutableStateOf(TextFieldShaker()) }
+                val shakerP2 by remember { mutableStateOf(TextFieldShaker()) }
+                val shakerP3 by remember { mutableStateOf(TextFieldShaker()) }
+                val shakerP4 by remember { mutableStateOf(TextFieldShaker()) }
+
                 val pointsListState = rememberLazyListState()
+
                 scope.launch {
                     pointsListState.animateScrollToItem(points.size)
                 }
@@ -880,11 +940,15 @@ internal fun MatchScreen4(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     state = pointsListState
                 ) {
-
+                    item {
+                        HorizontalDivider(
+                            thickness = 2.dp
+                        )
+                    }
                     itemsIndexed(points) { index: Int, item: Points4PUi ->
                         val isLast = index == points.lastIndex
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (isLast && viewModel.statusGame.value == GameStatus.CONTINUE) {
+                            if (isLast) {
                                 GameCard(onDelete = {
                                     scope.launch {
                                         viewModel.deleteLastPoints()
@@ -906,79 +970,85 @@ internal fun MatchScreen4(
                         }
                         if ((index + 1) % 4 == 0) {
                             HorizontalDivider(
-                                thickness = 4.dp
+                                thickness = 4.dp, color = MaterialTheme.colorScheme.scrim
                             )
+                        } else {
+                            HorizontalDivider(
+                                thickness = 2.dp
+                            )
+                        }
+                    }
+                    if (viewModel.statusGame.value == GameStatus.CONTINUE) {
+                        item {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+                                    .wrapContentHeight()
+                            ) {
+                                TouchableText(
+                                    text = pointsGame,
+                                    shaker = shakerGame,
+                                    isPressed = isPressedPoints,
+                                    onClick = {
+
+                                        isPressedPoints = true
+                                        isPressedP1 = false
+                                        isPressedP2 = false
+                                        isPressedP3 = false
+                                        isPressedP4 = false
+
+                                    })
+
+                                TouchableText(
+                                    text = pointsP1,
+                                    shaker = shakerP1,
+                                    isPressed = isPressedP1,
+                                    onClick = {
+
+                                        isPressedPoints = false
+                                        isPressedP1 = true
+                                        isPressedP2 = false
+                                        isPressedP3 = false
+                                        isPressedP4 = false
+
+                                    })
+                                TouchableText(
+                                    text = pointsP2,
+                                    shaker = shakerP2,
+                                    isPressed = isPressedP2,
+                                    onClick = {
+                                        isPressedPoints = false
+                                        isPressedP1 = false
+                                        isPressedP2 = true
+                                        isPressedP3 = false
+                                        isPressedP4 = false
+                                    })
+                                TouchableText(
+                                    text = pointsP3,
+                                    shaker = shakerP3,
+                                    isPressed = isPressedP3,
+                                    onClick = {
+                                        isPressedPoints = false
+                                        isPressedP1 = false
+                                        isPressedP2 = false
+                                        isPressedP3 = true
+                                        isPressedP4 = false
+                                    })
+                                TouchableText(
+                                    text = pointsP4,
+                                    shaker = shakerP4,
+                                    isPressed = isPressedP4,
+                                    onClick = {
+                                        isPressedPoints = false
+                                        isPressedP1 = false
+                                        isPressedP2 = false
+                                        isPressedP3 = false
+                                        isPressedP4 = true
+                                    })
+                            }
                         }
                     }
                 }
                 if (viewModel.statusGame.value == GameStatus.CONTINUE) {
-                    var pointsGame by remember { mutableStateOf("") }
-                    var pointsP1 by remember { mutableStateOf("") }
-                    var pointsP2 by remember { mutableStateOf("") }
-                    var pointsP3 by remember { mutableStateOf("") }
-                    var pointsP4 by remember { mutableStateOf("") }
-                    var isPressedPoints by remember { mutableStateOf(true) }
-                    var isPressedP1 by remember { mutableStateOf(false) }
-                    var isPressedP2 by remember { mutableStateOf(false) }
-                    var isPressedP3 by remember { mutableStateOf(false) }
-                    var isPressedP4 by remember { mutableStateOf(false) }
-                    val shakerGame by remember { mutableStateOf(TextFieldShaker()) }
-                    val shakerP1 by remember { mutableStateOf(TextFieldShaker()) }
-                    val shakerP2 by remember { mutableStateOf(TextFieldShaker()) }
-                    val shakerP3 by remember { mutableStateOf(TextFieldShaker()) }
-                    val shakerP4 by remember { mutableStateOf(TextFieldShaker()) }
-                    Row(
-                        modifier = Modifier.fillMaxWidth().wrapContentHeight()
-                    ) {
-                        TouchableText(
-                            text = pointsGame,
-                            shaker = shakerGame,
-                            isPressed = isPressedPoints,
-                            onClick = {
-
-                                isPressedPoints = true
-                                isPressedP1 = false
-                                isPressedP2 = false
-                                isPressedP3 = false
-                                isPressedP4 = false
-
-                            })
-
-                        TouchableText(
-                            text = pointsP1, shaker = shakerP1, isPressed = isPressedP1, onClick = {
-
-                                isPressedPoints = false
-                                isPressedP1 = true
-                                isPressedP2 = false
-                                isPressedP3 = false
-                                isPressedP4 = false
-
-                            })
-                        TouchableText(
-                            text = pointsP2, shaker = shakerP2, isPressed = isPressedP2, onClick = {
-                                isPressedPoints = false
-                                isPressedP1 = false
-                                isPressedP2 = true
-                                isPressedP3 = false
-                                isPressedP4 = false
-                            })
-                        TouchableText(
-                            text = pointsP3, shaker = shakerP3, isPressed = isPressedP3, onClick = {
-                                isPressedPoints = false
-                                isPressedP1 = false
-                                isPressedP2 = false
-                                isPressedP3 = true
-                                isPressedP4 = false
-                            })
-                        TouchableText(
-                            text = pointsP4, shaker = shakerP4, isPressed = isPressedP4, onClick = {
-                                isPressedPoints = false
-                                isPressedP1 = false
-                                isPressedP2 = false
-                                isPressedP3 = false
-                                isPressedP4 = true
-                            })
-                    }
                     Keyboard(
                         isPressedGames = isPressedPoints,
                         modifier = Modifier.fillMaxWidth(),
@@ -1024,17 +1094,7 @@ internal fun MatchScreen4(
                                         inputText = pointsP1, inputKey = inputKey
                                     ) { text ->
                                         pointsP1 = text
-                                        if (inputKey == MINUS_10) {
-                                            if (pointsP2 == MINUS_10) {
-                                                pointsP2 = ""
-                                            }
-                                            if (pointsP3 == MINUS_10) {
-                                                pointsP3 = ""
-                                            }
-                                            if (pointsP4 == MINUS_10) {
-                                                pointsP4 = ""
-                                            }
-                                        } else if (inputKey == BOLT) {
+                                        if (inputKey == BOLT) {
                                             if (pointsP2 == BOLT) {
                                                 pointsP2 = ""
                                             }
@@ -1052,17 +1112,7 @@ internal fun MatchScreen4(
                                         inputText = pointsP2, inputKey = inputKey
                                     ) { text ->
                                         pointsP2 = text
-                                        if (inputKey == MINUS_10) {
-                                            if (pointsP1 == MINUS_10) {
-                                                pointsP1 = ""
-                                            }
-                                            if (pointsP3 == MINUS_10) {
-                                                pointsP3 = ""
-                                            }
-                                            if (pointsP4 == MINUS_10) {
-                                                pointsP4 = ""
-                                            }
-                                        } else if (inputKey == BOLT) {
+                                        if (inputKey == BOLT) {
                                             if (pointsP1 == BOLT) {
                                                 pointsP1 = ""
                                             }
@@ -1081,17 +1131,7 @@ internal fun MatchScreen4(
                                         inputText = pointsP3, inputKey = inputKey
                                     ) { text ->
                                         pointsP3 = text
-                                        if (inputKey == MINUS_10) {
-                                            if (pointsP1 == MINUS_10) {
-                                                pointsP1 = ""
-                                            }
-                                            if (pointsP2 == MINUS_10) {
-                                                pointsP2 = ""
-                                            }
-                                            if (pointsP4 == MINUS_10) {
-                                                pointsP4 = ""
-                                            }
-                                        } else if (inputKey == BOLT) {
+                                        if (inputKey == BOLT) {
                                             if (pointsP1 == BOLT) {
                                                 pointsP1 = ""
                                             }
@@ -1110,17 +1150,7 @@ internal fun MatchScreen4(
                                         inputText = pointsP4, inputKey = inputKey
                                     ) { text ->
                                         pointsP4 = text
-                                        if (inputKey == MINUS_10) {
-                                            if (pointsP1 == MINUS_10) {
-                                                pointsP1 = ""
-                                            }
-                                            if (pointsP2 == MINUS_10) {
-                                                pointsP2 = ""
-                                            }
-                                            if (pointsP3 == MINUS_10) {
-                                                pointsP3 = ""
-                                            }
-                                        } else if (inputKey == BOLT) {
+                                        if (inputKey == BOLT) {
                                             if (pointsP1 == BOLT) {
                                                 pointsP1 = ""
                                             }
@@ -1141,7 +1171,7 @@ internal fun MatchScreen4(
                     var shouDialog by remember { mutableStateOf(false) }
                     InsertFloatingActionButton(onClick = {
                         if (viewModel.statusGame.value == GameStatus.EXTENDED || viewModel.statusGame.value == GameStatus.EXTENDED_MANDATORY) {
-                            viewModel.checkIsExtended()
+                            viewModel.checkStatusAndScore()
                         } else {
                             shouDialog = true
                         }
@@ -1172,8 +1202,7 @@ internal fun MatchScreen4(
 
 @Composable
 internal fun MatchScreen2Groups(
-    viewModel: ViewModelBase,
-    winningPointsViewModel: WinningPointsViewModel
+    viewModel: ViewModelBase, winningPointsViewModel: WinningPointsViewModel
 ) {
     val matchUiState = viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
@@ -1225,7 +1254,7 @@ internal fun MatchScreen2Groups(
             showExtended = false
         }, onWin = {
             winnerData?.let {
-                viewModel.updateStatusScoreName(it)
+                viewModel.updateStatusScoreName(idWinner = it.id, gameStatus = GameStatus.FINISHED)
             }
             showExtended = false
         }, onExtend = { winningPoints ->
@@ -1235,7 +1264,17 @@ internal fun MatchScreen2Groups(
     }
     MatchWrapper {
         when (val matchState = matchUiState.value) {
+
             is MatchUiState.Success<*> -> {
+                var pointsGame by remember { mutableStateOf("") }
+                var pointsP1 by remember { mutableStateOf("") }
+                var pointsP2 by remember { mutableStateOf("") }
+                var isPressedPoints by remember { mutableStateOf(true) }
+                var isPressedP1 by remember { mutableStateOf(false) }
+                var isPressedP2 by remember { mutableStateOf(false) }
+                val shakerGame by remember { mutableStateOf(TextFieldShaker()) }
+                val shakerP1 by remember { mutableStateOf(TextFieldShaker()) }
+                val shakerP2 by remember { mutableStateOf(TextFieldShaker()) }
                 if (showInfoGameDialog) {
                     InfoGameDialog(
                         onDismiss = {
@@ -1296,12 +1335,16 @@ internal fun MatchScreen2Groups(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     state = pointsListState
                 ) {
-
+                    item {
+                        HorizontalDivider(
+                            thickness = 2.dp
+                        )
+                    }
 
                     itemsIndexed(points) { index: Int, item: Points2GroupsUi ->
                         val isLast = index == points.lastIndex
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (isLast && viewModel.statusGame.value == GameStatus.CONTINUE) {
+                            if (isLast) {
                                 GameCard(onDelete = {
                                     scope.launch {
                                         viewModel.deleteLastPoints()
@@ -1319,51 +1362,57 @@ internal fun MatchScreen2Groups(
                         }
                         if ((index + 1) % 2 == 0) {
                             HorizontalDivider(
-                                thickness = 4.dp
+                                thickness = 4.dp, color = MaterialTheme.colorScheme.scrim
                             )
+                        } else {
+                            HorizontalDivider(
+                                thickness = 2.dp
+                            )
+                        }
+                    }
+                    if (viewModel.statusGame.value == GameStatus.CONTINUE) {
+                        item {
+                            Row(
+                                modifier = Modifier.fillMaxWidth().padding(top = 4.dp)
+                                    .wrapContentHeight()
+                            ) {
+                                TouchableText(
+                                    text = pointsGame,
+                                    shaker = shakerGame,
+                                    isPressed = isPressedPoints,
+                                    onClick = {
+
+                                        isPressedPoints = true
+                                        isPressedP1 = false
+                                        isPressedP2 = false
+
+                                    })
+
+                                TouchableText(
+                                    text = pointsP1,
+                                    shaker = shakerP1,
+                                    isPressed = isPressedP1,
+                                    onClick = {
+
+                                        isPressedPoints = false
+                                        isPressedP1 = true
+                                        isPressedP2 = false
+
+                                    })
+                                TouchableText(
+                                    text = pointsP2,
+                                    shaker = shakerP2,
+                                    isPressed = isPressedP2,
+                                    onClick = {
+                                        isPressedPoints = false
+                                        isPressedP1 = false
+                                        isPressedP2 = true
+                                    })
+                            }
                         }
                     }
                 }
                 if (viewModel.statusGame.value == GameStatus.CONTINUE) {
-                    var pointsGame by remember { mutableStateOf("") }
-                    var pointsP1 by remember { mutableStateOf("") }
-                    var pointsP2 by remember { mutableStateOf("") }
-                    var isPressedPoints by remember { mutableStateOf(true) }
-                    var isPressedP1 by remember { mutableStateOf(false) }
-                    var isPressedP2 by remember { mutableStateOf(false) }
-                    val shakerGame by remember { mutableStateOf(TextFieldShaker()) }
-                    val shakerP1 by remember { mutableStateOf(TextFieldShaker()) }
-                    val shakerP2 by remember { mutableStateOf(TextFieldShaker()) }
-                    Row(
-                        modifier = Modifier.fillMaxWidth().wrapContentHeight()
-                    ) {
-                        TouchableText(
-                            text = pointsGame,
-                            shaker = shakerGame,
-                            isPressed = isPressedPoints,
-                            onClick = {
-
-                                isPressedPoints = true
-                                isPressedP1 = false
-                                isPressedP2 = false
-
-                            })
-
-                        TouchableText(
-                            text = pointsP1, shaker = shakerP1, isPressed = isPressedP1, onClick = {
-
-                                isPressedPoints = false
-                                isPressedP1 = true
-                                isPressedP2 = false
-
-                            })
-                        TouchableText(
-                            text = pointsP2, shaker = shakerP2, isPressed = isPressedP2, onClick = {
-                                isPressedPoints = false
-                                isPressedP1 = false
-                                isPressedP2 = true
-                            })
-                    }
                     Keyboard(
                         isPressedGames = isPressedPoints,
                         modifier = Modifier.fillMaxWidth(),
@@ -1401,13 +1450,9 @@ internal fun MatchScreen2Groups(
                                         inputText = pointsP1, inputKey = inputKey
                                     ) { text ->
                                         pointsP1 = text
-                                        if (inputKey == MINUS_10 || inputKey == BOLT) {
-                                            if (pointsP2 == MINUS_10 || pointsP2.equals(
-                                                    BOLT
-                                                )
-                                            ) {
+                                        if (inputKey == BOLT) {
+                                            if (pointsP2 == BOLT) {
                                                 pointsP2 = ""
-
                                             }
                                         }
                                     }
@@ -1417,8 +1462,8 @@ internal fun MatchScreen2Groups(
                                         inputText = pointsP2, inputKey = inputKey
                                     ) { text ->
                                         pointsP2 = text
-                                        if (inputKey == MINUS_10 || inputKey == BOLT) {
-                                            if (pointsP1 == MINUS_10 || pointsP1 == BOLT) {
+                                        if (inputKey == BOLT) {
+                                            if (pointsP1 == BOLT) {
                                                 pointsP1 = ""
                                             }
                                         }
@@ -1432,7 +1477,7 @@ internal fun MatchScreen2Groups(
                     var shouDialog by remember { mutableStateOf(false) }
                     InsertFloatingActionButton(onClick = {
                         if (viewModel.statusGame.value == GameStatus.EXTENDED || viewModel.statusGame.value == GameStatus.EXTENDED_MANDATORY) {
-                            viewModel.checkIsExtended()
+                            viewModel.checkStatusAndScore()
                         } else {
                             shouDialog = true
                         }
@@ -1534,8 +1579,10 @@ private fun MatchWrapper(
 ) {
 
     Column(
-        modifier = modifier.padding(8.dp).wrapContentSize().clip(shape = RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainerHighest),
+        modifier = modifier.alpha(GLOBAL_ALPHA).padding(8.dp).wrapContentSize().background(
+            color = MaterialTheme.colorScheme.surfaceContainerHighest,
+            shape = MaterialTheme.shapes.large
+        ),
     ) {
         content()
     }
@@ -1595,27 +1642,51 @@ fun RowScope.TouchableText(
     }
 
     Box(
-        modifier = modifier.focusRequester(focusRequester).offset(x = vibrationOffset.value.dp)
-            .weight(1f).clip(RoundedCornerShape(16.dp))
+        modifier = modifier.padding(1.dp).focusRequester(focusRequester).offset(x = vibrationOffset.value.dp)
+            .weight(1f)
             .background(if (isPressed) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.tertiary)
-            .clickable { onClick() }.padding(8.dp).height(32.dp),
+            .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.widthIn(64.dp, 120.dp).heightIn(16.dp, 32.dp)
+            modifier = Modifier
         ) {
             Text(
                 text = text.take(3),
                 style = MaterialTheme.typography.titleLarge,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = if (isSystemInDarkTheme()) Color.White else Color.Black
             )
             if (isPressed && text.isEmpty()) {
-                WritingPenIcon()
+                BlinkingCursor()
             }
         }
     }
+}
+
+@Composable
+fun BlinkingCursor(
+    text: String = "|",
+    durationMillis: Int = 500
+) {
+    val infiniteTransition = rememberInfiniteTransition()
+    val alpha by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 0f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+
+    Text(
+        text = text,
+        modifier = Modifier.alpha(alpha),
+        style = MaterialTheme.typography.bodyLarge,
+        color = if (isSystemInDarkTheme()) Color.White else Color.Black
+    )
 }
 
 @Composable
@@ -1644,7 +1715,7 @@ private fun Keyboard(
     val keyAlpha = if (!isPressedGames) 1f else 0f
     Column(
         modifier = modifier.fillMaxWidth().padding(top = 4.dp).background(
-            color = MaterialTheme.colorScheme.background,
+            color = MaterialTheme.colorScheme.surfaceContainerHighest,
             shape = MaterialTheme.shapes.large
         )
     ) {
