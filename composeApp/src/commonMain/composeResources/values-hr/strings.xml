@@ -10,11 +10,11 @@
     <string name="dialog_fragment_insert_manually_winner_points">Ručno unesite pobjedničke bodove</string>
     <string name="dialog_fragment_extend_match_info">Imamo više pobjednika.</string>
     <string name="dialog_fragment_extend_match_q">Što želite učiniti?</string>
-    <string name="dialog_fragment_extend_match">Proširi\npartiju</string>
+    <string name="dialog_fragment_extend_match">Proširi partiju</string>
     <string name="dialog_fragment_mandatory_extend_match_info1">Imamo više pobjednika s istim brojem bodova.</string>
     <string name="dialog_fragment_mandatory_extend_match_info2">Obavezno je proširiti partiju.</string>
     <string name="dialog_fragment_greater_than">veće od %1$s</string>
-    <string name="dialog_fragment_win">Pobijedi\n%1$s</string>
+    <string name="dialog_fragment_win">Pobijedi %1$s</string>
     <string name="game">Igra</string>
     <string name="we">Mi</string>
     <string name="you_s">Ti</string>

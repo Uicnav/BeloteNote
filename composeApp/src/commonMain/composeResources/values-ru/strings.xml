@@ -10,11 +10,11 @@
     <string name="dialog_fragment_insert_manually_winner_points">Введите вручную очки победителя</string>
     <string name="dialog_fragment_extend_match_info">У нас есть несколько победителей.</string>
     <string name="dialog_fragment_extend_match_q">Что вы хотите сделать?</string>
-    <string name="dialog_fragment_extend_match">Продлить\nматч</string>
+    <string name="dialog_fragment_extend_match">Продлить матч</string>
     <string name="dialog_fragment_mandatory_extend_match_info1">У нас есть несколько победителей с одинаковыми очками.</string>
     <string name="dialog_fragment_mandatory_extend_match_info2">Необходимо продлить матч.</string>
     <string name="dialog_fragment_greater_than">больше чем %1$s</string>
-    <string name="dialog_fragment_win">Выиграть\n%1$s</string>
+    <string name="dialog_fragment_win">Выиграть %1$s</string>
     <string name="game">Игра</string>
     <string name="we">Мы</string>
     <string name="you_s">Ты</string>

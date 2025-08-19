@@ -10,11 +10,11 @@
     <string name="dialog_fragment_insert_manually_winner_points">Introdu manual punctele câștigătoare</string>
     <string name="dialog_fragment_extend_match_info">Avem mai mulți câștigători.</string>
     <string name="dialog_fragment_extend_match_q">Ce vrei să faci?</string>
-    <string name="dialog_fragment_extend_match">Extinde\njocul</string>
+    <string name="dialog_fragment_extend_match">Extinde jocul</string>
     <string name="dialog_fragment_mandatory_extend_match_info1">Avem mai mulți câștigători cu același număr de puncte.</string>
     <string name="dialog_fragment_mandatory_extend_match_info2">Este obligatoriu să extinzi jocul.</string>
     <string name="dialog_fragment_greater_than">mai mare decât %1$s</string>
-    <string name="dialog_fragment_win">Câștigă\n%1$s</string>
+    <string name="dialog_fragment_win">Câștigă %1$s</string>
     <string name="game">Joc</string>
     <string name="we">Noi</string>
     <string name="you_s">Tu</string>
