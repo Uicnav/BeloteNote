@@ -1644,7 +1644,7 @@ fun RowScope.TouchableText(
     Box(
         modifier = modifier.padding(1.dp).focusRequester(focusRequester).offset(x = vibrationOffset.value.dp)
             .weight(1f)
-            .background(if (isPressed) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.tertiary)
+            .background(if (isPressed) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.tertiary, shape = MaterialTheme.shapes.small).padding(2.dp)
             .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
@@ -1957,7 +1957,6 @@ private fun ExtendedDialog(
                     )
                 }
 
-                Row {
                     Button(
                         onClick = {
                             val winningPoints = newWinningPoints.toShortCustom()
@@ -1970,7 +1969,6 @@ private fun ExtendedDialog(
                         }, colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow)
                     ) {
                         Text(
-                            fontSize = 10.sp,
                             text = stringResource(Res.string.dialog_fragment_extend_match),
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center,
@@ -1984,7 +1982,6 @@ private fun ExtendedDialog(
                                 onWin()
                             }) {
                             Text(
-                                fontSize = 10.sp,
                                 text = stringResource(Res.string.dialog_fragment_win, it),
                                 maxLines = 2,
                                 color = Color.White,
@@ -1993,7 +1990,7 @@ private fun ExtendedDialog(
                             )
                         }
                     }
-                }
+
 
             }
         }

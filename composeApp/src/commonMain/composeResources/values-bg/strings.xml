@@ -10,11 +10,11 @@
     <string name="dialog_fragment_insert_manually_winner_points">Въведете ръчно победните точки</string>
     <string name="dialog_fragment_extend_match_info">Има повече победители.</string>
     <string name="dialog_fragment_extend_match_q">Какво искате да направите?</string>
-    <string name="dialog_fragment_extend_match">Продължи\nмача</string>
+    <string name="dialog_fragment_extend_match">Продължи мача</string>
     <string name="dialog_fragment_mandatory_extend_match_info1">Има повече победители с еднакъв брой точки.</string>
     <string name="dialog_fragment_mandatory_extend_match_info2">Задължително е да продължите мача.</string>
     <string name="dialog_fragment_greater_than">по-голямо от %1$s</string>
-    <string name="dialog_fragment_win">Спечели\n%1$s</string>
+    <string name="dialog_fragment_win">Спечели %1$s</string>
     <string name="game">Игра</string>
     <string name="we">Ние</string>
     <string name="you_s">Ти</string>
