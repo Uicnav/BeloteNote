@@ -176,7 +176,9 @@ internal fun TablesScreen2(
                     modifier = Modifier.fillMaxSize(),
                     state = gameListState
                 ) {
-                    itemsIndexed(visibleGames) { index, game ->
+                    itemsIndexed(visibleGames, key = { _, game ->
+                        game.idGame
+                    }) { index, game ->
                         GameCard(
                             onDelete = {
                             scope.launch {
@@ -279,7 +281,9 @@ internal fun TablesScreen3(
                     modifier = Modifier.fillMaxSize(),
                     state = gameListState
                 ) {
-                    itemsIndexed(visibleGames) { index, game ->
+                    itemsIndexed(visibleGames, key = { _, game ->
+                        game.idGame
+                    }) { index, game ->
                         GameCard(onDelete = {
                             snackbarHostState.currentSnackbarData?.dismiss()
                             viewModel.prepareDeleteGame(game)
@@ -369,7 +373,9 @@ internal fun TablesScreen4(
                     scope.launch {
                         gameListState.animateScrollToItem(state.data.size)
                     }
-                    itemsIndexed(visibleGames) { index, game ->
+                    itemsIndexed(visibleGames, key = { _, game ->
+                        game.idGame
+                    }) { index, game ->
                         GameCard(onDelete = {
                             snackbarHostState.currentSnackbarData?.dismiss()
                             viewModel.prepareDeleteGame(game)
@@ -464,7 +470,9 @@ internal fun TablesScreenGroups(
                     modifier = Modifier.fillMaxSize(),
                     state = gameListState
                 ) {
-                    itemsIndexed(visibleGames) { index, game ->
+                    itemsIndexed(visibleGames, key = { _, game ->
+                        game.idGame
+                    }) { index, game ->
                         GameCard(onDelete = {
                             snackbarHostState.currentSnackbarData?.dismiss()
                             viewModel.prepareDeleteGame(game)

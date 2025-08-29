@@ -248,7 +248,9 @@ internal fun MatchScreen2(
                     state = pointsListState
                 ) {
                     item { HorizontalDivider(thickness = 2.dp) }
-                    itemsIndexed(points) { index: Int, item: Points2PUi ->
+                    itemsIndexed(points, key = { _, item ->
+                        item.id
+                    }) { index: Int, item: Points2PUi ->
                         val isLast = index == points.lastIndex
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             if (isLast) {
@@ -538,7 +540,9 @@ internal fun MatchScreen3(
                     state = pointsListState
                 ) {
                     item { HorizontalDivider(thickness = 2.dp) }
-                    itemsIndexed(points) { index: Int, item: Points3PUi ->
+                    itemsIndexed(points, key = { _, item ->
+                        item.id
+                    }) { index: Int, item: Points3PUi ->
                         val isLast = index == points.lastIndex
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             if (isLast) {
@@ -876,7 +880,9 @@ internal fun MatchScreen4(
                     state = pointsListState
                 ) {
                     item { HorizontalDivider(thickness = 2.dp) }
-                    itemsIndexed(points) { index: Int, item: Points4PUi ->
+                    itemsIndexed(points, key = { _, item ->
+                        item.id
+                    }) { index: Int, item: Points4PUi ->
                         val isLast = index == points.lastIndex
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             if (isLast) {
@@ -1231,7 +1237,9 @@ internal fun MatchScreen2Groups(
                     state = pointsListState
                 ) {
                     item { HorizontalDivider(thickness = 2.dp) }
-                    itemsIndexed(points) { index: Int, item: Points2GroupsUi ->
+                    itemsIndexed(points, key = { _, item ->
+                        item.id
+                    }) { index: Int, item: Points2GroupsUi ->
                         val isLast = index == points.lastIndex
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             if (isLast) {
