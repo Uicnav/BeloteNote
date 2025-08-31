@@ -200,11 +200,15 @@ internal fun MatchScreen2(
                 val game = matchData.game
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
                     StatusImage(
                         gameStatus = GameStatus.fromId(game.statusGame),
-                        modifier = Modifier.clickable { showInfoGameDialog = true }.weight(1F)
+                        isInMatch = true,
+                        onStatusClick = {
+                            showInfoGameDialog = true
+                        }
                     )
                     PointsTextAtom(text = game.scoreName1.toString(), isBody = false)
                     PointsTextAtom(text = game.scoreName2.toString(), isBody = false)
@@ -484,7 +488,10 @@ internal fun MatchScreen3(
                 ) {
                     StatusImage(
                         gameStatus = GameStatus.fromId(game.statusGame),
-                        modifier = Modifier.clickable { showInfoGameDialog = true }.weight(1F)
+                        isInMatch = true,
+                        onStatusClick = {
+                            showInfoGameDialog = true
+                        },
                     )
                     PointsTextAtom(text = game.scoreName1.toString())
                     PointsTextAtom(text = game.scoreName2.toString())
@@ -814,7 +821,10 @@ internal fun MatchScreen4(
                 ) {
                     StatusImage(
                         gameStatus = GameStatus.fromId(game.statusGame),
-                        modifier = Modifier.clickable { showInfoGameDialog = true }.weight(1F)
+                        isInMatch = true,
+                        onStatusClick = {
+                            showInfoGameDialog = true
+                        }
                     )
                     PointsTextAtom(text = game.scoreName1.toString())
                     PointsTextAtom(text = game.scoreName2.toString())
@@ -1204,7 +1214,10 @@ internal fun MatchScreen2Groups(
                 ) {
                     StatusImage(
                         gameStatus = GameStatus.fromId(game.statusGame),
-                        modifier = Modifier.clickable { showInfoGameDialog = true }.weight(1F)
+                        isInMatch = true,
+                        onStatusClick = {
+                            showInfoGameDialog = true
+                        }
                     )
                     PointsTextAtom(text = game.scoreName1.toString())
                     PointsTextAtom(text = game.scoreName2.toString())

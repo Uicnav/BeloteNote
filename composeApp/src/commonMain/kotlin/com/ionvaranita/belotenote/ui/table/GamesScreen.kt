@@ -94,11 +94,11 @@ import belotenote.composeapp.generated.resources.undo
 import belotenote.composeapp.generated.resources.we
 import belotenote.composeapp.generated.resources.you_p
 import belotenote.composeapp.generated.resources.you_s
+import com.ionvaranita.belotenote.GameStatusCircle
 import com.ionvaranita.belotenote.Match2Dest
 import com.ionvaranita.belotenote.Match3Dest
 import com.ionvaranita.belotenote.Match4Dest
 import com.ionvaranita.belotenote.MatchGroupsDest
-import com.ionvaranita.belotenote.StatusImage
 import com.ionvaranita.belotenote.constants.GLOBAL_ALPHA
 import com.ionvaranita.belotenote.constants.GameStatus
 import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Game2GroupsEntity
@@ -201,7 +201,7 @@ internal fun TablesScreen2(
                             }
                             TableDateTextAtom(text = game.dateGame)
                             //Spacer(modifier = Modifier.width(spacingBetweenStatusAndDate))
-                            StatusImage(gameStatus = GameStatus.fromId(game.statusGame))
+                            GameStatusCircle(gameStatus = GameStatus.fromId(game.statusGame))
                         }
                     }
                 }
@@ -307,7 +307,7 @@ internal fun TablesScreen3(
                             }
                             TableDateTextAtom(text = game.dateGame)
                             //Spacer(modifier = Modifier.width(spacingBetweenStatusAndDate))
-                            StatusImage(
+                            GameStatusCircle(
                                 gameStatus = GameStatus.fromId(game.statusGame)
                             )
                         }
@@ -402,7 +402,7 @@ internal fun TablesScreen4(
                             }
                             TableDateTextAtom(text = game.dateGame)
                             //Spacer(modifier = Modifier.width(spacingBetweenStatusAndDate))
-                            StatusImage(
+                            GameStatusCircle(
                                 gameStatus = GameStatus.fromId(game.statusGame)
                             )
                         }
@@ -494,7 +494,7 @@ internal fun TablesScreenGroups(
                             }
                             TableDateTextAtom(text = game.dateGame)
                             //Spacer(modifier = Modifier.width(spacingBetweenStatusAndDate))
-                            StatusImage(
+                            GameStatusCircle(
                                 gameStatus = GameStatus.fromId(game.statusGame)
                             )
                         }
@@ -641,7 +641,7 @@ private fun TableDateTextAtom(text: String, modifier: Modifier = Modifier) {
         style = MaterialTheme.typography.bodySmall,
         maxLines = 1,
         textAlign = TextAlign.Center,
-        modifier = modifier.wrapContentSize()
+        modifier = modifier.wrapContentSize().padding(8.dp)
     )
 }
 
