@@ -13,7 +13,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,7 +31,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -58,18 +58,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -130,7 +128,6 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import kotlin.math.hypot
 
 @Composable
 internal fun MatchScreen2(
@@ -1452,60 +1449,36 @@ private fun manageUserInputKey(
 @Composable
 fun RowScope.AddIcon(modifier: Modifier = Modifier, onClick: () -> Unit) {
     val tint = Color(0xFF00C853)
-    val scope = rememberCoroutineScope()
     val haptic = LocalHapticFeedback.current
-    var pressed by remember { mutableStateOf(false) }
-    var touch by remember { mutableStateOf(Offset.Unspecified) }
-    val wave = remember { Animatable(0f) }
+    val interaction = remember { MutableInteractionSource() }
+    val pressed by interaction.collectIsPressedAsState()
     val scale by animateFloatAsState(if (pressed) 0.94f else 1f, tween(90), label = "")
     val elevation by animateDpAsState(if (pressed) 0.dp else 4.dp, tween(90), label = "")
     val bg by animateColorAsState(
-        if (pressed) MaterialTheme.colorScheme.primary.copy(alpha = 0.12f) else MaterialTheme.colorScheme.surface,
-        tween(120),
-        label = ""
+        if (pressed) MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+        else MaterialTheme.colorScheme.surface, tween(120), label = ""
     )
     Card(
-        modifier = modifier.padding(4.dp).weight(1f).scale(scale)
-        .pointerInput(Unit) {
-            detectTapGestures(
-                onPress = {
-                    pressed = true
-                    touch = it
-                    wave.snapTo(0f)
-                    val job = scope.launch { wave.animateTo(1f, tween(220)) }
-                    val released = tryAwaitRelease()
-                    pressed = false
-                    if (released) {
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        onClick()
-                    } else job.cancel()
-                })
-        }.drawBehind {
-            if (touch.isSpecified && wave.value > 0f) {
-                val r = hypot(size.width.toDouble(), size.height.toDouble()).toFloat()
-                drawCircle(
-                    color = tint.copy(alpha = 0.24f * (1f - wave.value)),
-                    radius = r * wave.value,
-                    center = touch
-                )
-            }
+        modifier = modifier.padding(4.dp).weight(1f).scale(scale),
+        onClick = {
+            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            onClick()
         },
-        elevation = CardDefaults.cardElevation(elevation),
-        colors = CardDefaults.cardColors(containerColor = bg)
+        interactionSource = interaction,
+        colors = CardDefaults.cardColors(containerColor = bg),
+        elevation = CardDefaults.cardElevation(elevation)
     ) {
         Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
         ) {
             Text(
-                modifier = Modifier.background(Color.Transparent),
                 text = "+",
                 maxLines = 1,
                 color = tint,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.displayLarge.copy(
                     fontSize = 32.sp, fontWeight = FontWeight.Black
-                ),
+                )
             )
         }
     }
@@ -1514,52 +1487,32 @@ fun RowScope.AddIcon(modifier: Modifier = Modifier, onClick: () -> Unit) {
 @Composable
 fun RowScope.BackspaceIcon(modifier: Modifier = Modifier, onClick: () -> Unit) {
     val tint = Color(0xFFD32F2F)
-    val scope = rememberCoroutineScope()
     val haptic = LocalHapticFeedback.current
-    var pressed by remember { mutableStateOf(false) }
-    var touch by remember { mutableStateOf(Offset.Unspecified) }
-    val wave = remember { Animatable(0f) }
+    val interaction = remember { MutableInteractionSource() }
+    val pressed by interaction.collectIsPressedAsState()
     val scale by animateFloatAsState(if (pressed) 0.94f else 1f, tween(90), label = "")
     val elevation by animateDpAsState(if (pressed) 0.dp else 4.dp, tween(90), label = "")
     val bg by animateColorAsState(
-        if (pressed) MaterialTheme.colorScheme.primary.copy(alpha = 0.12f) else MaterialTheme.colorScheme.surface,
-        tween(120),
-        label = ""
+        if (pressed) MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+        else MaterialTheme.colorScheme.surface, tween(120), label = ""
     )
     Card(
-        modifier = modifier.padding(8.dp).weight(1f).scale(scale).pointerInput(Unit) {
-        detectTapGestures(
-            onPress = {
-                pressed = true
-                touch = it
-                wave.snapTo(0f)
-                val job = scope.launch { wave.animateTo(1f, tween(220)) }
-                val released = tryAwaitRelease()
-                pressed = false
-                if (released) {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    onClick()
-                } else job.cancel()
-            })
-    }.drawBehind {
-        if (touch.isSpecified && wave.value > 0f) {
-            val r = hypot(size.width.toDouble(), size.height.toDouble()).toFloat()
-            drawCircle(
-                color = tint.copy(alpha = 0.24f * (1f - wave.value)),
-                radius = r * wave.value,
-                center = touch
-            )
-        }
-    },
-        elevation = CardDefaults.cardElevation(elevation),
-        colors = CardDefaults.cardColors(containerColor = bg)
+        modifier = modifier.padding(8.dp).weight(1f).scale(scale),
+        onClick = {
+            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            onClick()
+        },
+        interactionSource = interaction,
+        colors = CardDefaults.cardColors(containerColor = bg),
+        elevation = CardDefaults.cardElevation(elevation)
     ) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+        ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Backspace Icon",
-                tint = tint,
-                modifier = Modifier
+                contentDescription = null,
+                tint = tint
             )
         }
     }
@@ -1748,13 +1701,21 @@ private fun Keyboard(
                 modifier = modifier.graphicsLayer {
                     alpha = keyAlpha
                 })
-            AddIcon {
-                onClick(ADD)
-            }
-            BackspaceIcon {
-                onClick(DELETE)
-            }
+            KeyAtom(
+                text = PLUS, onClick = {
+                    onClick(ADD)
+                }, style = MaterialTheme.typography.displayLarge.copy(
+                    fontSize = 32.sp, fontWeight = FontWeight.Black
+                ), color = Color(0xFF00C853)
+            )
 
+            KeyAtom(
+                text = BACK_SPACE, onClick = {
+                    onClick(DELETE)
+                }, style = MaterialTheme.typography.displayLarge.copy(
+                    fontSize = 32.sp, fontWeight = FontWeight.Black
+                ), color = Color(0xFFD32F2F), imageVector = Icons.AutoMirrored.Filled.ArrowBack
+            )
         }
     }
 }
@@ -1774,18 +1735,22 @@ const val MINUS_10 = "-10"
 private const val ADD = "add"
 private const val DELETE = "delete"
 
+private const val PLUS = "+"
+
+private const val BACK_SPACE = "<--"
+
 @Composable
 fun RowScope.KeyAtom(
     text: String,
     onClick: (String) -> Unit,
     color: Color = Color.Unspecified,
+    style: TextStyle = MaterialTheme.typography.displayLarge,
+    imageVector: ImageVector? = null,
     modifier: Modifier = Modifier
 ) {
-    val scope = rememberCoroutineScope()
     val haptic = LocalHapticFeedback.current
-    var pressed by remember { mutableStateOf(false) }
-    var touch by remember { mutableStateOf(Offset.Unspecified) }
-    val wave = remember { Animatable(0f) }
+    val interaction = remember { MutableInteractionSource() }
+    val pressed by interaction.collectIsPressedAsState()
     val scale by animateFloatAsState(if (pressed) 0.94f else 1f, tween(90), label = "")
     val elevation by animateDpAsState(if (pressed) 0.dp else 4.dp, tween(90), label = "")
     val bg by animateColorAsState(
@@ -1795,41 +1760,33 @@ fun RowScope.KeyAtom(
     val tint = if (color == Color.Unspecified) MaterialTheme.colorScheme.primary else color
 
     Card(
-        modifier = modifier.padding(4.dp).weight(1f).scale(scale).pointerInput(text) {
-        detectTapGestures(
-            onPress = {
-                pressed = true
-                touch = it
-                wave.snapTo(0f)
-                val job = scope.launch { wave.animateTo(1f, tween(220)) }
-                val released = tryAwaitRelease()
-                pressed = false
-                if (released) {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    onClick(text)
-                } else job.cancel()
-            })
-    }.drawBehind {
-        if (touch.isSpecified && wave.value > 0f) {
-            val r = hypot(size.width.toDouble(), size.height.toDouble()).toFloat()
-            drawCircle(
-                color = tint.copy(alpha = 0.24f * (1f - wave.value)),
-                radius = r * wave.value,
-                center = touch
-            )
-        }
-    },
-        elevation = CardDefaults.cardElevation(elevation),
-        colors = CardDefaults.cardColors(containerColor = bg)
+        modifier = modifier.padding(2.dp).weight(1f).scale(scale),
+        onClick = {
+            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            onClick(text)
+        },
+        interactionSource = interaction,
+        colors = CardDefaults.cardColors(containerColor = bg),
+        elevation = CardDefaults.cardElevation(elevation)
     ) {
-        Text(
-            text = text,
-            maxLines = 1,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.displayLarge,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-                .wrapContentWidth(Alignment.CenterHorizontally).padding(8.dp)
-        )
+        Box(
+            modifier = Modifier.fillMaxWidth().padding(8.dp), contentAlignment = Alignment.Center
+        ) {
+
+            if (imageVector == null) {
+                Text(
+                    text = text,
+                    maxLines = 1,
+                    style = style,
+                    textAlign = TextAlign.Center,
+                    color = tint
+                )
+            } else {
+                Icon(
+                    imageVector = imageVector, contentDescription = "Backspace", tint = tint
+                )
+            }
+        }
     }
 }
 
