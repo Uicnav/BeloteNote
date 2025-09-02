@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,7 +38,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -1467,7 +1465,7 @@ fun RowScope.AddIcon(modifier: Modifier = Modifier, onClick: () -> Unit) {
         label = ""
     )
     Card(
-        modifier = modifier.padding(4.dp).fillMaxHeight().weight(1f).scale(scale)
+        modifier = modifier.padding(4.dp).weight(1f).scale(scale)
         .pointerInput(Unit) {
             detectTapGestures(
                 onPress = {
@@ -1495,12 +1493,19 @@ fun RowScope.AddIcon(modifier: Modifier = Modifier, onClick: () -> Unit) {
         elevation = CardDefaults.cardElevation(elevation),
         colors = CardDefaults.cardColors(containerColor = bg)
     ) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Icon(
-                imageVector = Icons.Filled.Add,
-                contentDescription = "Add Icon",
-                tint = tint,
-                modifier = Modifier
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                modifier = Modifier.background(Color.Transparent),
+                text = "+",
+                maxLines = 1,
+                color = tint,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.displayLarge.copy(
+                    fontSize = 32.sp, fontWeight = FontWeight.Black
+                ),
             )
         }
     }
@@ -1784,7 +1789,7 @@ fun RowScope.KeyAtom(
     val scale by animateFloatAsState(if (pressed) 0.94f else 1f, tween(90), label = "")
     val elevation by animateDpAsState(if (pressed) 0.dp else 4.dp, tween(90), label = "")
     val bg by animateColorAsState(
-        if (pressed) MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+        if (pressed) MaterialTheme.colorScheme.primary
         else MaterialTheme.colorScheme.surface, tween(120), label = ""
     )
     val tint = if (color == Color.Unspecified) MaterialTheme.colorScheme.primary else color
@@ -1820,7 +1825,6 @@ fun RowScope.KeyAtom(
         Text(
             text = text,
             maxLines = 1,
-            color = color,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.displayLarge,
             modifier = Modifier.align(Alignment.CenterHorizontally)
