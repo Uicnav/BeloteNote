@@ -4,13 +4,16 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,6 +31,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -56,11 +60,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -81,10 +92,13 @@ import belotenote.composeapp.generated.resources.dialog_fragment_mandatory_exten
 import belotenote.composeapp.generated.resources.dialog_fragment_mandatory_extend_match_info2
 import belotenote.composeapp.generated.resources.dialog_fragment_win
 import belotenote.composeapp.generated.resources.game
+import belotenote.composeapp.generated.resources.game_status
+import belotenote.composeapp.generated.resources.games_played
 import belotenote.composeapp.generated.resources.ic_writting_indicator
 import belotenote.composeapp.generated.resources.no
 import belotenote.composeapp.generated.resources.ok
 import belotenote.composeapp.generated.resources.winner_is
+import belotenote.composeapp.generated.resources.winning_points
 import belotenote.composeapp.generated.resources.yes
 import com.ionvaranita.belotenote.Circle
 import com.ionvaranita.belotenote.StatusImage
@@ -118,6 +132,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.math.hypot
 
 @Composable
 internal fun MatchScreen2(
@@ -180,7 +195,8 @@ internal fun MatchScreen2(
         InfoGameDialog(
             onDismiss = { showInfoGameDialog = false }, infoGame = InfoGame(
                 status = viewModel.statusGame.value,
-                winningPoints = viewModel.winningPoints.toString()
+                winningPoints = viewModel.winningPoints.toString(),
+                matchPlayed = viewModel.matchPlayed
             ), onConfirm = {
                 showInfoGameDialog = false
                 showUpdateStatusGameDialog = true
@@ -208,8 +224,7 @@ internal fun MatchScreen2(
                         isInMatch = true,
                         onStatusClick = {
                             showInfoGameDialog = true
-                        }
-                    )
+                        })
                     PointsTextAtom(text = game.scoreName1.toString(), isBody = false)
                     PointsTextAtom(text = game.scoreName2.toString(), isBody = false)
                 }
@@ -464,7 +479,8 @@ internal fun MatchScreen3(
         InfoGameDialog(
             onDismiss = { showInfoGameDialog = false }, infoGame = InfoGame(
                 status = viewModel.statusGame.value,
-                winningPoints = viewModel.winningPoints.toString()
+                winningPoints = viewModel.winningPoints.toString(),
+                matchPlayed = viewModel.matchPlayed
             ), onConfirm = {
                 showInfoGameDialog = false
                 showUpdateStatusGameDialog = true
@@ -797,7 +813,8 @@ internal fun MatchScreen4(
         InfoGameDialog(
             onDismiss = { showInfoGameDialog = false }, infoGame = InfoGame(
                 status = viewModel.statusGame.value,
-                winningPoints = viewModel.winningPoints.toString()
+                winningPoints = viewModel.winningPoints.toString(),
+                matchPlayed = viewModel.matchPlayed
             ), onConfirm = {
                 showInfoGameDialog = false
                 showUpdateStatusGameDialog = true
@@ -824,8 +841,7 @@ internal fun MatchScreen4(
                         isInMatch = true,
                         onStatusClick = {
                             showInfoGameDialog = true
-                        }
-                    )
+                        })
                     PointsTextAtom(text = game.scoreName1.toString())
                     PointsTextAtom(text = game.scoreName2.toString())
                     PointsTextAtom(text = game.scoreName3.toString())
@@ -1191,7 +1207,8 @@ internal fun MatchScreen2Groups(
                     InfoGameDialog(
                         onDismiss = { showInfoGameDialog = false }, infoGame = InfoGame(
                             status = viewModel.statusGame.value,
-                            winningPoints = viewModel.winningPoints.toString()
+                            winningPoints = viewModel.winningPoints.toString(),
+                            matchPlayed = viewModel.matchPlayed
                         ), onConfirm = {
                             showInfoGameDialog = false
                             showUpdateStatusGameDialog = true
@@ -1217,8 +1234,7 @@ internal fun MatchScreen2Groups(
                         isInMatch = true,
                         onStatusClick = {
                             showInfoGameDialog = true
-                        }
-                    )
+                        })
                     PointsTextAtom(text = game.scoreName1.toString())
                     PointsTextAtom(text = game.scoreName2.toString())
                 }
@@ -1436,33 +1452,111 @@ private fun manageUserInputKey(
 }
 
 @Composable
-fun AddIcon(modifier: Modifier = Modifier) {
-    val boldGreen = Color(0xFF00C853) // Bright Vibrant Green (Material A700)
-    Box(
-        modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center
+fun RowScope.AddIcon(modifier: Modifier = Modifier, onClick: () -> Unit) {
+    val tint = Color(0xFF00C853)
+    val scope = rememberCoroutineScope()
+    val haptic = LocalHapticFeedback.current
+    var pressed by remember { mutableStateOf(false) }
+    var touch by remember { mutableStateOf(Offset.Unspecified) }
+    val wave = remember { Animatable(0f) }
+    val scale by animateFloatAsState(if (pressed) 0.94f else 1f, tween(90), label = "")
+    val elevation by animateDpAsState(if (pressed) 0.dp else 4.dp, tween(90), label = "")
+    val bg by animateColorAsState(
+        if (pressed) MaterialTheme.colorScheme.primary.copy(alpha = 0.12f) else MaterialTheme.colorScheme.surface,
+        tween(120),
+        label = ""
+    )
+    Card(
+        modifier = modifier.padding(4.dp).fillMaxHeight().weight(1f).scale(scale)
+        .pointerInput(Unit) {
+            detectTapGestures(
+                onPress = {
+                    pressed = true
+                    touch = it
+                    wave.snapTo(0f)
+                    val job = scope.launch { wave.animateTo(1f, tween(220)) }
+                    val released = tryAwaitRelease()
+                    pressed = false
+                    if (released) {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onClick()
+                    } else job.cancel()
+                })
+        }.drawBehind {
+            if (touch.isSpecified && wave.value > 0f) {
+                val r = hypot(size.width.toDouble(), size.height.toDouble()).toFloat()
+                drawCircle(
+                    color = tint.copy(alpha = 0.24f * (1f - wave.value)),
+                    radius = r * wave.value,
+                    center = touch
+                )
+            }
+        },
+        elevation = CardDefaults.cardElevation(elevation),
+        colors = CardDefaults.cardColors(containerColor = bg)
     ) {
-        Icon(
-            imageVector = Icons.Filled.Add,
-            contentDescription = "Add Icon",
-            tint = boldGreen,
-            modifier = Modifier.size(40.dp) // larger for bold visibility
-        )
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = "Add Icon",
+                tint = tint,
+                modifier = Modifier
+            )
+        }
     }
 }
 
-
 @Composable
-fun BackspaceIcon(modifier: Modifier = Modifier) {
-    val red = Color(0xFFD32F2F)
-    Box(
-        modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center
+fun RowScope.BackspaceIcon(modifier: Modifier = Modifier, onClick: () -> Unit) {
+    val tint = Color(0xFFD32F2F)
+    val scope = rememberCoroutineScope()
+    val haptic = LocalHapticFeedback.current
+    var pressed by remember { mutableStateOf(false) }
+    var touch by remember { mutableStateOf(Offset.Unspecified) }
+    val wave = remember { Animatable(0f) }
+    val scale by animateFloatAsState(if (pressed) 0.94f else 1f, tween(90), label = "")
+    val elevation by animateDpAsState(if (pressed) 0.dp else 4.dp, tween(90), label = "")
+    val bg by animateColorAsState(
+        if (pressed) MaterialTheme.colorScheme.primary.copy(alpha = 0.12f) else MaterialTheme.colorScheme.surface,
+        tween(120),
+        label = ""
+    )
+    Card(
+        modifier = modifier.padding(8.dp).weight(1f).scale(scale).pointerInput(Unit) {
+        detectTapGestures(
+            onPress = {
+                pressed = true
+                touch = it
+                wave.snapTo(0f)
+                val job = scope.launch { wave.animateTo(1f, tween(220)) }
+                val released = tryAwaitRelease()
+                pressed = false
+                if (released) {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    onClick()
+                } else job.cancel()
+            })
+    }.drawBehind {
+        if (touch.isSpecified && wave.value > 0f) {
+            val r = hypot(size.width.toDouble(), size.height.toDouble()).toFloat()
+            drawCircle(
+                color = tint.copy(alpha = 0.24f * (1f - wave.value)),
+                radius = r * wave.value,
+                center = touch
+            )
+        }
+    },
+        elevation = CardDefaults.cardElevation(elevation),
+        colors = CardDefaults.cardColors(containerColor = bg)
     ) {
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-            contentDescription = "Backspace Icon",
-            tint = red,
-            modifier = Modifier.size(32.dp)
-        )
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Backspace Icon",
+                tint = tint,
+                modifier = Modifier
+            )
+        }
     }
 }
 
@@ -1649,16 +1743,11 @@ private fun Keyboard(
                 modifier = modifier.graphicsLayer {
                     alpha = keyAlpha
                 })
-            Card(modifier = modifier.padding(4.dp).fillMaxHeight().weight(1F).clickable {
+            AddIcon {
                 onClick(ADD)
-            }, elevation = CardDefaults.cardElevation(4.dp)) {
-                AddIcon()
             }
-            Card(modifier = modifier.padding(8.dp).weight(1F).clickable {
+            BackspaceIcon {
                 onClick(DELETE)
-
-            }, elevation = CardDefaults.cardElevation(4.dp)) {
-                BackspaceIcon()
             }
 
         }
@@ -1681,22 +1770,61 @@ private const val ADD = "add"
 private const val DELETE = "delete"
 
 @Composable
-private fun RowScope.KeyAtom(
+fun RowScope.KeyAtom(
     text: String,
     onClick: (String) -> Unit,
     color: Color = Color.Unspecified,
     modifier: Modifier = Modifier
 ) {
-    Card(modifier = modifier.clickable {
-        onClick(text)
-    }.padding(4.dp).weight(1F), elevation = CardDefaults.cardElevation(4.dp)) {
+    val scope = rememberCoroutineScope()
+    val haptic = LocalHapticFeedback.current
+    var pressed by remember { mutableStateOf(false) }
+    var touch by remember { mutableStateOf(Offset.Unspecified) }
+    val wave = remember { Animatable(0f) }
+    val scale by animateFloatAsState(if (pressed) 0.94f else 1f, tween(90), label = "")
+    val elevation by animateDpAsState(if (pressed) 0.dp else 4.dp, tween(90), label = "")
+    val bg by animateColorAsState(
+        if (pressed) MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+        else MaterialTheme.colorScheme.surface, tween(120), label = ""
+    )
+    val tint = if (color == Color.Unspecified) MaterialTheme.colorScheme.primary else color
+
+    Card(
+        modifier = modifier.padding(4.dp).weight(1f).scale(scale).pointerInput(text) {
+        detectTapGestures(
+            onPress = {
+                pressed = true
+                touch = it
+                wave.snapTo(0f)
+                val job = scope.launch { wave.animateTo(1f, tween(220)) }
+                val released = tryAwaitRelease()
+                pressed = false
+                if (released) {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    onClick(text)
+                } else job.cancel()
+            })
+    }.drawBehind {
+        if (touch.isSpecified && wave.value > 0f) {
+            val r = hypot(size.width.toDouble(), size.height.toDouble()).toFloat()
+            drawCircle(
+                color = tint.copy(alpha = 0.24f * (1f - wave.value)),
+                radius = r * wave.value,
+                center = touch
+            )
+        }
+    },
+        elevation = CardDefaults.cardElevation(elevation),
+        colors = CardDefaults.cardColors(containerColor = bg)
+    ) {
         Text(
             text = text,
             maxLines = 1,
             color = color,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.displayLarge,
-            modifier = Modifier.align(Alignment.CenterHorizontally).padding(8.dp)
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+                .wrapContentWidth(Alignment.CenterHorizontally).padding(8.dp)
         )
     }
 }
@@ -1727,24 +1855,57 @@ private fun InfoGameDialog(
                 .padding(24.dp)
         ) {
             Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()
             ) {
-
+                val modifierMarginTop = Modifier.padding(top = 8.dp)
                 Text(
-                    text = statusGameText,
+                    textAlign = TextAlign.Center,
+                    text = stringResource(Res.string.game_status),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = if (isSystemInDarkTheme()) Color.White else Color.Black
                 )
                 Text(
+                    text = statusGameText,
+                    textAlign = TextAlign.Center,
+                    fontStyle = FontStyle.Italic,
+                    fontSize = 16.sp,
+                    color = if (isSystemInDarkTheme()) Color.White else Color.Black
+                )
+                Text(
+                    textAlign = TextAlign.Center,
+                    modifier = modifierMarginTop,
+                    text = stringResource(Res.string.winning_points),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = if (isSystemInDarkTheme()) Color.White else Color.Black
+                )
+                Text(
+                    textAlign = TextAlign.Center,
                     text = infoGame.winningPoints,
                     fontSize = 16.sp,
+                    fontStyle = FontStyle.Italic,
+                    color = if (isSystemInDarkTheme()) Color.White else Color.Black
+                )
+                Text(
+                    textAlign = TextAlign.Center,
+                    modifier = modifierMarginTop,
+                    text = stringResource(Res.string.games_played),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = if (isSystemInDarkTheme()) Color.White else Color.Black
+                )
+                Text(
+                    textAlign = TextAlign.Center,
+                    text = infoGame.matchPlayed,
+                    fontSize = 16.sp,
+                    fontStyle = FontStyle.Italic,
                     color = if (isSystemInDarkTheme()) Color.White else Color.Black
                 )
                 if (showFinishMatch) {
                     Button(
+                        modifier = Modifier.padding(top = 16.dp),
                         onClick = onConfirm,
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
                     ) {
@@ -1924,20 +2085,23 @@ private fun UpdateStatusGameDialog(
             Spacer(Modifier.height(16.dp))
             AnimatedColorCircle()
             Spacer(Modifier.height(16.dp))
+            val modifierMargins = Modifier.padding(8.dp)
             Row {
-                Button(onClick = onDismiss) {
+                Button(onClick = onDismiss, modifier = modifierMargins) {
                     Text(text = stringResource(Res.string.no))
                 }
-                ConfirmYesButton(onConfirm = onConfirm)
+                ConfirmYesButton(onConfirm = onConfirm, modifier = modifierMargins)
             }
         }
     }
 }
 
 @Composable
-fun ConfirmYesButton(onConfirm: () -> Unit) {
+fun ConfirmYesButton(onConfirm: () -> Unit, modifier: Modifier = Modifier) {
     Button(
-        onClick = onConfirm, colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+        modifier = modifier,
+        onClick = onConfirm,
+        colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
     ) {
         Text(
             text = stringResource(Res.string.yes), color = Color.White
@@ -1964,7 +2128,7 @@ fun AnimatedColorCircle() {
     )
 }
 
-data class InfoGame(val status: GameStatus, val winningPoints: String)
+data class InfoGame(val status: GameStatus, val winningPoints: String, val matchPlayed: String)
 
 
 @Preview

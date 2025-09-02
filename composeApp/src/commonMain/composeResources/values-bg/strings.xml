@@ -35,4 +35,9 @@
 
     <string name="game_deleted">Играта е изтрита</string>
     <string name="undo">Отмени</string>
+
+    <string name="game_status">Статус на играта</string>
+    <string name="winning_points">Точки за победа</string>
+    <string name="games_played">Брой изиграни партии</string>
+
 </resources>

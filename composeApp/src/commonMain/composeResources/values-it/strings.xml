@@ -34,4 +34,9 @@
     <string name="no">No</string>
     <string name="game_deleted">Partita eliminata</string>
     <string name="undo">Annulla</string>
+
+    <string name="game_status">Stato del gioco</string>
+    <string name="winning_points">Punti vincenti</string>
+    <string name="games_played">Numero di partite giocate</string>
+
 </resources>

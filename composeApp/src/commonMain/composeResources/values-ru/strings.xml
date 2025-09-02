@@ -34,4 +34,9 @@
     <string name="no">Нет</string>
     <string name="game_deleted">Игра удалена</string>
     <string name="undo">Отменить</string>
+
+    <string name="game_status">Статус игры</string>
+    <string name="winning_points">Очки для победы</string>
+    <string name="games_played">Количество сыгранных партий</string>
+
 </resources>

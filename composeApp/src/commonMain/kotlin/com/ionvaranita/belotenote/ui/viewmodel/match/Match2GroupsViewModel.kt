@@ -42,6 +42,8 @@ class Match2GroupsViewModel(
     override val idGame: Int,
 
 ) : ViewModelBase() {
+    override val matchPlayed: String
+        get() = (scoreName1 + scoreName2).toString()
     override val gamePath: GamePath = GamePath.GROUP
     override val namesMap: Map<Int, String> by lazy {
         mutableMapOf<Int, String>().apply {

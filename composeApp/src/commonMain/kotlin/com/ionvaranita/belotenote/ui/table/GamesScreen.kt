@@ -641,6 +641,7 @@ private fun TableDateTextAtom(text: String, modifier: Modifier = Modifier) {
         style = MaterialTheme.typography.bodySmall,
         maxLines = 1,
         textAlign = TextAlign.Center,
+        fontStyle = FontStyle.Italic,
         modifier = modifier.wrapContentSize().padding(8.dp)
     )
 }

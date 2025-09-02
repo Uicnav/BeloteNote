@@ -35,4 +35,9 @@
 
     <string name="game_deleted">Partie supprimée</string>
     <string name="undo">Annuler</string>
+
+    <string name="game_status">Statut du jeu</string>
+    <string name="winning_points">Points gagnants</string>
+    <string name="games_played">Nombre de parties jouées</string>
+
 </resources>

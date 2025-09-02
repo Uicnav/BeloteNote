@@ -44,7 +44,8 @@ class Match3PPViewModel(
     override val prefs: DataStore<Preferences>,
     override val idGame: Int,
 ) : ViewModelBase() {
-
+    override val matchPlayed: String
+        get() = (scoreName1 + scoreName2 + scoreName3).toString()
     init {
         getMatchData()
     }

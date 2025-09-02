@@ -51,5 +51,10 @@
     <string name="game_deleted">Game deleted</string>
     <string name="undo">Undo</string>
 
+    <string name="game_status">Game status</string>
+    <string name="winning_points">Winning points</string>
+    <string name="games_played">Number of games played</string>
+
+
 </resources>
 
