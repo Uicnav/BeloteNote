@@ -1829,6 +1829,7 @@ fun RowScope.KeyAtom(
     }
 }
 
+
 @Composable
 private fun InfoGameDialog(
     onDismiss: () -> Unit, onConfirm: () -> Unit, infoGame: InfoGame, showFinishMatch: Boolean

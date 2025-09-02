@@ -939,15 +939,16 @@ internal fun InsertGameDialogBase(
                         }
                     }, shaker = shakerWinningPoints, isOnlyDigit = true)
                 }
-                Button(onClick = {
-                    if (winningPoints.isNotEmpty()) {
-                        val result = winningPoints.toShort()
-                        winningPointsViewModel.insertWinningPoints(WinningPointsUi(winningPoints = result))
-                        onClick(result)
-                    } else {
-                        shakerWinningPoints.shake()
-                    }
-                }) {
+                Button(
+                    modifier = Modifier.padding(top = 16.dp), onClick = {
+                        if (winningPoints.isNotEmpty()) {
+                            val result = winningPoints.toShort()
+                            winningPointsViewModel.insertWinningPoints(WinningPointsUi(winningPoints = result))
+                            onClick(result)
+                        } else {
+                            shakerWinningPoints.shake()
+                        }
+                    }) {
                     Text(
                         text = if (isNewGame) {
                             stringResource(Res.string.dialog_fragment_insert_table)
