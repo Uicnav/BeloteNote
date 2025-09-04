@@ -90,7 +90,6 @@ import belotenote.composeapp.generated.resources.dialog_fragment_win
 import belotenote.composeapp.generated.resources.game
 import belotenote.composeapp.generated.resources.game_status
 import belotenote.composeapp.generated.resources.games_played
-import belotenote.composeapp.generated.resources.ic_writting_indicator
 import belotenote.composeapp.generated.resources.no
 import belotenote.composeapp.generated.resources.ok
 import belotenote.composeapp.generated.resources.winner_is

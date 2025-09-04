@@ -60,8 +60,8 @@ android {
         applicationId = "com.ionvaranita.belotenote"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 147
-        versionName = "1.4.7"
+        versionCode = 149
+        versionName = "1.4.9"
     }
 
     buildTypes {
