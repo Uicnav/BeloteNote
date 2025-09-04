@@ -12,7 +12,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -678,6 +677,7 @@ fun InsertFloatingActionButton(
     onClick: () -> Unit,
     isLoading: Boolean = false,
     animate: Boolean = false,
+    isVisible: Boolean =true,
     modifier: Modifier = Modifier
 ) {
     val scale by if (animate) {
@@ -693,7 +693,7 @@ fun InsertFloatingActionButton(
     FloatingActionButton(
         onClick = {
             if (!isLoading) onClick()
-        }, modifier = modifier.scale(scale)
+        }, modifier = modifier.alpha(if(isVisible)1f else 0F).scale(scale)
     ) {
         Icon(
             imageVector = Icons.Filled.Add, contentDescription = "Floating action button"
@@ -892,7 +892,7 @@ internal fun InsertGameDialogBase(
                         style = MaterialTheme.typography.labelLarge,
                         textAlign = TextAlign.Center,
                         maxLines = 2,
-                        color = if (isSystemInDarkTheme()) Color.White else Color.Black,
+                        color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.weight(1F)
                     )
                     Spacer(modifier = Modifier.width(8.dp))

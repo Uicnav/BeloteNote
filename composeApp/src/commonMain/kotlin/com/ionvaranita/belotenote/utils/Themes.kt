@@ -13,15 +13,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ionvaranita.belotenote.constants.GLOBAL_ALPHA
-
-val PrimaryBlue = Color(0xFF1565C0).copy(alpha = GLOBAL_ALPHA)
-val AccentOrange = Color(0xFFFF9800).copy(alpha = GLOBAL_ALPHA)
-val SurfaceGray = Color(0xFFF5F7FA).copy(alpha = GLOBAL_ALPHA)
-val DarkSurface = Color(0xFF232946).copy(alpha = GLOBAL_ALPHA)
-val TextOnPrimary = Color(0xFFFFFFFF).copy(alpha = GLOBAL_ALPHA)
-val TextOnBackground = Color(0xFF232946).copy(alpha = GLOBAL_ALPHA)
-val TextOnDark = Color(0xFFF5F7FA).copy(alpha = GLOBAL_ALPHA)
+val PrimaryBlue = Color(0xFF1565C0)
+val AccentOrange = Color(0xFFFF9800)
+val SurfaceGray = Color(0xFFF5F7FA)
+val DarkSurface = Color(0xFF232946)
+val TextOnPrimary = Color(0xFFFFFFFF)
+val TextOnBackground = Color(0xFF232946)
+val TextOnDark = Color(0xFFF5F7FA)
 
 private val BeloteLightColors = lightColorScheme(
     primary = PrimaryBlue,
@@ -30,7 +28,7 @@ private val BeloteLightColors = lightColorScheme(
     onSecondary = TextOnPrimary,
     background = SurfaceGray,
     onBackground = TextOnBackground,
-    surface = Color.White.copy(alpha = GLOBAL_ALPHA),
+    surface = Color.White,
     onSurface = TextOnBackground
 )
 
@@ -41,7 +39,7 @@ private val BeloteDarkColors = darkColorScheme(
     onSecondary = TextOnPrimary,
     background = DarkSurface,
     onBackground = TextOnDark,
-    surface = Color(0xFF1A1A2E).copy(alpha = GLOBAL_ALPHA),
+    surface = Color(0xFF1A1A2E),
     onSurface = TextOnDark
 )
 

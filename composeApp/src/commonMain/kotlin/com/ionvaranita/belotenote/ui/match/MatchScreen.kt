@@ -1539,13 +1539,12 @@ private fun MatchWrapper(
 private fun RowScope.PointsTextAtom(
     text: String, isBody: Boolean = false, modifier: Modifier = Modifier
 ) {
-    val textColor = if (isSystemInDarkTheme()) Color.White else Color.Black
 
     Text(
         text = text,
         modifier = modifier.padding(8.dp).weight(1F).align(Alignment.CenterVertically),
         textAlign = TextAlign.Center,
-        color = textColor,
+        color = MaterialTheme.colorScheme.onSurface,
         style = if (isBody) MaterialTheme.typography.bodyMedium
         else MaterialTheme.typography.titleMedium,
     )
@@ -1600,7 +1599,7 @@ fun RowScope.TouchableText(
                 text = text.take(3),
                 style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.Center,
-                color = if (isSystemInDarkTheme()) Color.White else Color.Black
+                color  = MaterialTheme.colorScheme.onSurface,
             )
 
             isPressed && placeholder.isEmpty() -> BlinkingCursor()
@@ -1609,7 +1608,7 @@ fun RowScope.TouchableText(
                 text = placeholder,
                 style = MaterialTheme.typography.titleLarge.copy(fontStyle = FontStyle.Italic),
                 textAlign = TextAlign.Center,
-                color = (if (isSystemInDarkTheme()) Color.White else Color.Black).copy(alpha = 0.7f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
             )
         }
     }
@@ -1633,26 +1632,8 @@ fun BlinkingCursor(
         text = text,
         style = MaterialTheme.typography.bodyLarge,
         textAlign = TextAlign.Center,
-        color = if (isSystemInDarkTheme()) Color.White else Color.Black,
+        color = MaterialTheme.colorScheme.onSurface,
         modifier = modifier.alpha(alpha)
-    )
-}
-
-@Composable
-fun WritingPenIcon(modifier: Modifier = Modifier) {
-    val isDark = isSystemInDarkTheme()
-    val transition = rememberInfiniteTransition(label = "")
-    val offsetX by transition.animateFloat(
-        initialValue = 0f, targetValue = 10f, animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 400, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
-        ), label = ""
-    )
-    Image(
-        painter = painterResource(Res.drawable.ic_writting_indicator),
-        contentDescription = null,
-        modifier = modifier.offset(x = offsetX.dp),
-        colorFilter = ColorFilter.tint(if (isDark) Color.White else Color.Black)
     )
 }
 
@@ -1826,14 +1807,14 @@ private fun InfoGameDialog(
                     text = stringResource(Res.string.game_status),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (isSystemInDarkTheme()) Color.White else Color.Black
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
                     text = statusGameText,
                     textAlign = TextAlign.Center,
                     fontStyle = FontStyle.Italic,
                     fontSize = 16.sp,
-                    color = if (isSystemInDarkTheme()) Color.White else Color.Black
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
                     textAlign = TextAlign.Center,
@@ -1841,14 +1822,14 @@ private fun InfoGameDialog(
                     text = stringResource(Res.string.winning_points),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (isSystemInDarkTheme()) Color.White else Color.Black
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
                     textAlign = TextAlign.Center,
                     text = infoGame.winningPoints,
                     fontSize = 16.sp,
                     fontStyle = FontStyle.Italic,
-                    color = if (isSystemInDarkTheme()) Color.White else Color.Black
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
                     textAlign = TextAlign.Center,
@@ -1856,14 +1837,14 @@ private fun InfoGameDialog(
                     text = stringResource(Res.string.games_played),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (isSystemInDarkTheme()) Color.White else Color.Black
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
                     textAlign = TextAlign.Center,
                     text = infoGame.matchPlayed,
                     fontSize = 16.sp,
                     fontStyle = FontStyle.Italic,
-                    color = if (isSystemInDarkTheme()) Color.White else Color.Black
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
                 if (showFinishMatch) {
                     Button(
@@ -1954,13 +1935,12 @@ private fun ExtendedDialog(
                         Res.string.dialog_fragment_greater_than, maxPoints
                     ), shaker = shakerWinningPoints, isOnlyDigit = true
                 )
-                val textColor = if (isSystemInDarkTheme()) Color.White else Color.Black
                 if (winnerText != null) {
                     Text(
                         text = stringResource(Res.string.dialog_fragment_extend_match_info),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = textColor,
+                        color = MaterialTheme.colorScheme.onSurface,
                         textAlign = TextAlign.Center
                     )
                     Text(
@@ -1968,7 +1948,7 @@ private fun ExtendedDialog(
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.ExtraBold,
                         textAlign = TextAlign.Center,
-                        color = textColor
+                        color = MaterialTheme.colorScheme.onSurface,
 
                     )
                 } else {
@@ -1977,13 +1957,13 @@ private fun ExtendedDialog(
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
-                        color = textColor
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
                     Text(
                         text = stringResource(Res.string.dialog_fragment_mandatory_extend_match_info2),
                         fontWeight = FontWeight.ExtraBold,
                         textAlign = TextAlign.Center,
-                        color = textColor
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
                 }
 
@@ -2042,7 +2022,7 @@ private fun UpdateStatusGameDialog(
             Text(
                 text = stringResource(Res.string.dialog_are_you_sure),
                 style = MaterialTheme.typography.titleLarge,
-                color = if (isSystemInDarkTheme()) Color.White else Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
             )
             Spacer(Modifier.height(16.dp))
             AnimatedColorCircle()
