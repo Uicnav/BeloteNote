@@ -10,7 +10,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -62,7 +61,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -92,6 +90,10 @@ import belotenote.composeapp.generated.resources.game_status
 import belotenote.composeapp.generated.resources.games_played
 import belotenote.composeapp.generated.resources.no
 import belotenote.composeapp.generated.resources.ok
+import belotenote.composeapp.generated.resources.rate_confirm
+import belotenote.composeapp.generated.resources.rate_dismiss
+import belotenote.composeapp.generated.resources.rate_message
+import belotenote.composeapp.generated.resources.rate_title
 import belotenote.composeapp.generated.resources.winner_is
 import belotenote.composeapp.generated.resources.winning_points
 import belotenote.composeapp.generated.resources.yes
@@ -121,10 +123,11 @@ import com.ionvaranita.belotenote.ui.viewmodel.match.MatchUiState
 import com.ionvaranita.belotenote.ui.viewmodel.match.SideEffect
 import com.ionvaranita.belotenote.ui.viewmodel.match.ViewModelBase
 import com.ionvaranita.belotenote.ui.viewmodel.match.Winner
+import com.stevdza_san.demo.domain.Interval
+import com.stevdza_san.demo.presentation.component.AppRatingDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -1598,7 +1601,7 @@ fun RowScope.TouchableText(
                 text = text.take(3),
                 style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.Center,
-                color  = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onSurface,
             )
 
             isPressed && placeholder.isEmpty() -> BlinkingCursor()
@@ -1893,9 +1896,26 @@ private fun WinnerDialog(
                     textAlign = TextAlign.Center,
                     color = textColor
                 )
+                var showRateDialog: Boolean by remember { mutableStateOf(false) }
+                Button(onClick = {
+                    onConfirm()
+                    showRateDialog = true
 
-                Button(onClick = onConfirm) {
+                }) {
                     Text(text = stringResource(Res.string.ok))
+                }
+                if (showRateDialog) {
+                    AppRatingDialog(
+                        playStoreLink = "https://play.google.com/store/apps/details?id=com.ionvaranita.belotenote",
+                        appStoreLink = "https://apps.apple.com/ro/app/belote-note/id6749823405",
+                        initialDelayInDays = 0,
+                        interval = Interval.Monthly,
+                        title = { Text(text = stringResource(Res.string.rate_title)) },
+                        content = { Text(text = stringResource(Res.string.rate_message)) },
+                        dismissText = stringResource(Res.string.rate_dismiss),
+                        confirmText = stringResource(Res.string.rate_confirm),
+                        onDismiss = { showRateDialog = false })
+
                 }
             }
 
@@ -1949,7 +1969,7 @@ private fun ExtendedDialog(
                         textAlign = TextAlign.Center,
                         color = MaterialTheme.colorScheme.onSurface,
 
-                    )
+                        )
                 } else {
                     Text(
                         text = stringResource(Res.string.dialog_fragment_mandatory_extend_match_info1),

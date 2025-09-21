@@ -39,4 +39,10 @@
     <string name="winning_points">Punti vincenti</string>
     <string name="games_played">Numero di partite giocate</string>
 
+    <string name="rate_title">Ti piace Belote Note?</string>
+    <string name="rate_message">Le recensioni aiutano i giocatori di Belote a trovare l’app. Se Belote Note ti semplifica il punteggio, lasci una valutazione veloce? Meno di 30 secondi.</string>
+    <string name="rate_dismiss">Non ora</string>
+    <string name="rate_confirm">Valuta ora</string>
+
+
 </resources>

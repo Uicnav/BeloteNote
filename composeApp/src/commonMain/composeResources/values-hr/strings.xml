@@ -39,4 +39,9 @@
     <string name="winning_points">Pobjednički bodovi</string>
     <string name="games_played">Broj odigranih partija</string>
 
+    <string name="rate_title">Sviđa li ti se Belote Note?</string>
+    <string name="rate_message">Recenzije pomažu belotašima da pronađu aplikaciju. Ako ti Belote Note olakšava vođenje rezultata, ostavi brzu ocjenu. Manje od 30 sekundi.</string>
+    <string name="rate_dismiss">Ne sada</string>
+    <string name="rate_confirm">Ocijeni sada</string>
+
 </resources>

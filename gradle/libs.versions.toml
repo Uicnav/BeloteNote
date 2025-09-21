@@ -1,7 +1,7 @@
 [versions]
 agp = "8.10.1"
 android-compileSdk = "36"
-android-minSdk = "21"
+android-minSdk = "24"
 android-targetSdk = "36"
 androidx-activityCompose = "1.10.1"
 androidx-appcompat = "1.7.1"
@@ -10,6 +10,7 @@ androidx-core-ktx = "1.16.0"
 androidx-espresso-core = "3.7.0"
 androidx-material = "1.12.0"
 androidx-test-junit = "1.3.0"
+appRating = "1.0.1"
 compose = "1.7.3"
 compose-plugin = "1.7.3"
 junit = "4.13.2"
@@ -26,6 +27,7 @@ serialization = "1.7.3"
 datastore = "1.1.7"
 
 [libraries]
+app-rating = { module = "com.stevdza-san:app-rating", version.ref = "appRating" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

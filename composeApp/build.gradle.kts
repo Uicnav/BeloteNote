@@ -44,6 +44,7 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             api(libs.datastore.preferences)
             api(libs.datastore)
+            implementation(libs.app.rating)
         }
     }
 }
