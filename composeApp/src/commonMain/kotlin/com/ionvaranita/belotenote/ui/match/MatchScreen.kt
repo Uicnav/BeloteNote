@@ -123,8 +123,6 @@ import com.ionvaranita.belotenote.ui.viewmodel.match.MatchUiState
 import com.ionvaranita.belotenote.ui.viewmodel.match.SideEffect
 import com.ionvaranita.belotenote.ui.viewmodel.match.ViewModelBase
 import com.ionvaranita.belotenote.ui.viewmodel.match.Winner
-import com.stevdza_san.demo.domain.Interval
-import com.stevdza_san.demo.presentation.component.AppRatingDialog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -1896,26 +1894,10 @@ private fun WinnerDialog(
                     textAlign = TextAlign.Center,
                     color = textColor
                 )
-                var showRateDialog: Boolean by remember { mutableStateOf(false) }
                 Button(onClick = {
                     onConfirm()
-                    showRateDialog = true
-
                 }) {
                     Text(text = stringResource(Res.string.ok))
-                }
-                if (showRateDialog) {
-                    AppRatingDialog(
-                        playStoreLink = "https://play.google.com/store/apps/details?id=com.ionvaranita.belotenote",
-                        appStoreLink = "https://apps.apple.com/ro/app/belote-note/id6749823405",
-                        initialDelayInDays = 0,
-                        interval = Interval.Monthly,
-                        title = { Text(text = stringResource(Res.string.rate_title)) },
-                        content = { Text(text = stringResource(Res.string.rate_message)) },
-                        dismissText = stringResource(Res.string.rate_dismiss),
-                        confirmText = stringResource(Res.string.rate_confirm),
-                        onDismiss = { showRateDialog = false })
-
                 }
             }
 

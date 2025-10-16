@@ -1,6 +1,6 @@
 package com.ionvaranita.belotenote.utils
 
-import kotlin.time.Clock
+import kotlinx.datetime.Clock
 import kotlin.time.ExperimentalTime
 
 
