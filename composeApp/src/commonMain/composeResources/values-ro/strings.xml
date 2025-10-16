@@ -34,4 +34,15 @@
     <string name="no">Nu</string>
     <string name="game_deleted">Joc șters</string>
     <string name="undo">Anulează</string>
+
+    <string name="game_status">Statusul jocului</string>
+    <string name="winning_points">Punctele câștigătoare</string>
+    <string name="games_played">Numărul de partide jucate</string>
+
+    <string name="rate_title">Îți place Belote Note?</string>
+    <string name="rate_message">Recenziile îi ajută pe jucătorii de Belot să găsească aplicația. Dacă Belote Note îți ușurează scorul, lași o evaluare rapidă? Durează sub 30 de secunde.</string>
+    <string name="rate_dismiss">Nu acum</string>
+    <string name="rate_confirm">Evaluează acum</string>
+
+
 </resources>

@@ -12,7 +12,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -94,11 +93,11 @@ import belotenote.composeapp.generated.resources.undo
 import belotenote.composeapp.generated.resources.we
 import belotenote.composeapp.generated.resources.you_p
 import belotenote.composeapp.generated.resources.you_s
+import com.ionvaranita.belotenote.GameStatusCircle
 import com.ionvaranita.belotenote.Match2Dest
 import com.ionvaranita.belotenote.Match3Dest
 import com.ionvaranita.belotenote.Match4Dest
 import com.ionvaranita.belotenote.MatchGroupsDest
-import com.ionvaranita.belotenote.StatusImage
 import com.ionvaranita.belotenote.constants.GLOBAL_ALPHA
 import com.ionvaranita.belotenote.constants.GameStatus
 import com.ionvaranita.belotenote.datalayer.database.entity.groups2.Game2GroupsEntity
@@ -176,7 +175,9 @@ internal fun TablesScreen2(
                     modifier = Modifier.fillMaxSize(),
                     state = gameListState
                 ) {
-                    itemsIndexed(visibleGames) { index, game ->
+                    itemsIndexed(visibleGames, key = { _, game ->
+                        game.idGame
+                    }) { index, game ->
                         GameCard(
                             onDelete = {
                             scope.launch {
@@ -199,7 +200,7 @@ internal fun TablesScreen2(
                             }
                             TableDateTextAtom(text = game.dateGame)
                             //Spacer(modifier = Modifier.width(spacingBetweenStatusAndDate))
-                            StatusImage(gameStatus = GameStatus.fromId(game.statusGame))
+                            GameStatusCircle(gameStatus = GameStatus.fromId(game.statusGame))
                         }
                     }
                 }
@@ -279,7 +280,9 @@ internal fun TablesScreen3(
                     modifier = Modifier.fillMaxSize(),
                     state = gameListState
                 ) {
-                    itemsIndexed(visibleGames) { index, game ->
+                    itemsIndexed(visibleGames, key = { _, game ->
+                        game.idGame
+                    }) { index, game ->
                         GameCard(onDelete = {
                             snackbarHostState.currentSnackbarData?.dismiss()
                             viewModel.prepareDeleteGame(game)
@@ -303,7 +306,7 @@ internal fun TablesScreen3(
                             }
                             TableDateTextAtom(text = game.dateGame)
                             //Spacer(modifier = Modifier.width(spacingBetweenStatusAndDate))
-                            StatusImage(
+                            GameStatusCircle(
                                 gameStatus = GameStatus.fromId(game.statusGame)
                             )
                         }
@@ -369,7 +372,9 @@ internal fun TablesScreen4(
                     scope.launch {
                         gameListState.animateScrollToItem(state.data.size)
                     }
-                    itemsIndexed(visibleGames) { index, game ->
+                    itemsIndexed(visibleGames, key = { _, game ->
+                        game.idGame
+                    }) { index, game ->
                         GameCard(onDelete = {
                             snackbarHostState.currentSnackbarData?.dismiss()
                             viewModel.prepareDeleteGame(game)
@@ -396,7 +401,7 @@ internal fun TablesScreen4(
                             }
                             TableDateTextAtom(text = game.dateGame)
                             //Spacer(modifier = Modifier.width(spacingBetweenStatusAndDate))
-                            StatusImage(
+                            GameStatusCircle(
                                 gameStatus = GameStatus.fromId(game.statusGame)
                             )
                         }
@@ -464,7 +469,9 @@ internal fun TablesScreenGroups(
                     modifier = Modifier.fillMaxSize(),
                     state = gameListState
                 ) {
-                    itemsIndexed(visibleGames) { index, game ->
+                    itemsIndexed(visibleGames, key = { _, game ->
+                        game.idGame
+                    }) { index, game ->
                         GameCard(onDelete = {
                             snackbarHostState.currentSnackbarData?.dismiss()
                             viewModel.prepareDeleteGame(game)
@@ -486,7 +493,7 @@ internal fun TablesScreenGroups(
                             }
                             TableDateTextAtom(text = game.dateGame)
                             //Spacer(modifier = Modifier.width(spacingBetweenStatusAndDate))
-                            StatusImage(
+                            GameStatusCircle(
                                 gameStatus = GameStatus.fromId(game.statusGame)
                             )
                         }
@@ -633,7 +640,8 @@ private fun TableDateTextAtom(text: String, modifier: Modifier = Modifier) {
         style = MaterialTheme.typography.bodySmall,
         maxLines = 1,
         textAlign = TextAlign.Center,
-        modifier = modifier.wrapContentSize()
+        fontStyle = FontStyle.Italic,
+        modifier = modifier.wrapContentSize().padding(8.dp)
     )
 }
 
@@ -669,6 +677,7 @@ fun InsertFloatingActionButton(
     onClick: () -> Unit,
     isLoading: Boolean = false,
     animate: Boolean = false,
+    isVisible: Boolean =true,
     modifier: Modifier = Modifier
 ) {
     val scale by if (animate) {
@@ -684,7 +693,7 @@ fun InsertFloatingActionButton(
     FloatingActionButton(
         onClick = {
             if (!isLoading) onClick()
-        }, modifier = modifier.scale(scale)
+        }, modifier = modifier.alpha(if(isVisible)1f else 0F).scale(scale)
     ) {
         Icon(
             imageVector = Icons.Filled.Add, contentDescription = "Floating action button"
@@ -883,7 +892,7 @@ internal fun InsertGameDialogBase(
                         style = MaterialTheme.typography.labelLarge,
                         textAlign = TextAlign.Center,
                         maxLines = 2,
-                        color = if (isSystemInDarkTheme()) Color.White else Color.Black,
+                        color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.weight(1F)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
@@ -930,15 +939,16 @@ internal fun InsertGameDialogBase(
                         }
                     }, shaker = shakerWinningPoints, isOnlyDigit = true)
                 }
-                Button(onClick = {
-                    if (winningPoints.isNotEmpty()) {
-                        val result = winningPoints.toShort()
-                        winningPointsViewModel.insertWinningPoints(WinningPointsUi(winningPoints = result))
-                        onClick(result)
-                    } else {
-                        shakerWinningPoints.shake()
-                    }
-                }) {
+                Button(
+                    modifier = Modifier.padding(top = 16.dp), onClick = {
+                        if (winningPoints.isNotEmpty()) {
+                            val result = winningPoints.toShort()
+                            winningPointsViewModel.insertWinningPoints(WinningPointsUi(winningPoints = result))
+                            onClick(result)
+                        } else {
+                            shakerWinningPoints.shake()
+                        }
+                    }) {
                     Text(
                         text = if (isNewGame) {
                             stringResource(Res.string.dialog_fragment_insert_table)

@@ -51,5 +51,15 @@
     <string name="game_deleted">Game deleted</string>
     <string name="undo">Undo</string>
 
+    <string name="game_status">Game status</string>
+    <string name="winning_points">Winning points</string>
+    <string name="games_played">Number of games played</string>
+
+    <string name="rate_title">Enjoying Belote Note?</string>
+    <string name="rate_message">Reviews help Belote players find the app. If Belote Note makes scorekeeping easier, would you leave a quick rating? It takes under 30 seconds.</string>
+    <string name="rate_dismiss">Not now</string>
+    <string name="rate_confirm">Rate now</string>
+
+
 </resources>
 

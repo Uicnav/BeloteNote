@@ -42,6 +42,7 @@ sealed interface MatchUiState {
 }
 
 abstract class ViewModelBase : ViewModel() {
+    abstract val matchPlayed: String
     protected abstract val gamePath: GamePath
     protected abstract val idGame: Int
 

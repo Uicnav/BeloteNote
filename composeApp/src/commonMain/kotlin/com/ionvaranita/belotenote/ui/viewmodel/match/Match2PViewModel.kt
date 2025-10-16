@@ -41,6 +41,8 @@ class Match2PPViewModel(
     override val prefs: DataStore<Preferences>,
     override val idGame: Int
 ) : ViewModelBase() {
+    override val matchPlayed: String
+        get() = (scoreName1 + scoreName2).toString()
     override val gamePath: GamePath = GamePath.TWO
     override val namesMap: Map<Int, String> by lazy {
         mutableMapOf<Int, String>().apply {

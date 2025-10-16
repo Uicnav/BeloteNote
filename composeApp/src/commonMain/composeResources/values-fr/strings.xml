@@ -35,4 +35,15 @@
 
     <string name="game_deleted">Partie supprimée</string>
     <string name="undo">Annuler</string>
+
+    <string name="game_status">Statut du jeu</string>
+    <string name="winning_points">Points gagnants</string>
+    <string name="games_played">Nombre de parties jouées</string>
+
+    <string name="rate_title">Vous aimez Belote Note ?</string>
+    <string name="rate_message">Les avis aident les joueurs de belote à trouver l’app. Si Belote Note facilite le comptage des points, laisseriez-vous une note rapide ? Moins de 30 secondes.</string>
+    <string name="rate_dismiss">Pas maintenant</string>
+    <string name="rate_confirm">Noter maintenant</string>
+
+
 </resources>

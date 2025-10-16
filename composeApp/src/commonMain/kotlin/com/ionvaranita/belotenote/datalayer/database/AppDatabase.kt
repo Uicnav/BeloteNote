@@ -58,11 +58,11 @@ abstract class AppDatabase : RoomDatabase(), DB {
 
     abstract fun winningPointsDao(): WinningPointsDao
 
-    override fun clearAllTables(): Unit {}
+    override fun clearAllTables() {}
 }
 
 interface DB {
-    fun clearAllTables(): Unit {}
+    fun clearAllTables() {}
 }
 
 // The Room compiler generates the `actual` implementations.

@@ -250,6 +250,18 @@ fun String.toShortCustom(): Short {
     } else this.toShort()
 }
 
+fun String.toShortGame(): Short {
+    return if (this.isEmpty()) {
+        0
+    } else this.toShort()
+}
+
+fun String.toShortHint(): Short {
+    return if (this.isEmpty() || this.contains(BOLT) || this.contains(MINUS_10)) {
+        0
+    } else this.toShort()
+}
+
 data class WinningPointsUi(
     val winningPoints: Short
 ) {
