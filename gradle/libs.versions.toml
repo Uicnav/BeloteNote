@@ -25,8 +25,12 @@ sqlite = "2.5.2"
 navigationRuntimeKtx = "2.9.3"
 serialization = "1.7.3"
 datastore = "1.1.7"
+startupRuntime = "1.2.0"
+workRuntimeKtx = "2.11.0"
 
 [libraries]
+androidx-startup-runtime = { module = "androidx.startup:startup-runtime", version.ref = "startupRuntime" }
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 app-rating = { module = "com.stevdza-san:app-rating", version.ref = "appRating" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
