@@ -1,17 +1,11 @@
 package com.ionvaranita.belotenote.reminder
 
 import android.Manifest
-import android.R
 import android.app.AlarmManager
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.Context
-import android.graphics.Color
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
@@ -32,12 +26,12 @@ object AndroidExactAlarm {
 
     fun request(context: Context) {
         if (Build.VERSION.SDK_INT >= 31) {
-            scheduleTestNow(context)
+            scheduleWithWorkManager(context)
         }
     }
 }
 
-fun scheduleWithWorkManager(context: Context, hour: Int = 20, minute: Int = 0) {
+fun scheduleWithWorkManager(context: Context, hour: Int = DAILY_SCHEDULED_NOTIFICATION_HOUR, minute: Int = DAILY_SCHEDULED_NOTIFICATION_MINUTE) {
     val delay = calculateDelayUntilNext(hour, minute)
     val request =
         PeriodicWorkRequestBuilder<BeloteReminderWorker>(1, TimeUnit.DAYS).setInitialDelay(
@@ -71,34 +65,10 @@ fun calculateDelayUntilNext(hour: Int, minute: Int): Long {
 
 class BeloteReminderWorker(appContext: Context, params: WorkerParameters) :
     CoroutineWorker(appContext, params) {
-
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun doWork(): Result {
-        val title = "Belote time"
-        val body = "Deschide Belote Note și joacă o mână"
-        showNotification(title, body)
+        notify(applicationContext)
         return Result.success()
-    }
-
-    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun showNotification(title: String, body: String) {
-        val channelId = "belote_reminder_channel"
-        val mgr =
-            applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val channel =
-            NotificationChannel(channelId, "Belote reminders", NotificationManager.IMPORTANCE_HIGH)
-        channel.description = "Reminders to play Belote"
-        channel.enableLights(true)
-        channel.lightColor = Color.RED
-        mgr.createNotificationChannel(channel)
-
-        val notification =
-            NotificationCompat.Builder(applicationContext, channelId).setContentTitle(title)
-                .setContentText(body).setSmallIcon(R.drawable.ic_popup_reminder).setAutoCancel(true)
-                .setPriority(NotificationCompat.PRIORITY_HIGH).build()
-
-        NotificationManagerCompat.from(applicationContext).notify(1002, notification)
     }
 }
