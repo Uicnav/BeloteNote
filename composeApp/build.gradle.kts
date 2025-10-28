@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -50,72 +51,72 @@ kotlin {
 }
 
 android {
-    namespace = "com.ionvaranita.belotenote"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+namespace = "com.ionvaranita.belotenote"
+compileSdk = libs.versions.android.compileSdk.get().toInt()
 
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/androidMain/res")
-    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
+sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+sourceSets["main"].res.srcDirs("src/androidMain/res")
+sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
-    defaultConfig {
-        applicationId = "com.ionvaranita.belotenote"
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 149
-        versionName = "1.4.9"
-    }
-
-    buildTypes {
-        debug {
-            ndk {
-                abiFilters.clear()
-                abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
-            }
-            packaging {
-                jniLibs {
-                    useLegacyPackaging = false
-                }
-                resources {
-                    excludes += "/META-INF/{AL2.0,LGPL2.1}"
-                }
-            }
-            isMinifyEnabled = false
-        }
-        release {
-            isMinifyEnabled = true
-            ndk {
-                abiFilters.clear()
-                abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
-            }
-            packaging {
-                jniLibs {
-                    useLegacyPackaging = false
-                }
-                resources {
-                    excludes += "/META-INF/{AL2.0,LGPL2.1}"
-                }
-            }
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    dependencies {
-        debugImplementation(libs.compose.ui.tooling)
-    }
+defaultConfig {
+applicationId = "com.ionvaranita.belotenote"
+minSdk = libs.versions.android.minSdk.get().toInt()
+targetSdk = libs.versions.android.targetSdk.get().toInt()
+versionCode = 149
+versionName = "1.4.9"
 }
 
-room {
-    schemaDirectory("$projectDir/schemas")
+buildTypes {
+debug {
+ndk {
+abiFilters.clear()
+abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
+}
+packaging {
+jniLibs {
+useLegacyPackaging = false
+}
+resources {
+excludes += "/META-INF/{AL2.0,LGPL2.1}"
+}
+}
+isMinifyEnabled = false
+}
+release {
+isMinifyEnabled = true
+ndk {
+abiFilters.clear()
+abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
+}
+packaging {
+jniLibs {
+useLegacyPackaging = false
+}
+resources {
+excludes += "/META-INF/{AL2.0,LGPL2.1}"
+}
+}
+}
+}
+
+compileOptions {
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
 }
 
 dependencies {
-    ksp(libs.room.compiler)
-    implementation(libs.androidx.startup.runtime)
-    add("kspIosX64", libs.room.compiler)
-    add("kspIosArm64", libs.room.compiler)
-    add("kspIosSimulatorArm64", libs.room.compiler)
+debugImplementation(libs.compose.ui.tooling)
+}
+}
+
+room {
+schemaDirectory("$projectDir/schemas")
+}
+
+dependencies {
+ksp(libs.room.compiler)
+implementation(libs.androidx.startup.runtime)
+add("kspIosX64", libs.room.compiler)
+add("kspIosArm64", libs.room.compiler)
+add("kspIosSimulatorArm64", libs.room.compiler)
 }

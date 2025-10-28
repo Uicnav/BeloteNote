@@ -15,6 +15,7 @@ compose = "1.7.3"
 compose-plugin = "1.7.3"
 junit = "4.13.2"
 kotlin = "2.1.10"
+kotlinxCoroutinesCore = "1.10.2"
 kotlinxDatetime = "0.6.0"
 lifecycleViewmodelCompose = "2.8.2"
 navigationCompose = "2.8.0-alpha10"
@@ -32,6 +33,7 @@ workRuntimeKtx = "2.11.0"
 androidx-startup-runtime = { module = "androidx.startup:startup-runtime", version.ref = "startupRuntime" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
 app-rating = { module = "com.stevdza-san:app-rating", version.ref = "appRating" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
