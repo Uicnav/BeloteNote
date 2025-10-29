@@ -39,8 +39,7 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             scheduler.requestPermission()
             scheduler.scheduleDaily(
-                title = "Belote time",
-                body = "Deschide Belote Note și joacă o mână"
+                5, 13
             )
         }
     }

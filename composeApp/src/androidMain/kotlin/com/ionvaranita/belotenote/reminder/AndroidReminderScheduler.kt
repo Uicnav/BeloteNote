@@ -23,13 +23,11 @@ class AndroidReminderSchedulerImpl(private val context: Context) : ReminderSched
     }
 
     @RequiresPermission(value = Manifest.permission.SCHEDULE_EXACT_ALARM, conditional = true)
-    override suspend fun scheduleDaily(hour: Int , minute: Int , title: String, body: String) {
+    override suspend fun scheduleDaily(hour: Int , minute: Int) {
         withContext(Dispatchers.IO) {
             val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             val intent = Intent(context, BeloteNotificationReceiver::class.java).apply {
                 action = "com.belote.shared.ACTION_SEND_BELOTE_NOTIFICATION"
-                putExtra("title", title)
-                putExtra("body", body)
             }
             val pedingBroadcase = pendingBroadcast(context, 2001, intent)
             val cal = Calendar.getInstance().apply {
@@ -42,29 +40,6 @@ class AndroidReminderSchedulerImpl(private val context: Context) : ReminderSched
             }
             val trigger = cal.timeInMillis
             am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, trigger, pedingBroadcase)
-            store.saveDaily(hour, minute, title, body)
-        }
-    }
-
-    override suspend fun scheduleOneTimeAfterMillis(
-        delayMillis: Long,
-        title: String,
-        body: String
-    ) {
-        withContext(Dispatchers.IO) {
-            val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            val intent = Intent(context, BeloteNotificationReceiver::class.java).apply {
-                action = "com.belote.shared.ACTION_SEND_BELOTE_NOTIFICATION"
-                putExtra("title", title)
-                putExtra("body", body)
-            }
-            val pi = pendingBroadcast(context, 2002, intent)
-            val trigger = System.currentTimeMillis() + delayMillis
-            if (Build.VERSION.SDK_INT >= 23) {
-                am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, trigger, pi)
-            } else {
-                am.setExact(AlarmManager.RTC_WAKEUP, trigger, pi)
-            }
         }
     }
 

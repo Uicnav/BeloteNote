@@ -26,7 +26,7 @@ object AndroidExactAlarm {
 
     fun request(context: Context) {
         if (Build.VERSION.SDK_INT >= 31) {
-            scheduleWithWorkManager(context)
+            scheduleTestNow(context)
         }
     }
 }

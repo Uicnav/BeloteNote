@@ -60,6 +60,14 @@
     <string name="rate_dismiss">Not now</string>
     <string name="rate_confirm">Rate now</string>
 
+        <string name="reminder_title">Belote time</string>
+        <string name="reminder_body">Open Belote Note and play a hand</string>
+
+        <string name="permission_unknown">Unknown</string>
+        <string name="permission_granted">Granted</string>
+        <string name="permission_denied">Denied</string>
+
+
 
 </resources>
 

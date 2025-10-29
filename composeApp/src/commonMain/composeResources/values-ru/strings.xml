@@ -44,5 +44,13 @@
     <string name="rate_dismiss">Не сейчас</string>
     <string name="rate_confirm">Оценить</string>
 
+        <string name="reminder_title">Время для белота</string>
+        <string name="reminder_body">Открой Belote Note и сыграй партию</string>
+
+        <string name="permission_unknown">Неизвестно</string>
+        <string name="permission_granted">Разрешено</string>
+        <string name="permission_denied">Отклонено</string>
+
+
 
 </resources>

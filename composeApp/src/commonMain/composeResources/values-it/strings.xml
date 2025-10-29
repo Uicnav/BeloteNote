@@ -44,5 +44,13 @@
     <string name="rate_dismiss">Non ora</string>
     <string name="rate_confirm">Valuta ora</string>
 
+        <string name="reminder_title">È ora di Belote</string>
+        <string name="reminder_body">Apri Belote Note e gioca una mano</string>
+
+        <string name="permission_unknown">Sconosciuto</string>
+        <string name="permission_granted">Consentito</string>
+        <string name="permission_denied">Negato</string>
+
+
 
 </resources>

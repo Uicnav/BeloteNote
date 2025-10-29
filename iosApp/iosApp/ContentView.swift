@@ -20,7 +20,7 @@ struct ContentView: View {
                 }
                 Task {
                     _ = try? await scheduler.requestPermission()
-                    try? await scheduler.scheduleDaily(hour: 9, minute: 2, title: "Belote time", body: "Deschide Belote Note și joacă o mână")
+                    try? await scheduler.scheduleDaily(hour: 5, minute: 25)
                 }
             }
     }
