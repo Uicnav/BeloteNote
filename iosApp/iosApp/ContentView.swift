@@ -20,7 +20,7 @@ struct ContentView: View {
                 }
                 Task {
                     _ = try? await scheduler.requestPermission()
-                    try? await scheduler.scheduleDaily(hour: 5, minute: 25)
+                    try? await scheduler.scheduleDaily(hour:10, minute: 20)
                 }
             }
     }

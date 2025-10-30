@@ -17,12 +17,19 @@ import androidx.core.app.NotificationManagerCompat
 import com.ionvaranita.belotenote.MainActivity
 import com.ionvaranita.belotenote.reminder.BeloteNotificationReceiver.Companion.CHANNEL_ID
 import com.ionvaranita.belotenote.reminder.BeloteNotificationReceiver.Companion.NOTIF_ID
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class BeloteNotificationReceiver : BroadcastReceiver() {
+    @OptIn(DelicateCoroutinesApi::class)
     @RequiresApi(Build.VERSION_CODES.O)
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     override fun onReceive(context: Context, intent: Intent) {
-        notify(context)
+        GlobalScope.launch(Dispatchers.Default) {
+            notify(context)
+        }
     }
 
     companion object {
@@ -33,9 +40,10 @@ class BeloteNotificationReceiver : BroadcastReceiver() {
 
 @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
 @RequiresApi(Build.VERSION_CODES.O)
-internal fun notify(context: Context) {
-    val title = context.getString(R.string.ok) ?: "Belote"
-    val body = context.getString(R.string.no) ?: "Belote"
+internal suspend fun notify(context: Context) {
+    val reminder = localizedReminderTexts()
+    val title = reminder.first
+    val body = reminder.second
     ensureChannel(context)
     val mainIntent = Intent(context, MainActivity::class.java)
     mainIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

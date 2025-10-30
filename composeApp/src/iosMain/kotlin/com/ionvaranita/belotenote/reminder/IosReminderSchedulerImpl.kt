@@ -4,7 +4,6 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.Foundation.NSDateComponents
 import platform.UserNotifications.*
 import kotlin.coroutines.resume
-import kotlin.math.max
 
 class IosReminderSchedulerImpl : ReminderScheduler {
 
@@ -18,8 +17,8 @@ class IosReminderSchedulerImpl : ReminderScheduler {
         val reminder = localizedReminderTexts()
 
         val content = UNMutableNotificationContent()
-        content.setTitle(reminder.title)
-        content.setBody(reminder.body)
+        content.setTitle(reminder.first)
+        content.setBody(reminder.second)
         content.setSound(UNNotificationSound.defaultSound())
 
         val comps = NSDateComponents().apply {

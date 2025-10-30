@@ -11,7 +11,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.remember
 import androidx.lifecycle.lifecycleScope
 import com.ionvaranita.belotenote.datalayer.database.getRoomDatabase
-import com.ionvaranita.belotenote.reminder.AndroidExactAlarm
 import com.ionvaranita.belotenote.reminder.ReminderSchedulerFactory
 import kotlinx.coroutines.launch
 
@@ -28,19 +27,17 @@ class MainActivity : ComponentActivity() {
         if (Build.VERSION.SDK_INT >= 33) {
             requestNotif.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
-        val scheduler = ReminderSchedulerFactory.create()
         val appDatabase = getRoomDatabase(getDatabaseBuilder(applicationContext))
         setContent {
             App(appDatabase = appDatabase, prefs = remember { createDataStore(applicationContext) })
         }
-        if (Build.VERSION.SDK_INT >= 31 && !AndroidExactAlarm.canSchedule(this)) AndroidExactAlarm.request(
-            this
-        )
         lifecycleScope.launch {
-            scheduler.requestPermission()
-            scheduler.scheduleDaily(
-                5, 13
-            )
+            scheduleNotification()
         }
     }
+}
+
+suspend fun scheduleNotification() {
+    val scheduler = ReminderSchedulerFactory.create()
+    scheduler.scheduleDaily()
 }

@@ -30,6 +30,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.navigation.runtime.ktx)
             implementation(libs.androidx.work.runtime.ktx)
+            implementation("androidx.work:work-runtime-ktx:2.9.1")
         }
         commonMain.dependencies {
             implementation(compose.runtime)

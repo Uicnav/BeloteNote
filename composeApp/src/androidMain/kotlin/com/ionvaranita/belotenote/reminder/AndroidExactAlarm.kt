@@ -1,67 +1,12 @@
 package com.ionvaranita.belotenote.reminder
 
 import android.Manifest
-import android.app.AlarmManager
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import androidx.work.CoroutineWorker
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import java.util.Calendar
-import java.util.concurrent.TimeUnit
-
-object AndroidExactAlarm {
-    fun canSchedule(context: Context): Boolean {
-        return if (Build.VERSION.SDK_INT >= 31) {
-            val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            am.canScheduleExactAlarms()
-        } else true
-    }
-
-    fun request(context: Context) {
-        if (Build.VERSION.SDK_INT >= 31) {
-            scheduleTestNow(context)
-        }
-    }
-}
-
-fun scheduleWithWorkManager(context: Context, hour: Int = DAILY_SCHEDULED_NOTIFICATION_HOUR, minute: Int = DAILY_SCHEDULED_NOTIFICATION_MINUTE) {
-    val delay = calculateDelayUntilNext(hour, minute)
-    val request =
-        PeriodicWorkRequestBuilder<BeloteReminderWorker>(1, TimeUnit.DAYS).setInitialDelay(
-                delay,
-                TimeUnit.MILLISECONDS
-            ).build()
-
-    WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-            "belote_reminder", ExistingPeriodicWorkPolicy.UPDATE, request
-        )
-}
-
-fun scheduleTestNow(context: Context, secondsFromNow: Long = 10) {
-    val request = OneTimeWorkRequestBuilder<BeloteReminderWorker>()
-        .setInitialDelay(secondsFromNow, TimeUnit.SECONDS)
-        .build()
-    WorkManager.getInstance(context).enqueueUniqueWork("belote_test_now", ExistingWorkPolicy.REPLACE, request)
-}
-
-fun calculateDelayUntilNext(hour: Int, minute: Int): Long {
-    val now = Calendar.getInstance()
-    val next = Calendar.getInstance().apply {
-        set(Calendar.HOUR_OF_DAY, hour)
-        set(Calendar.MINUTE, minute)
-        set(Calendar.SECOND, 0)
-        set(Calendar.MILLISECOND, 0)
-        if (before(now)) add(Calendar.DAY_OF_YEAR, 1)
-    }
-    return next.timeInMillis - now.timeInMillis
-}
 
 class BeloteReminderWorker(appContext: Context, params: WorkerParameters) :
     CoroutineWorker(appContext, params) {

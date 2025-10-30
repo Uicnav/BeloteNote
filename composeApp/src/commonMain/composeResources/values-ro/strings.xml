@@ -44,12 +44,12 @@
     <string name="rate_dismiss">Nu acum</string>
     <string name="rate_confirm">Evaluează acum</string>
 
-        <string name="reminder_title">Timp de Belote</string>
-        <string name="reminder_body">Deschide Belote Note și joacă o mână</string>
+    <string name="reminder_title">Timp de Belote</string>
+    <string name="reminder_body">Deschide Belote Note și joacă o mână</string>
 
-        <string name="permission_unknown">Necunoscut</string>
-        <string name="permission_granted">Permis</string>
-        <string name="permission_denied">Respins</string>
+    <string name="permission_unknown">Necunoscut</string>
+    <string name="permission_granted">Permis</string>
+    <string name="permission_denied">Respins</string>
 
 
 </resources>
