@@ -4,8 +4,8 @@ import belotenote.composeapp.generated.resources.Res
 import belotenote.composeapp.generated.resources.reminder_body
 import belotenote.composeapp.generated.resources.reminder_title
 import org.jetbrains.compose.resources.getString
-internal const val DAILY_SCHEDULED_NOTIFICATION_HOUR= 19
-internal const val DAILY_SCHEDULED_NOTIFICATION_MINUTE=30
+internal const val DAILY_SCHEDULED_NOTIFICATION_HOUR= 8
+internal const val DAILY_SCHEDULED_NOTIFICATION_MINUTE= 3
 interface ReminderScheduler {
     suspend fun requestPermission(): Boolean
     suspend fun scheduleDaily(hour: Int = DAILY_SCHEDULED_NOTIFICATION_HOUR, minute: Int = DAILY_SCHEDULED_NOTIFICATION_MINUTE)
