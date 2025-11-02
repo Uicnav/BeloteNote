@@ -24,6 +24,8 @@ class AndroidReminderSchedulerImpl(private val context: Context) : ReminderSched
         } else true
     }
 
+    private val timeTreshold = 10
+
     override suspend fun scheduleDaily(hour: Int, minute: Int) {
         val context = AndroidContextHolder.appContext
         val wm = WorkManager.getInstance(context)
@@ -33,8 +35,9 @@ class AndroidReminderSchedulerImpl(private val context: Context) : ReminderSched
                 set(Calendar.MINUTE, minute)
                 set(Calendar.SECOND, 0)
                 set(Calendar.MILLISECOND, 0)
-                Log.d(TAG, "timeInMillis - now.timeInMillis = ${timeInMillis - now.timeInMillis}")
-                if (timeInMillis <= now.timeInMillis) add(Calendar.DAY_OF_YEAR, 1)
+                val deltaTime = timeInMillis - (now.timeInMillis + timeTreshold)
+                Log.d(TAG, "timeInMillis - now.timeInMillis = ${deltaTime}")
+                if (deltaTime <= 0) add(Calendar.DAY_OF_YEAR, 1)
             }
             val delay = target.timeInMillis - now.timeInMillis
             val request = OneTimeWorkRequestBuilder<BeloteReminderWorker>()
