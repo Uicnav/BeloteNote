@@ -3,4 +3,4 @@ package com.ionvaranita.belotenote.alarmee
 import com.tweener.alarmee.configuration.AlarmeeIosPlatformConfiguration
 import com.tweener.alarmee.configuration.AlarmeePlatformConfiguration
 
-val platformConfiguration: AlarmeePlatformConfiguration = AlarmeeIosPlatformConfiguration
+actual fun createAlarmeePlatformConfiguration(): AlarmeePlatformConfiguration = AlarmeeIosPlatformConfiguration

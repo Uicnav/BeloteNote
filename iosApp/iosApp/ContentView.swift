@@ -17,10 +17,7 @@ struct ContentView: View {
                 UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { g, _ in
                     DispatchQueue.main.async { grantedText = g ? "Granted" : "Denied" }
                 }
-                Task {
-                    _ = try? await scheduler.requestPermission()
-                    try? await scheduler.scheduleDaily(hour:19, minute: 30)
-                }
+        
             }
     }
 }

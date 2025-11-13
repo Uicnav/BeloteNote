@@ -160,7 +160,7 @@ fun App(appDatabase: AppDatabase, prefs: DataStore<Preferences>) {
             uuid = "myAlarmId",
             notificationTitle = "🎉 Congratulations! You've scheduled an Alarmee!",
             notificationBody = "This is the notification that will be displayed at the specified date and time.",
-            scheduledDateTime = LocalDateTime(year = 2025, month = Month.NOVEMBER, day = 13, hour = 6, minute = 21
+            scheduledDateTime = LocalDateTime(year = 2025, month = Month.NOVEMBER, day = 13, hour = 8, minute = 25
             ),
             androidNotificationConfiguration = AndroidNotificationConfiguration(
                 // Required configuration for Android target only (this parameter is ignored on iOS)
