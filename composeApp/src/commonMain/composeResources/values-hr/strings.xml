@@ -44,4 +44,12 @@
     <string name="rate_dismiss">Ne sada</string>
     <string name="rate_confirm">Ocijeni sada</string>
 
+    <string name="reminder_title">Vrijeme je za Belote</string>
+    <string name="reminder_body">Otvori Belote Note i odigraj jednu partiju</string>
+
+    <string name="permission_unknown">Nepoznato</string>
+    <string name="permission_granted">Dopušteno</string>
+    <string name="permission_denied">Odbijeno</string>
+
+
 </resources>
