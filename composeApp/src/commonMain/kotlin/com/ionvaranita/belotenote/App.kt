@@ -1,14 +1,10 @@
 package com.ionvaranita.belotenote
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -47,6 +43,7 @@ import belotenote.composeapp.generated.resources.tables_list
 import belotenote.composeapp.generated.resources.three_players
 import belotenote.composeapp.generated.resources.two_players
 import belotenote.composeapp.generated.resources.two_vs_two
+import com.ionvaranita.belotenote.alarmee.createAlarmeePlatformConfiguration
 import com.ionvaranita.belotenote.datalayer.database.AppDatabase
 import com.ionvaranita.belotenote.datalayer.datasource.game.Game2GroupsDataSourceImpl
 import com.ionvaranita.belotenote.datalayer.datasource.game.Game2PDataSourceImpl
@@ -140,12 +137,40 @@ import com.ionvaranita.belotenote.ui.viewmodel.match.Match2PPViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.match.Match3PPViewModel
 import com.ionvaranita.belotenote.ui.viewmodel.match.Match4PPViewModel
 import com.ionvaranita.belotenote.utils.BeloteTheme
+import com.tweener.alarmee.AlarmeeService
+import com.tweener.alarmee.model.Alarmee
+import com.tweener.alarmee.model.AndroidNotificationConfiguration
+import com.tweener.alarmee.model.AndroidNotificationPriority
+import com.tweener.alarmee.model.IosNotificationConfiguration
+import com.tweener.alarmee.rememberAlarmeeService
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.Month
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun App(appDatabase: AppDatabase, prefs:DataStore<Preferences>) {
+fun App(appDatabase: AppDatabase, prefs: DataStore<Preferences>) {
+    val alarmService: AlarmeeService = rememberAlarmeeService(
+        platformConfiguration = createAlarmeePlatformConfiguration()
+    )
+    val localService = alarmService.local
+    localService.schedule(
+        alarmee = Alarmee(
+            uuid = "myAlarmId",
+            notificationTitle = "🎉 Congratulations! You've scheduled an Alarmee!",
+            notificationBody = "This is the notification that will be displayed at the specified date and time.",
+            scheduledDateTime = LocalDateTime(year = 2025, month = Month.NOVEMBER, day = 13, hour = 6, minute = 4
+            ),
+            androidNotificationConfiguration = AndroidNotificationConfiguration(
+                // Required configuration for Android target only (this parameter is ignored on iOS)
+                priority = AndroidNotificationPriority.HIGH,
+                channelId = "dailyNewsChannelId",
+            ),
+            iosNotificationConfiguration = IosNotificationConfiguration(),
+        )
+    )
+
     BeloteTheme {
         val snackbarHostState = remember { SnackbarHostState() }
         val navController = rememberNavController()
@@ -222,7 +247,10 @@ fun App(appDatabase: AppDatabase, prefs:DataStore<Preferences>) {
                                 val deleteGameUseCase = DeleteGame2PUseCase(repositoryGame)
                                 val game2PViewModel = viewModel {
                                     Game2PViewModel(
-                                        getGamesUseCase= getGamesUseCase, insertGameUseCase=insertGameUseCase, deleteGameUseCase=deleteGameUseCase, prefs = prefs
+                                        getGamesUseCase = getGamesUseCase,
+                                        insertGameUseCase = insertGameUseCase,
+                                        deleteGameUseCase = deleteGameUseCase,
+                                        prefs = prefs
                                     )
                                 }
 
@@ -234,15 +262,15 @@ fun App(appDatabase: AppDatabase, prefs:DataStore<Preferences>) {
                             composable<Games3Dest> {
                                 val repository =
                                     Games3PRepositoryImpl(Game3PDataSourceImpl(appDatabase.game3PDao()))
-                                val getGamesUseCase =
-                                    GetGames3PUseCase(repository)
-                                val insertGameUseCase =
-                                    InsertGame3PUseCase(repository)
-                                val deleteGameUseCase =
-                                    DeleteGame3PUseCase(repository)
+                                val getGamesUseCase = GetGames3PUseCase(repository)
+                                val insertGameUseCase = InsertGame3PUseCase(repository)
+                                val deleteGameUseCase = DeleteGame3PUseCase(repository)
                                 val game3PViewModel = viewModel {
                                     Game3PViewModel(
-                                        getGamesUseCase= getGamesUseCase, insertGameUseCase=insertGameUseCase, deleteGameUseCase=deleteGameUseCase, prefs = prefs
+                                        getGamesUseCase = getGamesUseCase,
+                                        insertGameUseCase = insertGameUseCase,
+                                        deleteGameUseCase = deleteGameUseCase,
+                                        prefs = prefs
                                     )
                                 }
                                 TablesScreen3(game3PViewModel, winningPointsViewModel)
@@ -255,7 +283,10 @@ fun App(appDatabase: AppDatabase, prefs:DataStore<Preferences>) {
                                 val deleteGameUseCase = DeleteGame4PUseCase(repository)
                                 val game4PViewModel = viewModel {
                                     Game4PViewModel(
-                                        getGamesUseCase= getGamesUseCase, insertGameUseCase=insertGameUseCase, deleteGameUseCase=deleteGameUseCase, prefs = prefs
+                                        getGamesUseCase = getGamesUseCase,
+                                        insertGameUseCase = insertGameUseCase,
+                                        deleteGameUseCase = deleteGameUseCase,
+                                        prefs = prefs
                                     )
                                 }
                                 TablesScreen4(
@@ -265,15 +296,15 @@ fun App(appDatabase: AppDatabase, prefs:DataStore<Preferences>) {
                             composable<GamesGroupsDest> {
                                 val repository =
                                     Games2GroupsRepositoryImpl(Game2GroupsDataSourceImpl(appDatabase.game2GroupsDao()))
-                                val getGamesUseCase =
-                                    GetGames2GroupsUseCase(repository)
-                                val insertGameUseCase =
-                                    InsertGame2GroupsUseCase(repository)
-                                val deleteGameUseCase =
-                                    DeleteGame2GroupsUseCase(repository)
+                                val getGamesUseCase = GetGames2GroupsUseCase(repository)
+                                val insertGameUseCase = InsertGame2GroupsUseCase(repository)
+                                val deleteGameUseCase = DeleteGame2GroupsUseCase(repository)
                                 val game2GroupsViewModel = viewModel {
                                     Game2GroupsViewModel(
-                                        getGamesUseCase= getGamesUseCase, insertGameUseCase=insertGameUseCase, deleteGameUseCase=deleteGameUseCase, prefs = prefs
+                                        getGamesUseCase = getGamesUseCase,
+                                        insertGameUseCase = insertGameUseCase,
+                                        deleteGameUseCase = deleteGameUseCase,
+                                        prefs = prefs
                                     )
                                 }
                                 TablesScreenGroups(game2GroupsViewModel, winningPointsViewModel)
@@ -304,16 +335,16 @@ fun App(appDatabase: AppDatabase, prefs:DataStore<Preferences>) {
                                     DeleteAllPoints2PUseCase(repositoryPoints)
                                 val viewModel = viewModel {
                                     Match2PPViewModel(
-                                        idGame=idGame,
-                                        getGameUseCase=getGameUseCase,
-                                        getPointsUseCase=getPointsUseCase,
-                                        insertPointsUseCase=insertPointsUseCase,
-                                        deleteLastPointsUseCase=deleteLastPointsUseCase,
-                                        updateStatusScoreName1UseCase= updateStatusScoreName1UseCase,
-                                        updateStatusScoreName2UseCase=updateStatusScoreName2UseCase,
-                                        updateStatusWinningPointsUseCase=updateStatusWinningPointsUseCase,
-                                        updateOnlyStatusUseCase= updateOnlyStatusUseCase,
-                                        deleteAllPointsUseCase=deleteAllPointsUseCase,
+                                        idGame = idGame,
+                                        getGameUseCase = getGameUseCase,
+                                        getPointsUseCase = getPointsUseCase,
+                                        insertPointsUseCase = insertPointsUseCase,
+                                        deleteLastPointsUseCase = deleteLastPointsUseCase,
+                                        updateStatusScoreName1UseCase = updateStatusScoreName1UseCase,
+                                        updateStatusScoreName2UseCase = updateStatusScoreName2UseCase,
+                                        updateStatusWinningPointsUseCase = updateStatusWinningPointsUseCase,
+                                        updateOnlyStatusUseCase = updateOnlyStatusUseCase,
+                                        deleteAllPointsUseCase = deleteAllPointsUseCase,
                                         prefs = prefs
                                     )
                                 }
@@ -349,17 +380,17 @@ fun App(appDatabase: AppDatabase, prefs:DataStore<Preferences>) {
 
                                 val match3PPViewModel = viewModel {
                                     Match3PPViewModel(
-                                        idGame=idGame,
-                                        getGameUseCase=getGameUseCase,
-                                        getPointsUseCase=getPointsUseCase,
-                                        insertPointsUseCase=insertPointsUseCase,
-                                        deleteLastPointsUseCase=deleteLastPointsUseCase,
-                                        updateStatusScoreName1UseCase= updateStatusScoreName1UseCase,
-                                        updateStatusScoreName2UseCase=updateStatusScoreName2UseCase,
-                                        updateStatusScoreName3UseCase=updateStatusScoreName3UseCase,
-                                        updateStatusWinningPointsUseCase=updateStatusWinningPointsUseCase,
-                                        updateOnlyStatusUseCase= updateOnlyStatusUseCase,
-                                        deleteAllPointsUseCase=deleteAllPointsUseCase,
+                                        idGame = idGame,
+                                        getGameUseCase = getGameUseCase,
+                                        getPointsUseCase = getPointsUseCase,
+                                        insertPointsUseCase = insertPointsUseCase,
+                                        deleteLastPointsUseCase = deleteLastPointsUseCase,
+                                        updateStatusScoreName1UseCase = updateStatusScoreName1UseCase,
+                                        updateStatusScoreName2UseCase = updateStatusScoreName2UseCase,
+                                        updateStatusScoreName3UseCase = updateStatusScoreName3UseCase,
+                                        updateStatusWinningPointsUseCase = updateStatusWinningPointsUseCase,
+                                        updateOnlyStatusUseCase = updateOnlyStatusUseCase,
+                                        deleteAllPointsUseCase = deleteAllPointsUseCase,
                                         prefs = prefs
                                     )
                                 }
@@ -399,18 +430,18 @@ fun App(appDatabase: AppDatabase, prefs:DataStore<Preferences>) {
 
                                 val match4PPViewModel = viewModel {
                                     Match4PPViewModel(
-                                        idGame=idGame,
-                                        getGameUseCase=getGameUseCase,
-                                        getPointsUseCase=getPointsUseCase,
-                                        insertPointsUseCase=insertPointsUseCase,
-                                        deleteLastPointsUseCase=deleteLastPointsUseCase,
-                                        updateStatusScoreName1UseCase= updateStatusScoreName1UseCase,
-                                        updateStatusScoreName2UseCase=updateStatusScoreName2UseCase,
-                                        updateStatusScoreName3UseCase=updateStatusScoreName3UseCase,
-                                        updateStatusScoreName4UseCase=updateStatusScoreName4UseCase,
-                                        updateStatusWinningPointsUseCase=updateStatusWinningPointsUseCase,
-                                        updateOnlyStatusUseCase= updateOnlyStatusUseCase,
-                                        deleteAllPointsUseCase=deleteAllPointsUseCase,
+                                        idGame = idGame,
+                                        getGameUseCase = getGameUseCase,
+                                        getPointsUseCase = getPointsUseCase,
+                                        insertPointsUseCase = insertPointsUseCase,
+                                        deleteLastPointsUseCase = deleteLastPointsUseCase,
+                                        updateStatusScoreName1UseCase = updateStatusScoreName1UseCase,
+                                        updateStatusScoreName2UseCase = updateStatusScoreName2UseCase,
+                                        updateStatusScoreName3UseCase = updateStatusScoreName3UseCase,
+                                        updateStatusScoreName4UseCase = updateStatusScoreName4UseCase,
+                                        updateStatusWinningPointsUseCase = updateStatusWinningPointsUseCase,
+                                        updateOnlyStatusUseCase = updateOnlyStatusUseCase,
+                                        deleteAllPointsUseCase = deleteAllPointsUseCase,
                                         prefs = prefs
                                     )
                                 }
@@ -446,16 +477,16 @@ fun App(appDatabase: AppDatabase, prefs:DataStore<Preferences>) {
 
                                 val match2GroupsViewModel = viewModel {
                                     Match2GroupsViewModel(
-                                        idGame=idGame,
-                                        getGameUseCase=getGameUseCase,
-                                        getPointsUseCase=getPointsUseCase,
-                                        insertPointsUseCase=insertPointsUseCase,
-                                        deleteLastPointsUseCase=deleteLastPointsUseCase,
-                                        updateStatusScoreName1UseCase= updateStatusScoreName1UseCase,
-                                        updateStatusScoreName2UseCase=updateStatusScoreName2UseCase,
-                                        updateStatusWinningPointsUseCase=updateStatusWinningPointsUseCase,
-                                        updateOnlyStatusUseCase= updateOnlyStatusUseCase,
-                                        deleteAllPointsUseCase=deleteAllPointsUseCase,
+                                        idGame = idGame,
+                                        getGameUseCase = getGameUseCase,
+                                        getPointsUseCase = getPointsUseCase,
+                                        insertPointsUseCase = insertPointsUseCase,
+                                        deleteLastPointsUseCase = deleteLastPointsUseCase,
+                                        updateStatusScoreName1UseCase = updateStatusScoreName1UseCase,
+                                        updateStatusScoreName2UseCase = updateStatusScoreName2UseCase,
+                                        updateStatusWinningPointsUseCase = updateStatusWinningPointsUseCase,
+                                        updateOnlyStatusUseCase = updateOnlyStatusUseCase,
+                                        deleteAllPointsUseCase = deleteAllPointsUseCase,
                                         prefs = prefs
                                     )
                                 }
@@ -485,22 +516,18 @@ fun BeloteAppBar(
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
-        title = { ScreenTitle(currentRoute) },
-        navigationIcon = {
-            if (canNavigateBack) {
-                IconButton(onClick = navigateUp) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "menu items"
-                    )
-                }
+        title = { ScreenTitle(currentRoute) }, navigationIcon = {
+        if (canNavigateBack) {
+            IconButton(onClick = navigateUp) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "menu items"
+                )
             }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.Transparent,
-            scrolledContainerColor = Color.Transparent
-        ),
-        modifier = modifier
+        }
+    }, colors = TopAppBarDefaults.topAppBarColors(
+        containerColor = Color.Transparent, scrolledContainerColor = Color.Transparent
+    ), modifier = modifier
     )
 }
 

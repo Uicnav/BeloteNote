@@ -1,0 +1,5 @@
+package com.ionvaranita.belotenote.alarmee
+
+import com.tweener.alarmee.configuration.AlarmeePlatformConfiguration
+
+expect fun createAlarmeePlatformConfiguration(): AlarmeePlatformConfiguration

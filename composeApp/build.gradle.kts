@@ -16,34 +16,57 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach { iosTarget ->
+
+    val iosX64Target = iosX64()
+    val iosArm64Target = iosArm64()
+    val iosSimulatorArm64Target = iosSimulatorArm64()
+
+    listOf(iosX64Target, iosArm64Target, iosSimulatorArm64Target).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
             linkerOpts.add("-lsqlite3")
         }
     }
+
     sourceSets {
-        androidMain.dependencies {
-            implementation(libs.compose.ui.tooling.preview)
-            implementation(libs.androidx.activity.compose)
-            implementation(libs.androidx.navigation.runtime.ktx)
+        val commonMain by getting {
+            dependencies {
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material3)
+                implementation(compose.ui)
+                implementation(compose.components.resources)
+                implementation(compose.components.uiToolingPreview)
+                implementation(libs.lifecycle.viewmodel.compose)
+                implementation(libs.navigation.compose)
+                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.room.runtime)
+                implementation(libs.sqlite.bundled)
+                implementation(libs.kotlinx.datetime)
+                api(libs.datastore.preferences)
+                api(libs.datastore)
+                implementation(libs.alarmee)
+            }
         }
-        commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
-            implementation(libs.lifecycle.viewmodel.compose)
-            implementation(libs.navigation.compose)
-            implementation(libs.kotlinx.serialization.json)
-            implementation(libs.room.runtime)
-            implementation(libs.sqlite.bundled)
-            implementation(libs.kotlinx.datetime)
-            api(libs.datastore.preferences)
-            api(libs.datastore)
+
+        val androidMain by getting {
+            dependencies {
+                implementation(libs.compose.ui.tooling.preview)
+                implementation(libs.androidx.activity.compose)
+                implementation(libs.androidx.navigation.runtime.ktx)
+            }
+        }
+
+        val iosX64Main by getting
+        val iosArm64Main by getting
+        val iosSimulatorArm64Main by getting
+
+        val iosMain by creating {
+            dependsOn(commonMain)
+            iosX64Main.dependsOn(this)
+            iosArm64Main.dependsOn(this)
+            iosSimulatorArm64Main.dependsOn(this)
         }
     }
 }
