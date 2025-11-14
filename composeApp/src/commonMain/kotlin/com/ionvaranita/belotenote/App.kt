@@ -39,6 +39,8 @@ import belotenote.composeapp.generated.resources.four_players
 import belotenote.composeapp.generated.resources.game
 import belotenote.composeapp.generated.resources.image_background_dark
 import belotenote.composeapp.generated.resources.image_background_light
+import belotenote.composeapp.generated.resources.reminder_body
+import belotenote.composeapp.generated.resources.reminder_title
 import belotenote.composeapp.generated.resources.tables_list
 import belotenote.composeapp.generated.resources.three_players
 import belotenote.composeapp.generated.resources.two_players
@@ -142,34 +144,37 @@ import com.tweener.alarmee.model.Alarmee
 import com.tweener.alarmee.model.AndroidNotificationConfiguration
 import com.tweener.alarmee.model.AndroidNotificationPriority
 import com.tweener.alarmee.model.IosNotificationConfiguration
+import com.tweener.alarmee.model.RepeatInterval
 import com.tweener.alarmee.rememberAlarmeeService
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.Month
 import kotlinx.serialization.Serializable
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-
+import kotlin.time.Duration.Companion.minutes
+const val dailyNewsChannelId = "dailyNewsChannelId"
+const val breakingNewsChannelId = "breakingNewsChannelId"
 @Composable
 fun App(appDatabase: AppDatabase, prefs: DataStore<Preferences>) {
     val alarmService: AlarmeeService = rememberAlarmeeService(
         platformConfiguration = createAlarmeePlatformConfiguration()
     )
-    val localService = alarmService.local
-    localService.schedule(
-        alarmee = Alarmee(
-            uuid = "myAlarmId",
-            notificationTitle = "🎉 Congratulations! You've scheduled an Alarmee!",
-            notificationBody = "This is the notification that will be displayed at the specified date and time.",
-            scheduledDateTime = LocalDateTime(year = 2025, month = Month.NOVEMBER, day = 13, hour = 8, minute = 25
-            ),
-            androidNotificationConfiguration = AndroidNotificationConfiguration(
-                // Required configuration for Android target only (this parameter is ignored on iOS)
-                priority = AndroidNotificationPriority.HIGH,
-                channelId = "dailyNewsChannelId",
-            ),
-            iosNotificationConfiguration = IosNotificationConfiguration(),
+    LaunchedEffect(true) {
+        val localService = alarmService.local
+        localService.schedule(
+            alarmee = Alarmee(
+                uuid = "BelotNoteAlarmId",
+                notificationTitle = getString(Res.string.reminder_title),
+                notificationBody = getString(Res.string.reminder_body),
+                repeatInterval = RepeatInterval.Custom(duration = 1.minutes),
+                androidNotificationConfiguration = AndroidNotificationConfiguration(
+                    // Required configuration for Android target only (this parameter is ignored on iOS)
+                    priority = AndroidNotificationPriority.HIGH,
+                    channelId = dailyNewsChannelId,
+                ),
+                iosNotificationConfiguration = IosNotificationConfiguration(soundFilename = "notifications_sound.wav"),
+            )
         )
-    )
+    }
 
     BeloteTheme {
         val snackbarHostState = remember { SnackbarHostState() }
@@ -294,8 +299,9 @@ fun App(appDatabase: AppDatabase, prefs: DataStore<Preferences>) {
                                 )
                             }
                             composable<GamesGroupsDest> {
-                                val repository =
-                                    Games2GroupsRepositoryImpl(Game2GroupsDataSourceImpl(appDatabase.game2GroupsDao()))
+                                val repository = Games2GroupsRepositoryImpl(
+                                    Game2GroupsDataSourceImpl(appDatabase.game2GroupsDao())
+                                )
                                 val getGamesUseCase = GetGames2GroupsUseCase(repository)
                                 val insertGameUseCase = InsertGame2GroupsUseCase(repository)
                                 val deleteGameUseCase = DeleteGame2GroupsUseCase(repository)
@@ -395,7 +401,9 @@ fun App(appDatabase: AppDatabase, prefs: DataStore<Preferences>) {
                                     )
                                 }
 
-                                MatchScreen3(viewModel = match3PPViewModel, winningPointsViewModel)
+                                MatchScreen3(
+                                    viewModel = match3PPViewModel, winningPointsViewModel
+                                )
                             }
                             composable<Match4Dest> {
                                 val idGame = it.toRoute<Match3Dest>().idGame
@@ -452,8 +460,9 @@ fun App(appDatabase: AppDatabase, prefs: DataStore<Preferences>) {
                             }
                             composable<MatchGroupsDest> {
                                 val idGame = it.toRoute<MatchGroupsDest>().idGame
-                                val repositoryGame =
-                                    Games2GroupsRepositoryImpl(Game2GroupsDataSourceImpl(appDatabase.game2GroupsDao()))
+                                val repositoryGame = Games2GroupsRepositoryImpl(
+                                    Game2GroupsDataSourceImpl(appDatabase.game2GroupsDao())
+                                )
                                 val repositoryPoints = Points2GroupsRepositoryImpl(
                                     Points2GroupsDataSourceImpl(appDatabase.points2GroupsDao())
                                 )
