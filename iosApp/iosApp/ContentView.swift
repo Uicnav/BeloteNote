@@ -1,19 +1,24 @@
-import UIKit
+// iosApp/ContentView.swift
 import SwiftUI
+import UserNotifications
 import ComposeApp
 
 struct ComposeView: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> UIViewController {
-        MainViewControllerKt.MainViewController()
-    }
-
+    func makeUIViewController(context: Context) -> UIViewController { MainViewControllerKt.MainViewController() }
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
 }
 
 struct ContentView: View {
+    @State private var grantedText = "Unknown"
     var body: some View {
         ComposeView()
-                .ignoresSafeArea(.keyboard) // Compose has own keyboard handler
+            .ignoresSafeArea(.keyboard)
+            .onAppear {
+                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { g, _ in
+                    DispatchQueue.main.async { grantedText = g ? "Granted" : "Denied" }
+                }
+        
+            }
     }
 }
 
