@@ -85,8 +85,8 @@ android {
         applicationId = "com.ionvaranita.belotenote"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 149
-        versionName = "1.4.9"
+        versionCode = 151
+        versionName = "1.5.1"
     }
 
     buildTypes {
@@ -94,6 +94,7 @@ android {
             ndk {
                 abiFilters.clear()
                 abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
+                debugSymbolLevel = "SYMBOL_TABLE"
             }
             packaging {
                 jniLibs {
@@ -110,6 +111,7 @@ android {
             ndk {
                 abiFilters.clear()
                 abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
+                debugSymbolLevel = "SYMBOL_TABLE"
             }
             packaging {
                 jniLibs {

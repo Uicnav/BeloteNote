@@ -146,23 +146,26 @@ import com.tweener.alarmee.model.AndroidNotificationPriority
 import com.tweener.alarmee.model.IosNotificationConfiguration
 import com.tweener.alarmee.model.RepeatInterval
 import com.tweener.alarmee.rememberAlarmeeService
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.Month
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import kotlin.time.Duration.Companion.minutes
+
 const val dailyNewsChannelId = "dailyNewsChannelId"
+const val BelotNoteAlarmId = "BelotNoteAlarmId"
 const val breakingNewsChannelId = "breakingNewsChannelId"
+
 @Composable
 fun App(appDatabase: AppDatabase, prefs: DataStore<Preferences>) {
     val alarmService: AlarmeeService = rememberAlarmeeService(
         platformConfiguration = createAlarmeePlatformConfiguration()
     )
     LaunchedEffect(true) {
-        val localService = alarmService.local
-        localService.schedule(
+        val localService = alarmService.local/*localService.schedule(
             alarmee = Alarmee(
-                uuid = "BelotNoteAlarmId",
+                uuid = BelotNoteAlarmId,
                 notificationTitle = getString(Res.string.reminder_title),
                 notificationBody = getString(Res.string.reminder_body),
                 repeatInterval = RepeatInterval.Custom(duration = 1.minutes),
@@ -171,8 +174,26 @@ fun App(appDatabase: AppDatabase, prefs: DataStore<Preferences>) {
                     priority = AndroidNotificationPriority.HIGH,
                     channelId = dailyNewsChannelId,
                 ),
-                iosNotificationConfiguration = IosNotificationConfiguration(soundFilename = "notifications_sound.wav"),
+                iosNotificationConfiguration = IosNotificationConfiguration(soundFilename = "notifications_sound.mp3"),
             )
+
+        )*/
+        localService.schedule(
+            alarmee = Alarmee(
+                uuid = BelotNoteAlarmId,
+                notificationTitle = getString(Res.string.reminder_title),
+                notificationBody = getString(Res.string.reminder_body),
+                scheduledDateTime = LocalDateTime(
+                    year = 2025, month = Month.NOVEMBER, day = 15, hour = 19, minute = 30
+                ),
+                repeatInterval = RepeatInterval.Daily, // Will repeat every day
+                androidNotificationConfiguration = AndroidNotificationConfiguration(
+                    // Required configuration for Android target only (this parameter is ignored on iOS)
+                    priority = AndroidNotificationPriority.HIGH,
+                    channelId = dailyNewsChannelId,
+                ),
+                iosNotificationConfiguration = IosNotificationConfiguration(soundFilename = "notifications_sound.mp3"),
+                )
         )
     }
 
