@@ -5,5 +5,5 @@ import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
 fun getCurrentTime(): Long {
-    return Clock.System.now().toEpochMilliseconds()
+    return Clock.System.now().epochSeconds
 }
