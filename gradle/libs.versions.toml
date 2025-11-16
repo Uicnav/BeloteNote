@@ -14,6 +14,7 @@ appRating = "1.0.1"
 compose = "1.9.4"
 compose-plugin = "1.9.3"
 
+desugar_jdk_libs = "2.1.5"
 kotlin = "2.2.21"
 ksp = "2.2.21-2.0.4"        # <-- AICI e fixul
 
@@ -31,6 +32,7 @@ junit = "4.13.2"
 
 
 [libraries]
+desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 
 alarmee = { group = "io.github.tweener", name = "alarmee", version.ref = "alarmee" }
