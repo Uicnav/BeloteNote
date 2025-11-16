@@ -90,10 +90,6 @@ import belotenote.composeapp.generated.resources.game_status
 import belotenote.composeapp.generated.resources.games_played
 import belotenote.composeapp.generated.resources.no
 import belotenote.composeapp.generated.resources.ok
-import belotenote.composeapp.generated.resources.rate_confirm
-import belotenote.composeapp.generated.resources.rate_dismiss
-import belotenote.composeapp.generated.resources.rate_message
-import belotenote.composeapp.generated.resources.rate_title
 import belotenote.composeapp.generated.resources.winner_is
 import belotenote.composeapp.generated.resources.winning_points
 import belotenote.composeapp.generated.resources.yes
@@ -108,6 +104,7 @@ import com.ionvaranita.belotenote.domain.model.Points4PUi
 import com.ionvaranita.belotenote.domain.model.toShortCustom
 import com.ionvaranita.belotenote.domain.model.toShortGame
 import com.ionvaranita.belotenote.domain.model.toShortHint
+import com.ionvaranita.belotenote.review.rememberInAppReviewManager
 import com.ionvaranita.belotenote.ui.table.CenteredCircularProgressIndicator
 import com.ionvaranita.belotenote.ui.table.GameCard
 import com.ionvaranita.belotenote.ui.table.InsertFloatingActionButton
@@ -133,6 +130,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 internal fun MatchScreen2(
     viewModel: ViewModelBase, winningPointsViewModel: WinningPointsViewModel
 ) {
+    val reviewManager = rememberInAppReviewManager()
     val matchUiState = viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
     var showInfoGameDialog by remember { mutableStateOf(false) }
@@ -166,9 +164,12 @@ internal fun MatchScreen2(
     }
     if (showWinnerDialog) {
         WinnerDialog(
-            onDismiss = { showWinnerDialog = false },
-            onConfirm = { showWinnerDialog = false },
-            winner
+            onDismiss = { showWinnerDialog = false }, onConfirm = {
+            scope.launch {
+                reviewManager.requestReview()
+            }
+            showWinnerDialog = false
+        }, winner
         )
     }
     if (showExtended) {
@@ -421,6 +422,7 @@ internal fun MatchScreen2(
 internal fun MatchScreen3(
     viewModel: ViewModelBase, winningPointsViewModel: WinningPointsViewModel
 ) {
+    val reviewManager = rememberInAppReviewManager()
     val matchUiState = viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
     var showInfoGameDialog by remember { mutableStateOf(false) }
@@ -454,9 +456,13 @@ internal fun MatchScreen3(
     }
     if (showWinnerDialog) {
         WinnerDialog(
-            onDismiss = { showWinnerDialog = false },
-            onConfirm = { showWinnerDialog = false },
-            winner
+            onDismiss = { showWinnerDialog = false }, onConfirm = {
+            scope.launch {
+                reviewManager.requestReview()
+            }
+            showWinnerDialog = false
+
+        }, winner
         )
     }
     if (showExtended) {
@@ -751,6 +757,7 @@ internal fun MatchScreen3(
 internal fun MatchScreen4(
     viewModel: ViewModelBase, winningPointsViewModel: WinningPointsViewModel
 ) {
+    val reviewManager = rememberInAppReviewManager()
     val matchUiState = viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
     var showInfoGameDialog by remember { mutableStateOf(false) }
@@ -784,9 +791,13 @@ internal fun MatchScreen4(
     }
     if (showWinnerDialog) {
         WinnerDialog(
-            onDismiss = { showWinnerDialog = false },
-            onConfirm = { showWinnerDialog = false },
-            winner
+            onDismiss = { showWinnerDialog = false }, onConfirm = {
+            scope.launch {
+                reviewManager.requestReview()
+            }
+            showWinnerDialog = false
+
+        }, winner
         )
     }
     if (showExtended) {
@@ -1131,6 +1142,7 @@ internal fun MatchScreen4(
 internal fun MatchScreen2Groups(
     viewModel: ViewModelBase, winningPointsViewModel: WinningPointsViewModel
 ) {
+    val reviewManager = rememberInAppReviewManager()
     val matchUiState = viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
     var showInfoGameDialog by remember { mutableStateOf(false) }
@@ -1164,9 +1176,13 @@ internal fun MatchScreen2Groups(
     }
     if (showWinnerDialog) {
         WinnerDialog(
-            onDismiss = { showWinnerDialog = false },
-            onConfirm = { showWinnerDialog = false },
-            winner
+            onDismiss = { showWinnerDialog = false }, onConfirm = {
+            scope.launch {
+                reviewManager.requestReview()
+            }
+            showWinnerDialog = false
+
+        }, winner
         )
     }
     if (showExtended) {
