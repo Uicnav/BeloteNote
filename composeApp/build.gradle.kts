@@ -17,11 +17,10 @@ kotlin {
         }
     }
 
-    val iosX64Target = iosX64()
     val iosArm64Target = iosArm64()
     val iosSimulatorArm64Target = iosSimulatorArm64()
 
-    listOf(iosX64Target, iosArm64Target, iosSimulatorArm64Target).forEach { iosTarget ->
+    listOf(iosArm64Target, iosSimulatorArm64Target).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
@@ -38,14 +37,20 @@ kotlin {
                 implementation(compose.ui)
                 implementation(compose.components.resources)
                 implementation(compose.components.uiToolingPreview)
+
                 implementation(libs.lifecycle.viewmodel.compose)
                 implementation(libs.navigation.compose)
+
                 implementation(libs.kotlinx.serialization.json)
+
                 implementation(libs.room.runtime)
                 implementation(libs.sqlite.bundled)
+
                 implementation(libs.kotlinx.datetime)
+
                 api(libs.datastore.preferences)
                 api(libs.datastore)
+
                 implementation(compose.materialIconsExtended)
 
                 implementation(libs.alarmee)
@@ -60,13 +65,11 @@ kotlin {
             }
         }
 
-        val iosX64Main by getting
         val iosArm64Main by getting
         val iosSimulatorArm64Main by getting
 
         val iosMain by creating {
             dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
         }
@@ -129,11 +132,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
         isCoreLibraryDesugaringEnabled = true
     }
-
-    dependencies {
-        debugImplementation(libs.compose.ui.tooling)
-        coreLibraryDesugaring(libs.desugar.jdk.libs)
-    }
 }
 
 room {
@@ -143,4 +141,8 @@ room {
 dependencies {
     ksp(libs.room.compiler)
     add("kspAndroid", libs.room.compiler)
+
+    debugImplementation(libs.compose.ui.tooling)
+
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 }
