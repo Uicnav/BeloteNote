@@ -146,24 +146,63 @@ import com.tweener.alarmee.model.AndroidNotificationPriority
 import com.tweener.alarmee.model.IosNotificationConfiguration
 import com.tweener.alarmee.model.RepeatInterval
 import com.tweener.alarmee.rememberAlarmeeService
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.Month
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import kotlin.time.ExperimentalTime
 
 const val dailyNewsChannelId = "dailyNewsChannelId"
 const val BelotNoteAlarmId = "BelotNoteAlarmId"
 const val breakingNewsChannelId = "breakingNewsChannelId"
 
+@OptIn(ExperimentalTime::class)
 @Composable
 fun App(appDatabase: AppDatabase, prefs: DataStore<Preferences>) {
     val alarmService: AlarmeeService = rememberAlarmeeService(
         platformConfiguration = createAlarmeePlatformConfiguration()
     )
-    LaunchedEffect(true) {
-        val localService = alarmService.local/*localService.schedule(
+
+    LaunchedEffect(Unit) {
+        // 1. Luăm referința spre localService
+        val localService = alarmService.local
+
+        // 2. Anulăm orice alarmă veche cu același ID
+        localService.cancel(BelotNoteAlarmId)
+
+        // 3. Luăm timpul curent (Instant)
+        val nowInstant = kotlin.time.Clock.System.now()
+        val timeZone = TimeZone.currentSystemDefault()
+
+        // 4. Calculăm "mâine la aceeași oră" ca LocalDateTime
+        val tomorrowSameTimeInstant = nowInstant.plus(1, DateTimeUnit.DAY, timeZone)
+        val tomorrowSameTimeLocalDateTime = tomorrowSameTimeInstant.toLocalDateTime(timeZone)
+
+        // 5. Programăm Alarmee: prima notificare mâine la aceeași oră,
+        // apoi zilnic. De fiecare dată când userul intră în app,
+        // acest cod rulează din nou, cancellează și resetează ora.
+        localService.schedule(
+            alarmee = Alarmee(
+                uuid = BelotNoteAlarmId,
+                notificationTitle = getString(Res.string.reminder_title),
+                notificationBody = getString(Res.string.reminder_body),
+                scheduledDateTime = tomorrowSameTimeLocalDateTime,
+                repeatInterval = RepeatInterval.Daily,
+                androidNotificationConfiguration = AndroidNotificationConfiguration(
+                    priority = AndroidNotificationPriority.HIGH,
+                    channelId = dailyNewsChannelId,
+                ),
+                iosNotificationConfiguration = IosNotificationConfiguration(
+                    soundFilename = "notifications_sound.mp3"
+                ),
+            )
+        )
+    }/*LaunchedEffect(true) {
+        val localService = alarmService.local*//*localService.schedule(
             alarmee = Alarmee(
                 uuid = BelotNoteAlarmId,
                 notificationTitle = getString(Res.string.reminder_title),
@@ -177,14 +216,15 @@ fun App(appDatabase: AppDatabase, prefs: DataStore<Preferences>) {
                 iosNotificationConfiguration = IosNotificationConfiguration(soundFilename = "notifications_sound.mp3"),
             )
 
-        )*/
+        )*//*
+        localService.cancel(BelotNoteAlarmId)
         localService.schedule(
             alarmee = Alarmee(
                 uuid = BelotNoteAlarmId,
                 notificationTitle = getString(Res.string.reminder_title),
                 notificationBody = getString(Res.string.reminder_body),
                 scheduledDateTime = LocalDateTime(
-                    year = 2025, month = Month.NOVEMBER, day = 15, hour = 19, minute = 30
+                    year = 2025, month = Month.NOVEMBER, day = 16, hour = 6, minute = 46
                 ),
                 repeatInterval = RepeatInterval.Daily, // Will repeat every day
                 androidNotificationConfiguration = AndroidNotificationConfiguration(
@@ -195,7 +235,7 @@ fun App(appDatabase: AppDatabase, prefs: DataStore<Preferences>) {
                 iosNotificationConfiguration = IosNotificationConfiguration(soundFilename = "notifications_sound.mp3"),
                 )
         )
-    }
+    }*/
 
     BeloteTheme {
         val snackbarHostState = remember { SnackbarHostState() }
