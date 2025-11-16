@@ -54,14 +54,20 @@ kotlin {
                 implementation(compose.materialIconsExtended)
 
                 implementation(libs.alarmee)
+
             }
         }
 
         val androidMain by getting {
             dependencies {
+                implementation(libs.review)
+                // Potrebbe essere necessaria anche la versione KTX
+                implementation(libs.review.ktx)
                 implementation(libs.compose.ui.tooling.preview)
                 implementation(libs.androidx.activity.compose)
                 implementation(libs.androidx.navigation.runtime.ktx)
+                implementation(libs.androidx.fragment.ktx)
+                implementation(libs.kotlinx.coroutines.play.services)
             }
         }
 
@@ -88,8 +94,8 @@ android {
         applicationId = "com.ionvaranita.belotenote"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 153
-        versionName = "1.5.3"
+        versionCode = 159
+        versionName = "1.5.9"
     }
 
     buildTypes {

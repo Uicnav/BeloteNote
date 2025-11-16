@@ -22,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -118,6 +119,7 @@ import com.ionvaranita.belotenote.domain.usecase.match.insert.InsertPoints3PUseC
 import com.ionvaranita.belotenote.domain.usecase.match.insert.InsertPoints4PUseCase
 import com.ionvaranita.belotenote.domain.usecase.winningpoints.get.GetWinningPointsUseCase
 import com.ionvaranita.belotenote.domain.usecase.winningpoints.insert.InsertWinningPointsUseCase
+import com.ionvaranita.belotenote.review.rememberInAppReviewManager
 import com.ionvaranita.belotenote.ui.HomeScreen
 import com.ionvaranita.belotenote.ui.LocalNavHostController
 import com.ionvaranita.belotenote.ui.LocalSnackbarHostState
@@ -146,6 +148,7 @@ import com.tweener.alarmee.model.AndroidNotificationPriority
 import com.tweener.alarmee.model.IosNotificationConfiguration
 import com.tweener.alarmee.model.RepeatInterval
 import com.tweener.alarmee.rememberAlarmeeService
+import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
@@ -236,7 +239,6 @@ fun App(appDatabase: AppDatabase, prefs: DataStore<Preferences>) {
                 )
         )
     }*/
-
     BeloteTheme {
         val snackbarHostState = remember { SnackbarHostState() }
         val navController = rememberNavController()
